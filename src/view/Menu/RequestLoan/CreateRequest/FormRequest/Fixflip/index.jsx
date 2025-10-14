@@ -7,8 +7,6 @@ import { getClientById } from "../../../../../../Api/client";
 import { sendTemplateEmail } from "../../../../../../Api/emailTemplate";
 import { getUserIdFromToken } from "../../../../../../utils/auth";
 
-const URL_EXTERNAL_FORM = import.meta.env.VITE_URL_EXTERMAL_FORM;
-
 const initialState = {
   // Campos básicos del formulario
   borrower_name: "",
@@ -125,22 +123,12 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
     }));
   };
 
-  const handleNumberFormat = (values, name) => {
+  const handleNumberFormat = (name, values) => {
     const { value } = values;
     setForm(prev => ({
       ...prev,
       [name]: name === 'loan_term' ? String(value) : value
     }));
-  };
-
-  const toISOStringOrNull = (dateStr) => {
-    if (!dateStr) return null;
-    try {
-      const date = new Date(dateStr);
-      return date.toISOString();
-    } catch (error) {
-      return null;
-    }
   };
 
   const toISOOrNull = (dateStr) => {
@@ -152,7 +140,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
     } catch (_) {
       return null;
     }
-	};
+  };
 
   // Calcular Total Cost automáticamente
   const computeTotalCost = () => {
@@ -244,29 +232,31 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       console.log("Server response:", response);
 
       if (response && response.id) {
-        setFeedback("Request created successfully");
+        setFeedback("Solicitud creada exitosamente");
 
         // Create external link
+        let generatedLink = "";
         try {
-      const linkData = {
+          const linkData = {
             valid_days: 30,
             dscr_request_id: 0,
             construction_request_id: 0,
             fixflip_request_id: response.id
-      };
+          };
 
-      const linkResponse = await createRequestLink(linkData);
+          const linkResponse = await createRequestLink(linkData);
           console.log("Link created:", linkResponse);
           
           if (linkResponse && linkResponse.external_link) {
-            setExternalLink(linkResponse.external_link);
+            generatedLink = linkResponse.external_link;
+            setExternalLink(generatedLink);
           }
         } catch (linkError) {
           console.error("Error creating link:", linkError);
         }
 
         // Send email if client exists
-        if (client && client.correo) {
+        if (client && client.correo && generatedLink) {
           try {
             const emailData = {
               to: client.correo,
@@ -275,7 +265,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
               data: {
                 client_name: client.nombre,
                 request_id: response.id,
-                external_link: externalLink
+                external_link: generatedLink
               }
             };
             
@@ -288,14 +278,14 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
 
         // Go to documents tab
         if (goToDocumentsTab) {
-          goToDocumentsTab();
+          goToDocumentsTab(response.id, 'fixflip');
         }
       } else {
-        setFeedback("Error creating request");
+        setFeedback("Error al crear la solicitud");
       }
     } catch (error) {
       console.error("Error:", error);
-      setFeedback("Error creating request: " + (error.message || "Unknown error"));
+      setFeedback("Error al crear la solicitud: " + (error.message || "Error desconocido"));
     } finally {
       setLoading(false);
     }
@@ -352,7 +342,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             className={`form-control ${styles.input}`}
             name="fico_score" 
             value={form.fico_score} 
-            onValueChange={({ value }) => handleNumberFormat("fico_score", value)} 
+            onValueChange={(values) => handleNumberFormat("fico_score", values)} 
 						allowNegative={false} 
             decimalScale={0} 
             inputMode="numeric" 
@@ -371,7 +361,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
 
       <div className="row g-3">
         <div className="col-md-12">
-          <label className="form-label my_title_color">Street Address*</label>
+          <label className="form-label my_title_color">Street Address</label>
           <input 
             className={`form-control ${styles.input}`}
             name="street_address" 
@@ -383,7 +373,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
 
       <div className="row g-3">
         <div className="col-md-4">
-          <label className="form-label my_title_color">City*</label>
+          <label className="form-label my_title_color">City</label>
           <input 
             className={`form-control ${styles.input}`}
             name="city" 
@@ -392,7 +382,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
           />
         </div>
         <div className="col-md-4">
-          <label className="form-label my_title_color">State*</label>
+          <label className="form-label my_title_color">State</label>
           <select 
             className={`form-control ${styles.input}`}
             name="state" 
@@ -453,7 +443,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
           </select>
         </div>
         <div className="col-md-4">
-          <label className="form-label my_title_color">Zip*</label>
+          <label className="form-label my_title_color">Zip</label>
           <input 
             className={`form-control ${styles.input}`}
             name="zip" 
@@ -493,7 +483,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       {form.lived_less_than_2_years && (
         <div className="row g-3">
           <div className="col-md-12">
-            <label className="form-label my_title_color">Previous Street Address*</label>
+            <label className="form-label my_title_color">Previous Street Address</label>
             <input 
                 className={`form-control ${styles.input}`}
               name="previous_street_address" 
@@ -507,7 +497,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       {form.lived_less_than_2_years && (
         <div className="row g-3">
           <div className="col-md-4">
-            <label className="form-label my_title_color">Previous City*</label>
+            <label className="form-label my_title_color">Previous City</label>
             <input 
                 className={`form-control ${styles.input}`}
               name="previous_city" 
@@ -516,7 +506,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             />
           </div>
           <div className="col-md-4">
-            <label className="form-label my_title_color">Previous State*</label>
+            <label className="form-label my_title_color">Previous State</label>
             <select 
                 className={`form-control ${styles.input}`}
               name="previous_state" 
@@ -577,7 +567,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             </select>
           </div>
           <div className="col-md-4">
-            <label className="form-label my_title_color">Previous Zip*</label>
+            <label className="form-label my_title_color">Previous Zip</label>
             <input 
                 className={`form-control ${styles.input}`}
               name="previous_zip" 
@@ -619,7 +609,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             className={`form-control ${styles.input}`}
             name="estimated_after_completion_value" 
             value={form.estimated_after_completion_value} 
-            onValueChange={({ value }) => handleNumberFormat("estimated_after_completion_value", value)} 
+            onValueChange={(values) => handleNumberFormat("estimated_after_completion_value", values)} 
             thousandSeparator="," 
             prefix="$"
             decimalScale={2}
@@ -638,7 +628,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             className={`form-control ${styles.input}`}
             name="construction_rehab_budget" 
             value={form.construction_rehab_budget} 
-            onValueChange={({ value }) => handleNumberFormat("construction_rehab_budget", value)} 
+            onValueChange={(values) => handleNumberFormat("construction_rehab_budget", values)} 
             thousandSeparator="," 
             prefix="$"
             decimalScale={2}
@@ -655,7 +645,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             className={`form-control ${styles.input}`}
             name="land_acquisition_cost" 
             value={form.land_acquisition_cost} 
-            onValueChange={({ value }) => handleNumberFormat("land_acquisition_cost", value)} 
+            onValueChange={(values) => handleNumberFormat("land_acquisition_cost", values)} 
             thousandSeparator=","
             prefix="$"
             decimalScale={2}

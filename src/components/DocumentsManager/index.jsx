@@ -124,8 +124,8 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
     setShowViewModal(true);
     setDocumentViewUrl("");
     try {
-      const blob = await downloadDocument(document.id);
-      const url = window.URL.createObjectURL(blob);
+      //const blob = await downloadDocument(document.id);
+      const url = document.file_path;
       const fileExtension = document.name.split('.').pop().toLowerCase();
       const isPdf = fileExtension === 'pdf';
       const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
@@ -134,6 +134,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         throw new Error('Formato de archivo no compatible con visualización directa');
       }
       
+      console.log('URL de visualización:', url);
       setDocumentViewUrl(url);
       
       return () => {
