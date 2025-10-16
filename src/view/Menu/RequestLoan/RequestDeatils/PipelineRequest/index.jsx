@@ -3,14 +3,14 @@ import styles from "./style.module.css";
 import VerifyIcon from "../../../../../assets/verify-icon.png";
 import { getRequestTracking, createTracking } from "../../../../../Api/processTracking";
 
-// Tipos de proceso disponibles
+// Available process types
 const PROCESS_STAGES = {
-  revision_inicial: "Revisión Inicial",
-  documentacion: "Documentación",
-  aprobacion: "Aprobación",
-  financiamiento: "Financiamiento",
-  completado: "Completado",
-  rechazado: "Rechazado"
+  revision_inicial: "Initial Review",
+  documentacion: "Documentation",
+  aprobacion: "Approval",
+  financiamiento: "Financing",
+  completado: "Completed",
+  rechazado: "Rejected"
 };
 
 const PipelineRequest = ({ requestId, requestType }) => {
@@ -22,18 +22,18 @@ const PipelineRequest = ({ requestId, requestType }) => {
   const [completado, setCompletado] = useState(false);
   const [feedback, setFeedback] = useState("");
 
-  // Cargar historial de tracking
+  // Load tracking history
   const loadTracking = async () => {
     if (!requestId || !requestType) {
-      console.error('PipelineRequest: Faltan parámetros', { requestId, requestType });
+      console.error('PipelineRequest: Missing parameters', { requestId, requestType });
       return;
     }
 
     setLoading(true);
     try {
-      console.log('Llamando a getRequestTracking con:', requestType, requestId);
+      console.log('Calling getRequestTracking with:', requestType, requestId);
       const response = await getRequestTracking(requestType, requestId);
-      console.log('Respuesta de getRequestTracking:', response);
+      console.log('getRequestTracking response:', response);
 
       if (response && Array.isArray(response)) {
         setTrackingList(response);
@@ -42,12 +42,12 @@ const PipelineRequest = ({ requestId, requestType }) => {
       } else if (response && Array.isArray(response.results)) {
         setTrackingList(response.results);
       } else {
-        console.error('Formato de respuesta no reconocido:', response);
+        console.error('Unrecognized response format:', response);
         setTrackingList([]);
       }
     } catch (error) {
-      console.error('Error al cargar tracking:', error);
-      setFeedback("Error al cargar el historial");
+      console.error('Error loading tracking:', error);
+      setFeedback("Error loading history");
       setTrackingList([]);
     } finally {
       setLoading(false);
@@ -55,20 +55,20 @@ const PipelineRequest = ({ requestId, requestType }) => {
   };
 
   useEffect(() => {
-    console.log('PipelineRequest montado con:', { requestId, requestType });
+    console.log('PipelineRequest mounted with:', { requestId, requestType });
     loadTracking();
   }, [requestId, requestType]);
 
   const handleSubmit = async (e) => {
         e.preventDefault();
     if (!tipo || !comentario) {
-      setFeedback("Tipo y comentario son obligatorios");
+      setFeedback("Type and comment are required");
       return;
     }
 
     setLoading(true);
     try {
-      // Crear el objeto base
+      // Create base object
       const trackingData = {
         request_type: requestType,
         stage: tipo,
@@ -77,7 +77,7 @@ const PipelineRequest = ({ requestId, requestType }) => {
         completed: completado
       };
 
-      // Agregar solo el ID correspondiente según el tipo
+      // Add only corresponding ID according to type
       switch (requestType) {
         case "dscr":
           trackingData.dscr_request_id = parseInt(requestId);
@@ -89,25 +89,25 @@ const PipelineRequest = ({ requestId, requestType }) => {
           trackingData.construction_request_id = parseInt(requestId);
           break;
         default:
-          throw new Error("Tipo de solicitud no válido");
+          throw new Error("Invalid request type");
       }
 
-      console.log('Enviando tracking:', trackingData);
+      console.log('Sending tracking:', trackingData);
       const response = await createTracking(trackingData);
-      console.log('Respuesta de createTracking:', response);
+      console.log('createTracking response:', response);
 
-      // Limpiar el formulario
+      // Clear form
       setTipo("");
       setComentario("");
       setNotas("");
       setCompletado(false);
-      setFeedback("Observación registrada exitosamente");
+      setFeedback("Observation registered successfully");
       
-      // Recargar la lista
+      // Reload list
       loadTracking();
     } catch (error) {
-      console.error('Error al crear tracking:', error);
-      setFeedback(error.message || "Error al registrar la observación");
+      console.error('Error creating tracking:', error);
+      setFeedback(error.message || "Error registering observation");
     } finally {
       setLoading(false);
     }
@@ -121,15 +121,15 @@ const PipelineRequest = ({ requestId, requestType }) => {
             {loading ? (
               <div className="text-center py-4">
                 <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Cargando...</span>
+                  <span className="visually-hidden">Loading...</span>
                 </div>
-                <p className="mt-2">Cargando historial...</p>
+                <p className="mt-2">Loading history...</p>
               </div>
             ) : trackingList.length === 0 ? (
               <div className="text-center py-4">
-                <p>No hay actividades registradas</p>
+                <p>No activities registered</p>
                 <small className="text-muted d-block">
-                  Solicitud #{requestId} - {requestType?.toUpperCase()}
+                  Request #{requestId} - {requestType?.toUpperCase()}
                 </small>
               </div>
             ) : (
@@ -137,7 +137,7 @@ const PipelineRequest = ({ requestId, requestType }) => {
                 <div key={item.id || index} className={styles.step_item}>
                                 <div className={styles.step_header}>
                     <span className={styles.step_type}>
-                      {PROCESS_STAGES[item.stage] || item.stage || 'Estado no definido'}
+                      {PROCESS_STAGES[item.stage] || item.stage || 'Status not defined'}
                     </span>
                     <span className={styles.step_date}>
                       {new Date(item.created_at).toLocaleString()}
@@ -148,12 +148,12 @@ const PipelineRequest = ({ requestId, requestType }) => {
                                 </div>
                   {item.notes && (
                     <div className="mt-1 text-muted small">
-                      <strong>Notas:</strong> {item.notes}
+                      <strong>Notes:</strong> {item.notes}
                             </div>
                   )}
                   {item.completed && (
                     <div className="mt-1">
-                      <small className="badge bg-success">Completado</small>
+                      <small className="badge bg-success">Completed</small>
                     </div>
                   )}
                 </div>
@@ -170,14 +170,14 @@ const PipelineRequest = ({ requestId, requestType }) => {
                     >
                       <img src={VerifyIcon} alt="verify-icon" />
                     </div>
-                    <h4 className={styles.comment_title}>Crear comentario</h4>
+                    <h4 className={styles.comment_title}>Create Comment</h4>
                     <select
                         className={styles.comment_select}
                         value={tipo}
             onChange={(e) => setTipo(e.target.value)}
                         required
                     >
-            <option value="">Seleccione el estado del proceso</option>
+            <option value="">Select process status</option>
             {Object.entries(PROCESS_STAGES).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -186,7 +186,7 @@ const PipelineRequest = ({ requestId, requestType }) => {
                     </select>
                     <textarea
                         className={styles.comment_textarea}
-            placeholder="Descripción del proceso..."
+            placeholder="Process description..."
             rows={3}
                         value={comentario}
             onChange={(e) => setComentario(e.target.value)}
@@ -194,14 +194,14 @@ const PipelineRequest = ({ requestId, requestType }) => {
                     />
           <textarea
             className={styles.comment_textarea}
-            placeholder="Notas adicionales (opcional)..."
+            placeholder="Additional notes (optional)..."
             rows={2}
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
           />
                     <div className={styles.comment_checkbox_row}>
                         <label className={styles.comment_checkbox_label}>
-              MARCAR COMO COMPLETADO
+              MARK AS COMPLETED
                             <input
                                 type="checkbox"
                                 className={styles.comment_checkbox}
@@ -215,7 +215,7 @@ const PipelineRequest = ({ requestId, requestType }) => {
             type="submit" 
             disabled={loading || !requestId || !requestType}
           >
-            {loading ? "ENVIANDO..." : "ENVIAR"}
+            {loading ? "SENDING..." : "SEND"}
           </button>
           {feedback && (
             <div className={`mt-2 text-center ${feedback.includes("Error") ? "text-danger" : "text-success"}`}>

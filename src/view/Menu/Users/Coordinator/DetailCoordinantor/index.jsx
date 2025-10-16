@@ -59,7 +59,7 @@ const DetailCoordinator = () => {
             is_active: data.is_active !== undefined ? data.is_active : true
           });
         })
-        .catch(() => setFeedback("Error al cargar el coordinador"))
+        .catch(() => setFeedback("Error loading coordinator"))
         .finally(() => setLoading(false));
     }
   }, [id]);
@@ -89,22 +89,22 @@ const DetailCoordinator = () => {
     setRoleError("");
     
     if (!formData.full_name || !formData.phone || !formData.identification || !formData.address || !formData.company_id) {
-      if (!formData.company_id) setCompanyError("Debes seleccionar una compañía");
-      setFeedback("Todos los campos son obligatorios, incluyendo la compañía");
+      if (!formData.company_id) setCompanyError("You must select a company");
+      setFeedback("All fields are required, including company");
       setLoading(false);
       return;
     }
 
-    // Validación de contraseña si se está cambiando
+    // Password validation if changing
     if (formData.password) {
       if (formData.password.length < 8) {
-        setFeedback("La contraseña debe tener al menos 8 caracteres");
+        setFeedback("Password must be at least 8 characters");
         setLoading(false);
         return;
       }
       
       if (formData.password !== formData.confirmarContrasena) {
-        setFeedback("Las contraseñas no coinciden");
+        setFeedback("Passwords do not match");
         setLoading(false);
         return;
       }
@@ -127,20 +127,20 @@ const DetailCoordinator = () => {
     }
     
     if (!payload.role) {
-      setRoleError("El campo rol es obligatorio");
+      setRoleError("Role field is required");
       setLoading(false);
       return;
     }
     
     try {
       await updateCoordinator(id, payload);
-      setFeedback("¡Coordinador actualizado exitosamente!");
+      setFeedback("Coordinator updated successfully!");
       setEditMode(false);
       setTimeout(() => {
         navegate('/coordinators');
       }, 1500);
     } catch (error) {
-      setFeedback("Error al actualizar el coordinador. Inténtalo de nuevo.");
+      setFeedback("Error updating coordinator. Please try again.");
     }
     setLoading(false);
   };
@@ -149,7 +149,7 @@ const DetailCoordinator = () => {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({ ...prev, url_profile_photo: file.name }));
-      alert(`Imagen "${file.name}" seleccionada`);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -161,7 +161,7 @@ const DetailCoordinator = () => {
             <img src={Back} alt="back" width={35} />
           </button>
           <h2 className={`${styles.title} fw-bolder my_title_color`}>
-            {id ? "Detalle del coordinador" : "Crear coordinador"}
+            {id ? "Coordinator Details" : "Create Coordinator"}
           </h2>
         </div>
       </div>
@@ -173,7 +173,7 @@ const DetailCoordinator = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="full_name"
                     value={formData.full_name}
@@ -196,7 +196,7 @@ const DetailCoordinator = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="tel"
-                    placeholder="Celular"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="phone"
                     value={formData.phone}
@@ -207,7 +207,7 @@ const DetailCoordinator = () => {
                 <div className="col-md-6 mb-2">
                   <input
                     type="text"
-                    placeholder="Identificación"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identification"
                     value={formData.identification}
@@ -220,7 +220,7 @@ const DetailCoordinator = () => {
                 <div className="col-12 mb-2">
                   <input
                     type="text"
-                    placeholder="Dirección"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="address"
                     value={formData.address}
@@ -239,7 +239,7 @@ const DetailCoordinator = () => {
                     required
                     disabled={!editMode}
                   >
-                    <option value="">Seleccione una compañía</option>
+                    <option value="">Select a company</option>
                     {companies && companies.map(({ id, name }) => (
                       <option value={id} key={id}>{name}</option>
                     ))}
@@ -248,7 +248,7 @@ const DetailCoordinator = () => {
                 </div>
               </div>
 
-              {/* Campo de Estado */}
+              {/* Status Field */}
               <div className="row mb-4">
                 <div className="col-12 mb-2">
                   <div className="form-check">
@@ -262,11 +262,11 @@ const DetailCoordinator = () => {
                       disabled={!editMode}
                     />
                     <label className="form-check-label my_title_color" htmlFor="is_active">
-                      Coordinador Activo
+                      Active Coordinator
                     </label>
                   </div>
                   <small className="text-muted">
-                    {editMode ? "Desmarca esta casilla para desactivar el coordinador" : "Estado actual del coordinador"}
+                    {editMode ? "Uncheck this box to deactivate the coordinator" : "Current coordinator status"}
                   </small>
                 </div>
               </div>
@@ -278,7 +278,7 @@ const DetailCoordinator = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="password"
-                    placeholder="Contraseña"
+                    placeholder="Password"
                     className={`form-control  ${styles.input}`}
                     name="password"
                     value={formData.password}
@@ -289,7 +289,7 @@ const DetailCoordinator = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="password"
-                    placeholder="Confirmar contraseña"
+                    placeholder="Confirm Password"
                     className={`form-control  ${styles.input}`}
                     name="confirmarContrasena"
                     value={formData.confirmarContrasena}
@@ -299,7 +299,7 @@ const DetailCoordinator = () => {
                 </div>
               </div>
               {feedback && (
-                <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
+                <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
               )}
               {editMode && (
                 <button
@@ -313,7 +313,7 @@ const DetailCoordinator = () => {
                     minWidth: "180px",
                   }}
                 >
-                  {loading ? "Guardando..." : "GUARDAR CAMBIOS"}
+                  {loading ? "Saving..." : "SAVE CHANGES"}
                 </button>
               )}
             </form>
@@ -325,7 +325,7 @@ const DetailCoordinator = () => {
                 style={{ minWidth: "180px" }}
                 onClick={handleUpdate}
               >
-                ACTUALIZAR
+                UPDATE
               </button>
             )}
           </div>
@@ -380,7 +380,7 @@ const DetailCoordinator = () => {
                   cursor: "pointer",
                 }}
               >
-                SUBIR IMAGEN
+                UPLOAD IMAGE
               </label>
             </div>
           </div>

@@ -19,7 +19,7 @@ const AuthGuard = () => {
           setUser(null);
         }
       } catch (e) {
-        console.error("Error al verificar autenticación:", e);
+        console.error("Error verifying authentication:", e);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
@@ -31,16 +31,16 @@ const AuthGuard = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Verificando autenticación...</div>;
+    return <div>Verifying authentication...</div>;
   }
 
-  // Si el usuario está autenticado, redirigir según su rol
+  // If user is authenticated, redirect according to their role
   if (isAuthenticated) {
     const defaultRoute = user?.roles?.[0] === "Procesador" ? "/requests" : "/dashboard";
     return <Navigate to={defaultRoute} replace />;
   }
 
-  // Si no está autenticado, mostrar el componente de login
+  // If not authenticated, show login component
   return <Outlet />;
 };
 

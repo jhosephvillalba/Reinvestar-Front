@@ -49,7 +49,7 @@ const CreateOrEditClient = () => {
         setLoading(false);
       }).catch(() => {
         setLoading(false);
-        setFeedback("Error al cargar el cliente");
+        setFeedback("Error loading client");
       });
     }
   }, [id]);
@@ -71,42 +71,42 @@ const CreateOrEditClient = () => {
     setLoading(true);
     setFeedback("");
     
-    // Validación básica de campos obligatorios
+    // Basic validation of required fields
     if (!form.nombre || !form.correo || !form.empresa || !form.direccion) {
-      setFeedback("Nombre, correo, empresa y dirección son obligatorios");
+      setFeedback("Name, email, company and address are required");
       setLoading(false);
       return;
     }
 
-    // Validación de longitud mínima
+    // Minimum length validation
     if (form.nombre.length < 3) {
-      setFeedback("El nombre debe tener al menos 3 caracteres");
+      setFeedback("Name must be at least 3 characters");
       setLoading(false);
       return;
     }
 
     if (form.direccion.length < 10) {
-      setFeedback("La dirección debe tener al menos 10 caracteres");
+      setFeedback("Address must be at least 10 characters");
       setLoading(false);
       return;
     }
 
-    // Validación de formato de email
+    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.correo)) {
-      setFeedback("El formato del correo electrónico no es válido");
+      setFeedback("Email format is not valid");
       setLoading(false);
       return;
     }
 
-    // Validación de teléfono (si se proporciona)
+    // Phone validation (if provided)
     if (form.telefono && form.telefono.length < 7) {
-      setFeedback("El número de teléfono debe tener al menos 7 dígitos");
+      setFeedback("Phone number must be at least 7 digits");
       setLoading(false);
       return;
     }
 
-    // Mapeo de campos al formato esperado por la API
+    // Mapping fields to API expected format
     const payload = {
       full_name: form.nombre.trim(),
       email: form.correo.trim().toLowerCase(),
@@ -121,46 +121,46 @@ const CreateOrEditClient = () => {
       subject_under_llc: form.llc
     };
 
-    // Debug: mostrar payload en consola
-    console.log("Payload a enviar:", payload);
+    // Debug: show payload in console
+    console.log("Payload to send:", payload);
 
     try {
       if (editMode) {
-        // Actualizar cliente
+        // Update client
         const response = await updateClient(id, payload);
-        console.log("Respuesta de actualización:", response);
-        setFeedback("¡Cliente actualizado exitosamente!");
+        console.log("Update response:", response);
+        setFeedback("Client updated successfully!");
         setTimeout(() => {
           navegate("/clients");
         }, 1500);
       } else {
-        // Crear cliente
+        // Create client
         const response = await createClient(payload);
-        console.log("Respuesta de creación:", response);
-        setFeedback("¡Cliente creado exitosamente!");
+        console.log("Creation response:", response);
+        setFeedback("Client created successfully!");
         setForm(initialState);
         setTimeout(() => {
           navegate("/clients");
         }, 1500);
       }
     } catch (error) {
-      console.error("Error completo:", error);
-      console.error("Respuesta del servidor:", error.response?.data);
+      console.error("Complete error:", error);
+      console.error("Server response:", error.response?.data);
       
       if (error.response?.data?.detail) {
         setFeedback(`Error: ${error.response.data.detail}`);
       } else if (error.response?.status === 422) {
         const validationErrors = error.response.data?.detail || [];
         const errorMessages = validationErrors.map(err => `${err.loc?.join('.')}: ${err.msg}`).join(', ');
-        setFeedback(`Error de validación: ${errorMessages}`);
+        setFeedback(`Validation error: ${errorMessages}`);
       } else if (error.response?.status === 400) {
-        setFeedback("Error en los datos enviados. Revisa la información.");
+        setFeedback("Error in submitted data. Check the information.");
       } else if (error.response?.status === 401) {
-        setFeedback("No autorizado. Verifica tu sesión.");
+        setFeedback("Unauthorized. Verify your session.");
       } else if (error.response?.status === 500) {
-        setFeedback("Error del servidor. Inténtalo más tarde.");
+        setFeedback("Server error. Try again later.");
       } else {
-        setFeedback("Error al guardar el cliente. Inténtalo de nuevo.");
+        setFeedback("Error saving client. Please try again.");
       }
     }
     setLoading(false);
@@ -173,11 +173,11 @@ const CreateOrEditClient = () => {
           <img src={Back} alt="back" width={35} />
         </button>
         <h2 className={`${styles.title} fw-bolder my_title_color`}>
-          {editMode ? "Actualizar cliente" : "Registrar cliente"}
+          {editMode ? "Update Client" : "Register Client"}
         </h2>
       </div>
              {loading ? (
-         <div>Cargando datos...</div>
+         <div>Loading data...</div>
        ) : (
          <div className="container-fluid p-4">
            <div className="row">
@@ -185,7 +185,7 @@ const CreateOrEditClient = () => {
                <form className={styles.form} onSubmit={handleSubmit}>
                  <div className="row g-3">
                    <div className="col-12 col-md-6">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Nombre del cliente</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Client Name</label>
                      <input
                        type="text"
                        className={`form-control ${styles.input}`}
@@ -196,7 +196,7 @@ const CreateOrEditClient = () => {
                      />
                    </div>
                    <div className="col-12 col-md-6">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Empresa</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Company</label>
                      <select
                        name="empresa"
                        id="options_companies"
@@ -205,14 +205,14 @@ const CreateOrEditClient = () => {
                        onChange={handleChange}
                        required
                      >
-                       <option value="">Seleccione una empresa</option>
+                       <option value="">Select a company</option>
                        {companies && companies.map(({ id, name }) => (
                          <option value={id} key={id}>{name}</option>
                        ))}
                      </select>
                    </div>
                    <div className="col-12 col-md-6">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Correo electrónico</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Email Address</label>
                      <input
                        type="email"
                        className={`form-control ${styles.input}`}
@@ -223,7 +223,7 @@ const CreateOrEditClient = () => {
                      />
                    </div>
                    <div className="col-12 col-md-6">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Número de teléfono</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone Number</label>
                      <input
                        type="tel"
                        className={`form-control ${styles.input}`}
@@ -233,7 +233,7 @@ const CreateOrEditClient = () => {
                      />
                    </div>
                    <div className="col-12">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Dirección de la propiedad</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Property Address</label>
                      <input
                        type="text"
                        className={`form-control ${styles.input}`}
@@ -326,7 +326,7 @@ const CreateOrEditClient = () => {
                      minWidth: "180px",
                    }}
                  >
-                   {loading ? "Guardando..." : (editMode ? "ACTUALIZAR" : "CREAR")}
+                   {loading ? "Saving..." : (editMode ? "UPDATE" : "CREATE")}
                  </button>
                </form>
              </div>

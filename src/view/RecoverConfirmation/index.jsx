@@ -29,7 +29,7 @@ const RecoverConfirmation = () => {
         position: 'relative'
       }}
     >
-      {/* Overlay oscuro para mejorar legibilidad */}
+      {/* Dark overlay to improve readability */}
       <div 
         style={{
           position: 'absolute',
@@ -42,7 +42,7 @@ const RecoverConfirmation = () => {
         }}
       ></div>
       
-      {/* Formulario de confirmación centrado */}
+      {/* Centered confirmation form */}
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
         style={{
@@ -51,7 +51,7 @@ const RecoverConfirmation = () => {
           position: 'relative'
         }}
       >
-        {/* Logo REINVESTAR oficial */}
+        {/* Official REINVESTAR logo */}
         <div className="text-center mb-4">
           <img
             src={LogoLogin}
@@ -64,7 +64,7 @@ const RecoverConfirmation = () => {
           />
         </div>
 
-        {/* Título del formulario */}
+        {/* Form title */}
         <div className="text-start mb-4">
           <h2 
             className="fw-bold"
@@ -72,24 +72,24 @@ const RecoverConfirmation = () => {
               fontSize: '1.3rem'
             }}
           >
-            Revisa tu correo
+            Check your email
           </h2>
           <p className="text-muted fs-6 mb-0">
-            Hemos enviado un enlace de recuperación a tu cuenta de correo electrónico.
+            We've sent a recovery link to your email account.
           </p>
         </div>
 
-        {/* Mensaje de confirmación */}
+        {/* Confirmation message */}
         <div className="text-center mb-4">
           <div className="bg-light rounded-pill p-3 mb-3">
             <i className="fas fa-envelope text-success" style={{ fontSize: '2rem' }}></i>
           </div>
           <p className="text-muted mb-0">
-            El enlace será válido por 24 horas. Revisa tu carpeta de spam si no lo encuentras.
+            The link will be valid for 24 hours. Check your spam folder if you don't see it.
           </p>
         </div>
 
-        {/* Botón para volver al login */}
+        {/* Button to return to login */}
         <div className="text-center">
           <button 
             type="button"
@@ -103,7 +103,7 @@ const RecoverConfirmation = () => {
               minHeight: '48px'
             }}
           >
-            Volver al inicio de sesión
+            Back to sign in
           </button>
         </div>
       </div>

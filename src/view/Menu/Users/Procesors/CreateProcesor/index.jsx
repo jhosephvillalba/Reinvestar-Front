@@ -35,27 +35,27 @@ const CreateProcesor = () => {
     setLoading(true);
     setFeedback("");
     
-    // Validación básica
+    // Basic validation
     if (!formData.nombreCompleto || !formData.email || !formData.celular || !formData.identificacion || !formData.direccion || !formData.contrasena) {
-      setFeedback("Todos los campos son obligatorios");
+      setFeedback("All fields are required");
       setLoading(false);
       return;
     }
     
-    // Validación de contraseña
+    // Password validation
     if (formData.contrasena.length < 8) {
-      setFeedback("La contraseña debe tener al menos 8 caracteres");
+      setFeedback("Password must be at least 8 characters");
       setLoading(false);
       return;
     }
     
     if (formData.contrasena !== formData.confirmarContrasena) {
-      setFeedback("Las contraseñas no coinciden");
+      setFeedback("Passwords do not match");
       setLoading(false);
       return;
     }
     
-    // Mapeo de campos al formato esperado por la API
+    // Mapping fields to API expected format
     const payload = {
       full_name: formData.nombreCompleto,
       email: formData.email,
@@ -68,27 +68,27 @@ const CreateProcesor = () => {
     
     try {
       await createProcessor(payload);
-      setFeedback("¡Procesador creado exitosamente!");
+      setFeedback("Processor created successfully!");
       setTimeout(() => {
         navegate('/processors');
       }, 1500);
     } catch (error) {
-      console.error('Error al crear procesador:', error);
+      console.error('Error creating processor:', error);
       if (error.response?.data?.detail) {
-        // Manejar errores específicos del backend
+        // Handle specific backend errors
         const errorDetails = error.response.data.detail;
         if (Array.isArray(errorDetails)) {
           const passwordError = errorDetails.find(err => err.loc?.includes('password'));
           if (passwordError) {
-            setFeedback(`Error en contraseña: ${passwordError.msg}`);
+            setFeedback(`Password error: ${passwordError.msg}`);
           } else {
-            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error al crear el procesador'}`);
+            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error creating processor'}`);
           }
         } else {
           setFeedback(`Error: ${errorDetails}`);
         }
       } else {
-        setFeedback("Error al crear el procesador. Inténtalo de nuevo.");
+        setFeedback("Error creating processor. Please try again.");
       }
     }
     setLoading(false);
@@ -97,8 +97,8 @@ const CreateProcesor = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("Imagen seleccionada:", file.name);
-      alert(`Imagen "${file.name}" seleccionada`);
+      console.log("Image selected:", file.name);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -110,7 +110,7 @@ const CreateProcesor = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color`}>
-              Crear Procesador
+              Create Processor
             </h2>
           </div>
         </div>
@@ -123,7 +123,7 @@ const CreateProcesor = () => {
             <form>
               <div className="row mb-2">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Nombre completo</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -148,7 +148,7 @@ const CreateProcesor = () => {
 
               <div className="row mb-3">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Celular</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone</label>
                   <input
                     type="tel"
                     className={`form-control  ${styles.input}`}
@@ -159,7 +159,7 @@ const CreateProcesor = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identificación</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identification</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -173,7 +173,7 @@ const CreateProcesor = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Dirección</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -187,10 +187,10 @@ const CreateProcesor = () => {
 
               <div className="row mb-5">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Contraseña *</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Password *</label>
                   <input
                     type="password"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder="Minimum 8 characters"
                     className={`form-control  ${styles.input}`}
                     name="contrasena"
                     value={formData.contrasena}
@@ -200,15 +200,15 @@ const CreateProcesor = () => {
                   />
                   {formData.contrasena && formData.contrasena.length < 8 && (
                     <small className="text-warning">
-                      La contraseña debe tener al menos 8 caracteres
+                      Password must be at least 8 characters
                     </small>
                   )}
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirmar contraseña *</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm Password *</label>
                   <input
                     type="password"
-                    placeholder="Confirma tu contraseña"
+                    placeholder="Confirm your password"
                     className={`form-control  ${styles.input}`}
                     name="confirmarContrasena"
                     value={formData.confirmarContrasena}
@@ -217,14 +217,14 @@ const CreateProcesor = () => {
                   />
                   {formData.confirmarContrasena && formData.contrasena !== formData.confirmarContrasena && (
                     <small className="text-danger">
-                      Las contraseñas no coinciden
+                      Passwords do not match
                     </small>
                   )}
                 </div>
               </div>
 
               {feedback && (
-                <div className={`alert ${feedback.includes('exitosamente') ? 'alert-success' : 'alert-danger'} py-2 mb-3`}>{feedback}</div>
+                <div className={`alert ${feedback.includes('successfully') ? 'alert-success' : 'alert-danger'} py-2 mb-3`}>{feedback}</div>
               )}
 
               <button
@@ -239,7 +239,7 @@ const CreateProcesor = () => {
                 }}
                 disabled={loading}
               >
-                {loading ? "CREANDO..." : "CREAR"}
+                {loading ? "CREATING..." : "CREATE"}
               </button>
             </form>
           </div>

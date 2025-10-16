@@ -38,7 +38,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
     fetchCompanies();
   }, []);
 
-  // Buscar clientes por email (search) en vivo
+  // Search clients by email (search) live
   const handleCorreoChange = async (e) => {
     const value = e.target.value;
     setForm(prev => ({ ...prev, correo: value }));
@@ -53,16 +53,16 @@ const FormRequest = ({ goToDocumentsTab }) => {
     try {
       const res = await getClients({ search: value });
       
-      // Manejar la nueva estructura de datos con total e items
+      // Handle new data structure with total and items
       let clientes = [];
       if (Array.isArray(res)) {
-        // Si la API devuelve un array directamente
+        // If API returns an array directly
         clientes = res;
       } else if (res && Array.isArray(res.items)) {
-        // Si la API devuelve { total: N, items: [...] }
+        // If API returns { total: N, items: [...] }
         clientes = res.items;
       } else if (res && Array.isArray(res.results)) {
-        // Si la API devuelve { total: N, results: [...] }
+        // If API returns { total: N, results: [...] }
         clientes = res.results;
       }
       
@@ -74,13 +74,13 @@ const FormRequest = ({ goToDocumentsTab }) => {
         setShowSuggestions(false);
       }
     } catch (error) {
-      console.error('Error buscando clientes:', error);
+      console.error('Error searching clients:', error);
       setSuggestions([]);
       setShowSuggestions(false);
     }
   };
 
-  // Al seleccionar un cliente de la lista
+  // When selecting a client from the list
   const handleSuggestionClick = (cliente) => {
     setForm(prev => ({
       ...prev,
@@ -94,21 +94,21 @@ const FormRequest = ({ goToDocumentsTab }) => {
     setClienteEncontrado(true);
     setSuggestions([]);
     setShowSuggestions(false);
-    setFeedback(`Cliente encontrado: ${cliente.full_name || cliente.nombre}`);
+    setFeedback(`Client found: ${cliente.full_name || cliente.nombre}`);
   };
 
-  // Manejar cambios en el resto del formulario
+  // Handle changes in the rest of the form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // Registrar cliente si no existe
+  // Register client if it doesn't exist
   const handleCreateClient = async () => {
     setFeedback("");
     setLoading(true);
     if (!form.nombre || !form.correo || !form.direccion) {
-      setFeedback("Nombre, correo y dirección son obligatorios");
+      setFeedback("Name, email and address are required");
       setLoading(false);
       return;
     }
@@ -135,7 +135,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
         telefono: nuevo.phone,
         direccion: nuevo.address,
         empresa: nuevo.company_id ? String(nuevo.company_id) : "",
-        // Asegura que los booleanos también se reflejen
+        // Ensure booleans are also reflected
         purchase_or_refinancing: !!nuevo.purchase_or_refinancing,
         has_a_mortgage: !!nuevo.has_a_mortgage,
         has_delinquencies: !!nuevo.has_delinquencies,
@@ -143,25 +143,25 @@ const FormRequest = ({ goToDocumentsTab }) => {
         current_hoa: !!nuevo.current_hoa,
         subject_under_llc: !!nuevo.subject_under_llc,
       }));
-      setFeedback("Cliente registrado y seleccionado exitosamente");
+      setFeedback("Client registered and selected successfully");
     } catch (err) {
-      setFeedback("Error al registrar el cliente");
+      setFeedback("Error registering client");
     }
     setLoading(false);
   };
 
-  // Registrar cliente si no existe
+  // Register client if it doesn't exist
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFeedback("");
     setLoading(true);
     if (!form.nombre || !form.correo || !form.direccion) {
-      setFeedback("Nombre, correo y dirección son obligatorios");
+      setFeedback("Name, email and address are required");
       setLoading(false);
       return;
     }
     if (clienteEncontrado) {
-      setFeedback("Cliente ya existe. Puedes continuar con la solicitud.");
+      setFeedback("Client already exists. You can continue with the request.");
       setLoading(false);
       return;
     }
@@ -175,9 +175,9 @@ const FormRequest = ({ goToDocumentsTab }) => {
       });
       setClientId(nuevo.id);
       setClienteEncontrado(true);
-      setFeedback("Cliente registrado exitosamente");
+      setFeedback("Client registered successfully");
     } catch (err) {
-      setFeedback("Error al registrar el cliente");
+      setFeedback("Error registering client");
     }
     setLoading(false);
   };
@@ -191,7 +191,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
               <label htmlFor="correo">Email</label>
           <input
                 type="email"
-                placeholder="Correo electrónico"
+                placeholder="Email address"
             className={styles.input}
                 name="correo"
                 id="correo"
@@ -200,7 +200,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
             required
                 autoComplete="off"
           />
-              {/* Sugerencias de email */}
+              {/* Email suggestions */}
               {showSuggestions && suggestions.length > 0 && (
                 <ul style={{
                   position: "absolute",
@@ -239,7 +239,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
                         {cliente.email}
                       </div>
                       <div style={{ fontSize: "12px", color: "#6b7280", marginTop: "2px" }}>
-                        {cliente.full_name || cliente.nombre} • {cliente.phone || cliente.telefono || "Sin teléfono"}
+                        {cliente.full_name || cliente.nombre} • {cliente.phone || cliente.telefono || "No phone"}
                       </div>
                     </li>
                   ))}
@@ -249,10 +249,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
           <div className="col-4">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="correo">Nombre del cliente</label>
+              <label htmlFor="correo">Client Name</label>
           <input
             type="text"
-                placeholder="Nombre del cliente"
+                placeholder="Client name"
             className={styles.input}
             name="nombre"
             value={form.nombre}
@@ -262,10 +262,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
           />
         </div>
           </div>
-          {/* --------------EMPRESAS--------------- */}
+          {/* --------------COMPANIES--------------- */}
           <div className="col-4">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="options_companies">Empresa</label>
+              <label htmlFor="options_companies">Company</label>
               <select
                 name="empresa"
                 id="options_companies"
@@ -275,7 +275,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
             required
                 disabled={clienteEncontrado}
               >
-                <option value="">Seleccione una empresa</option>
+                <option value="">Select a company</option>
                 {companies && companies.map(({ id, name }) => (
                   <option value={id} key={id}>{name}</option>
                 ))}
@@ -286,10 +286,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
         <div className="row">
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="telefono">Número de teléfono</label>
+              <label htmlFor="telefono">Phone Number</label>
           <input
             type="tel"
-                placeholder="Número de teléfono"
+                placeholder="Phone number"
             className={styles.input}
             name="telefono"
             value={form.telefono}
@@ -300,10 +300,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="direccion">Dirección de la propiedad</label>
+              <label htmlFor="direccion">Property Address</label>
           <input
             type="text"
-                placeholder="Dirección de la propiedad"
+                placeholder="Property address"
             className={styles.input}
             name="direccion"
             value={form.direccion}
@@ -315,7 +315,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
           </div>
         </div>
 
-        {/* Botón para crear cliente si no existe */}
+        {/* Button to create client if it doesn't exist */}
         {!clienteEncontrado && !loading && form.correo && form.nombre && form.direccion && (
           <div className="row">
             <div className="col-12 d-flex justify-content-end">
@@ -325,7 +325,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
                 style={{ maxWidth: 250 }}
                 onClick={handleCreateClient}
               >
-                Crear cliente
+                Create Client
               </button>
             </div>
           </div>
@@ -349,7 +349,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
       <div className={`row`}>
         <div className="col-6">
           <div className="w-100 d-flex flex-column">
-            <label htmlFor="pruduct_type">Tipo de producto</label>
+            <label htmlFor="pruduct_type">Product Type</label>
             <select
               name="tipoProducto"
               id="product_type"
@@ -357,7 +357,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
               value={form.tipoProducto}
               onChange={handleChange}
             >
-              <option value="">seleccione un producto</option>
+              <option value="">Select a product</option>
               <option value="fixflip">FixFlip</option>
               <option value="dscr">Dscr</option>
               <option value="construction">Contruction</option>
@@ -366,13 +366,13 @@ const FormRequest = ({ goToDocumentsTab }) => {
         </div>
         {/* <div className="col-6">
           <div className="w-100 d-flex flex-column">
-            <label htmlFor="fecha_registro">Fecha de registor</label>
+            <label htmlFor="fecha_registro">Registration date</label>
             <input type="date" id="fecha_registro" className={styles.input} />
           </div>
         </div> */}
       </div>
       <hr className="mt-2 mb-2"/>
-      {/* Formulario de producto solo si hay cliente y tipo de producto */}
+      {/* Product form only if there is a client and product type */}
       {form.tipoProducto && (
         <div className="mt-4">
           {form.tipoProducto === "fixflip" && <FixflipForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}

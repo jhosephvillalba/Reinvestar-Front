@@ -286,10 +286,10 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
         status: "PENDING"
       };
       await updateFixflip(solicitud.id, dataToSend);
-      setFeedback("¡Solicitud actualizada exitosamente!");
+      setFeedback("Request updated successfully!");
       setIsEditMode(false);
     } catch (error) {
-      setFeedback("Error al actualizar la solicitud. Inténtalo de nuevo.");
+      setFeedback("Error updating request. Please try again.");
     }
     setLoading(false);
   };
@@ -364,12 +364,12 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
         total_liquidity: form.total_liquidity ? Number(form.total_liquidity) : 0
       };
       const response = await createFixflip(dataToSend);
-      setFeedback("¡Fixflip creado exitosamente!");
+      setFeedback("Fixflip created successfully!");
       if (typeof goToDocumentsTab === 'function') {
         goToDocumentsTab(response.id, 'fixflip');
       }
     } catch (error) {
-      setFeedback("Error al crear el Fixflip. Inténtalo de nuevo.");
+      setFeedback("Error creating Fixflip. Please try again.");
     }
     setLoading(false);
   };
@@ -412,10 +412,10 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
           request_id: solicitud.id
         }
       });
-      setFeedback("¡Email enviado exitosamente!");
+      setFeedback("Email sent successfully!");
     } catch (error) {
-      console.error('Error enviando email:', error);
-      setFeedback("Error al enviar el email. Inténtalo de nuevo.");
+      console.error('Error sending email:', error);
+      setFeedback("Error sending email. Please try again.");
     } finally {
       setSending(false);
     }
@@ -463,7 +463,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
               onClick={handleSendLink}
               disabled={sending}
             >
-              {sending ? "Enviando..." : "Enviar por Email"}
+              {sending ? "Sending..." : "Send by Email"}
             </button>
           </>
         ) : (
@@ -862,7 +862,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
 			</div>
 
       {feedback && (
-        <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+        <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
           {feedback}
         </div>
       )}
@@ -877,7 +877,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
                 style={{ minWidth: "200px" }}
                 disabled={loading}
               >
-                {loading ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
+                {loading ? "SAVING..." : "SAVE CHANGES"}
               </button>
             ) : (
               <button
@@ -886,7 +886,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
                 style={{ minWidth: "200px" }}
                 onClick={() => setIsEditMode(true)}
               >
-                EDITAR
+                EDIT
               </button>
             )
           ) : (
@@ -896,7 +896,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
               style={{ minWidth: "200px" }}
               disabled={loading}
             >
-              {loading ? "CREANDO..." : "CREAR FIXFLIP"}
+              {loading ? "CREATING..." : "CREATE FIXFLIP"}
             </button>
           )}
         </div>

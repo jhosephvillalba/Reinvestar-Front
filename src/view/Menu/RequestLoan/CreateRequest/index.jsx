@@ -16,7 +16,7 @@ const CreateRequest = () => {
     navegate("/requests");
   };
 
-  // Callback para cambiar a la pestaña de documentos y guardar el id de la solicitud
+  // Callback to switch to documents tab and save the request id
   const goToDocumentsTab = (requestId, requestType) => {
     setCreatedRequestId(requestId);
     setCreatedRequestType(requestType);
@@ -30,7 +30,7 @@ const CreateRequest = () => {
           <button className="btn border-none" onClick={handleback}>
             <img src={Back} alt="back" width={35} />
           </button>
-          <h2 className={`${styles.title} fw-bolder my_title_color mb-0`}>Crear solicitud</h2>
+          <h2 className={`${styles.title} fw-bolder my_title_color mb-0`}>Create Request</h2>
         </div>
         <div className="d-flex flex-column justify-content-center mx-4">
           <div className={styles.stickyTabs}>
@@ -47,7 +47,7 @@ const CreateRequest = () => {
                   aria-selected={activeTab === "home"}
                   onClick={() => setActiveTab("home")}
                 >
-                  Solicitud
+                  Request
                 </button>
               </li>
               <li className="nav-item" role="presentation">
@@ -62,9 +62,9 @@ const CreateRequest = () => {
                   aria-selected={activeTab === "profile"}
                   onClick={() => createdRequestId && setActiveTab("profile")}
                   disabled={!createdRequestId}
-                  title={!createdRequestId ? "Guarde la solicitud primero para cargar documentos" : ""}
+                  title={!createdRequestId ? "Save the request first to upload documents" : ""}
                 >
-                  Documentos {!createdRequestId && <i className="fas fa-lock ms-1"></i>}
+                  Documents {!createdRequestId && <i className="fas fa-lock ms-1"></i>}
                 </button>
               </li>
               {/* <li className="nav-item" role="presentation">

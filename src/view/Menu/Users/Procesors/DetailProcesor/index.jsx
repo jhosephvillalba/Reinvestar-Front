@@ -71,11 +71,11 @@ const DetailProcesor = () => {
       setFormData(processorData);
       setOriginalData(processorData);
       
-      // Cargar detalles del procesador (workload y asignaciones activas)
+      // Load processor details (workload and active assignments)
       await loadProcessorDetails(id);
     } catch (error) {
-      console.error('Error al cargar procesador:', error);
-      setFeedback("Error al cargar el procesador");
+      console.error('Error loading processor:', error);
+      setFeedback("Error loading processor");
     } finally {
       setLoading(false);
     }
@@ -83,12 +83,12 @@ const DetailProcesor = () => {
 
   const loadProcessorDetails = async (processorId) => {
     try {
-      console.log('Cargando detalles del procesador:', processorId);
+      console.log('Loading processor details:', processorId);
       const processorDetails = await getProcessorDetails(processorId);
-      console.log('Detalles del procesador recibidos:', processorDetails);
+      console.log('Processor details received:', processorDetails);
       
       if (processorDetails) {
-        // Establecer datos de workload
+        // Set workload data
         setWorkload({
           active_assignments_count: processorDetails.active_assignments?.length || 0,
           pending_requests: processorDetails.workload?.assigned || 0,
@@ -97,10 +97,10 @@ const DetailProcesor = () => {
           total_assignments: processorDetails.workload?.total_assignments || 0
         });
         
-        // Establecer asignaciones activas
+        // Set active assignments
         setActiveAssignments(processorDetails.active_assignments || []);
         
-        console.log('Datos de workload establecidos:', {
+        console.log('Workload data set:', {
           active_assignments_count: processorDetails.active_assignments?.length || 0,
           pending_requests: processorDetails.workload?.assigned || 0,
           in_progress_requests: processorDetails.workload?.in_progress || 0,
@@ -108,11 +108,11 @@ const DetailProcesor = () => {
           total_assignments: processorDetails.workload?.total_assignments || 0
         });
         
-        console.log('Asignaciones activas establecidas:', processorDetails.active_assignments || []);
+        console.log('Active assignments set:', processorDetails.active_assignments || []);
       }
     } catch (error) {
-      console.error('Error cargando detalles del procesador:', error);
-      // En caso de error, establecer valores por defecto
+      console.error('Error loading processor details:', error);
+      // In case of error, set default values
       setWorkload({
         active_assignments_count: 0,
         pending_requests: 0,
@@ -126,7 +126,7 @@ const DetailProcesor = () => {
 
   const handleback = () => {
     if (editMode) {
-      if (window.confirm('¿Estás seguro de que deseas salir? Los cambios no guardados se perderán.')) {
+      if (window.confirm('Are you sure you want to exit? Unsaved changes will be lost.')) {
         navegate('/processors');
       }
     } else {
@@ -155,24 +155,24 @@ const DetailProcesor = () => {
     setCompanyError("");
     setRoleError("");
     
-    // Validaciones
+    // Validations
     if (!formData.full_name || !formData.phone || !formData.identification || !formData.address || !formData.company_id) {
-      if (!formData.company_id) setCompanyError("Debes seleccionar una compañía");
-      setFeedback("Todos los campos son obligatorios, incluyendo la compañía");
+      if (!formData.company_id) setCompanyError("You must select a company");
+      setFeedback("All fields are required, including company");
       setLoading(false);
       return;
     }
 
-    // Validación de contraseña si se está cambiando
+    // Password validation if changing
     if (formData.password) {
       if (formData.password.length < 8) {
-        setFeedback("La contraseña debe tener al menos 8 caracteres");
+        setFeedback("Password must be at least 8 characters");
         setLoading(false);
         return;
       }
       
       if (formData.password !== formData.confirmarContrasena) {
-        setFeedback("Las contraseñas no coinciden");
+        setFeedback("Passwords do not match");
         setLoading(false);
         return;
       }
@@ -196,32 +196,32 @@ const DetailProcesor = () => {
       }
 
       await updateProcessor(id, payload);
-      setFeedback("¡Procesador actualizado exitosamente!");
+      setFeedback("Processor updated successfully!");
       setOriginalData(formData);
       setEditMode(false);
       
-      // Recargar datos después de actualizar
+      // Reload data after updating
       await loadProcessorData();
       
       setTimeout(() => {
         navegate('/processors');
       }, 1500);
     } catch (error) {
-      console.error('Error al actualizar procesador:', error);
+      console.error('Error updating processor:', error);
       if (error.response?.data?.detail) {
         const errorDetails = error.response.data.detail;
         if (Array.isArray(errorDetails)) {
           const passwordError = errorDetails.find(err => err.loc?.includes('password'));
           if (passwordError) {
-            setFeedback(`Error en contraseña: ${passwordError.msg}`);
+            setFeedback(`Password error: ${passwordError.msg}`);
           } else {
-            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error al actualizar el procesador'}`);
+            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error updating processor'}`);
           }
         } else {
           setFeedback(`Error: ${errorDetails}`);
         }
       } else {
-        setFeedback("Error al actualizar el procesador. Inténtalo de nuevo.");
+        setFeedback("Error updating processor. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -246,7 +246,7 @@ const DetailProcesor = () => {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
+          <span className="visually-hidden">Loading...</span>
         </div>
       </div>
     );
@@ -260,7 +260,7 @@ const DetailProcesor = () => {
             <img src={Back} alt="back" width={35} />
           </button>
           <h2 className={`${styles.title} fw-bolder my_title_color`}>
-            {id ? "Detalle del procesador" : "Crear procesador"}
+            {id ? "Processor Details" : "Create Processor"}
           </h2>
         </div>
       </div>
@@ -273,7 +273,7 @@ const DetailProcesor = () => {
             <form onSubmit={handleSubmit} autoComplete="off">
               <div className="row mb-2">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Nombre completo</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -297,7 +297,7 @@ const DetailProcesor = () => {
 
               <div className="row mb-3">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Celular</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone</label>
                   <input
                     type="tel"
                     className={`form-control  ${styles.input}`}
@@ -308,7 +308,7 @@ const DetailProcesor = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identificación</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identification</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -322,7 +322,7 @@ const DetailProcesor = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Dirección</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -336,7 +336,7 @@ const DetailProcesor = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Compañía</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Company</label>
                   <select
                     className={`form-select ${styles.input} ${companyError ? 'is-invalid' : ''}`}
                     name="company_id"
@@ -345,7 +345,7 @@ const DetailProcesor = () => {
                     required
                     disabled={!editMode}
                   >
-                    <option value="">Seleccione una compañía</option>
+                    <option value="">Select a company</option>
                     {companies && companies.map(({ id, name }) => (
                       <option value={id} key={id}>{name}</option>
                     ))}
@@ -354,7 +354,7 @@ const DetailProcesor = () => {
                 </div>
               </div>
 
-              {/* Campo de Estado */}
+              {/* Status Field */}
               <div className="row mb-4">
                 <div className="col-12 mb-2">
                   <div className="form-check">
@@ -368,11 +368,11 @@ const DetailProcesor = () => {
                       disabled={!editMode}
                     />
                     <label className="form-check-label my_title_color" htmlFor="is_active">
-                      Procesador Activo
+                      Active Processor
                     </label>
                   </div>
                   <small className="text-muted">
-                    {editMode ? "Desmarca esta casilla para desactivar el procesador" : "Estado actual del procesador"}
+                    {editMode ? "Uncheck this box to deactivate the processor" : "Current processor status"}
                   </small>
                 </div>
               </div>
@@ -381,14 +381,14 @@ const DetailProcesor = () => {
                 <div className="alert alert-danger py-2 mb-3">{roleError}</div>
               )}
 
-              {/* Campos de contraseña - solo visibles en modo edición */}
+              {/* Password fields - only visible in edit mode */}
               {editMode && (
                 <div className="row mb-5">
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Contraseña</label>
+                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Password</label>
                     <input
                       type="password"
-                      placeholder="Mínimo 8 caracteres"
+                      placeholder="Minimum 8 characters"
                       className={`form-control  ${styles.input}`}
                       name="password"
                       value={formData.password}
@@ -397,15 +397,15 @@ const DetailProcesor = () => {
                     />
                     {formData.password && formData.password.length < 8 && (
                       <small className="text-warning">
-                        La contraseña debe tener al menos 8 caracteres
+                        Password must be at least 8 characters
                       </small>
                     )}
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirmar contraseña</label>
+                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm Password</label>
                     <input
                       type="password"
-                      placeholder="Confirma tu contraseña"
+                      placeholder="Confirm your password"
                       className={`form-control  ${styles.input}`}
                       name="confirmarContrasena"
                       value={formData.confirmarContrasena}
@@ -413,7 +413,7 @@ const DetailProcesor = () => {
                     />
                     {formData.confirmarContrasena && formData.password !== formData.confirmarContrasena && (
                       <small className="text-danger">
-                        Las contraseñas no coinciden
+                        Passwords do not match
                       </small>
                     )}
                   </div>
@@ -421,7 +421,7 @@ const DetailProcesor = () => {
               )}
 
               {feedback && (
-                <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+                <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
                   {feedback}
                 </div>
               )}
@@ -438,7 +438,7 @@ const DetailProcesor = () => {
                     minWidth: "180px",
                   }}
                 >
-                  {loading ? "Guardando..." : "GUARDAR CAMBIOS"}
+                  {loading ? "Saving..." : "SAVE CHANGES"}
                 </button>
               )}
             </form>
@@ -450,7 +450,7 @@ const DetailProcesor = () => {
                 style={{ minWidth: "180px" }}
                 onClick={handleUpdate}
               >
-                ACTUALIZAR
+                UPDATE
               </button>
             )}
           </div>
@@ -516,50 +516,50 @@ const DetailProcesor = () => {
                     cursor: "pointer",
                   }}
                 >
-                  SUBIR IMAGEN
+                  UPLOAD IMAGE
                 </label>
               )}
             </div>
           </div>
         </div>
 
-        {/* Sección de Estadísticas y Métricas */}
+        {/* Statistics and Metrics Section */}
         <div className="row mt-5">
           <div className="col-12">
-            <h3 className="fw-bold mb-4" style={{color: "#000"}}>Carga de Trabajo</h3>
+            <h3 className="fw-bold mb-4" style={{color: "#000"}}>Workload</h3>
             <div className="alert alert-success mb-4">
               <i className="bi bi-check-circle me-2"></i>
-              <strong>Datos en tiempo real:</strong> La información de carga de trabajo se actualiza automáticamente desde el backend.
+              <strong>Real-time data:</strong> Workload information is automatically updated from the backend.
             </div>
             
             <div className="row g-3 mb-4">
               <div className="col-md-2">
                 <div className="p-3 border rounded" style={{ backgroundColor: '#f8f9fa' }}>
-                  <div className="small my_title_color">Total Asignaciones</div>
+                  <div className="small my_title_color">Total Assignments</div>
                   <div className="h3 mb-0 my_title_color">{workload?.total_assignments || 0}</div>
                 </div>
               </div>
               <div className="col-md-2">
                 <div className="p-3 border rounded" style={{ backgroundColor: '#e3f2fd' }}>
-                  <div className="small my_title_color">Asignadas</div>
+                  <div className="small my_title_color">Assigned</div>
                   <div className="h3 mb-0 my_title_color">{workload?.pending_requests || 0}</div>
                 </div>
               </div>
               <div className="col-md-2">
                 <div className="p-3 border rounded" style={{ backgroundColor: '#fff3e0' }}>
-                  <div className="small my_title_color">En Progreso</div>
+                  <div className="small my_title_color">In Progress</div>
                   <div className="h3 mb-0 my_title_color">{workload?.in_progress_requests || 0}</div>
                 </div>
               </div>
               <div className="col-md-2">
                 <div className="p-3 border rounded" style={{ backgroundColor: '#e8f5e8' }}>
-                  <div className="small my_title_color">Completadas</div>
+                  <div className="small my_title_color">Completed</div>
                   <div className="h3 mb-0 my_title_color">{workload?.completed_requests || 0}</div>
                 </div>
               </div>
               <div className="col-md-2">
                 <div className="p-3 border rounded" style={{ backgroundColor: '#fce4ec' }}>
-                  <div className="small my_title_color">Activas</div>
+                  <div className="small my_title_color">Active</div>
                   <div className="h3 mb-0 my_title_color">{workload?.active_assignments_count || 0}</div>
                 </div>
               </div>
@@ -567,21 +567,21 @@ const DetailProcesor = () => {
           </div>
         </div>
 
-        {/* Sección de Asignaciones Activas */}
+        {/* Active Assignments Section */}
         <div className="row mt-4">
           <div className="col-12">
-            <h3 className="fw-bold mb-4" style={{color: "#000"}}>Asignaciones Activas</h3>
+            <h3 className="fw-bold mb-4" style={{color: "#000"}}>Active Assignments</h3>
             {activeAssignments && activeAssignments.length > 0 ? (
               <div className="table-responsive">
                 <table className="table table-hover mb-0">
                   <thead>
                     <tr>
                       <th className="my_title_color">ID</th>
-                      <th className="my_title_color">Tipo</th>
-                      <th className="my_title_color">Cliente</th>
-                      <th className="my_title_color">Dirección</th>
-                      <th className="my_title_color">Estado</th>
-                      <th className="my_title_color">Fecha</th>
+                      <th className="my_title_color">Type</th>
+                      <th className="my_title_color">Client</th>
+                      <th className="my_title_color">Address</th>
+                      <th className="my_title_color">Status</th>
+                      <th className="my_title_color">Date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -624,10 +624,10 @@ const DetailProcesor = () => {
               <div className="text-center py-4">
                 <div className="alert alert-info mb-0">
                   <i className="bi bi-info-circle me-2"></i>
-                  <strong>No hay asignaciones activas</strong>
+                  <strong>No active assignments</strong>
                   <br />
                   <small className="text-muted">
-                    Este procesador no tiene asignaciones activas en este momento.
+                    This processor has no active assignments at this time.
                   </small>
                 </div>
               </div>

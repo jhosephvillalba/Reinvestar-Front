@@ -42,19 +42,19 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
   // Estado para descarga
   const [downloading, setDownloading] = useState(false);
 
-  // Opciones de tipo de observación
+  // Observation type options
   const observationTypes = [
-    "Pendiente de revisión",
-    "En revisión",
-    "Aprobado",
-    "Aprobado con observaciones",
-    "Rechazado",
-    "Vencido",
-    "Reemplazado",
-    "Requerido"
+    "Pending review",
+    "Under review",
+    "Approved",
+    "Approved with observations",
+    "Rejected",
+    "Expired",
+    "Replaced",
+    "Required"
   ];
 
-  // Cargar tipos de documento
+  // Load document types
   useEffect(() => {
     if (!isEnabled) return;
     getTypesDocument()
@@ -70,7 +70,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       .catch(() => setTypeDocuments([]));
   }, [isEnabled]);
 
-  // Cargar documentos cargados
+  // Load uploaded documents
   useEffect(() => {
     if (!requestId || !requestType || !isEnabled) {
       setDocuments([]);
@@ -86,15 +86,15 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       const docs = await getDocumentsByRequest(requestType, requestId);
       setDocuments(Array.isArray(docs) ? docs : []);
     } catch (error) {
-      console.error('Error cargando documentos:', error);
-      setFeedback("Error al cargar documentos");
+      console.error('Error loading documents:', error);
+      setFeedback("Error loading documents");
       setDocuments([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para descargar documento
+  // Function to download document
   const handleDownloadDocument = async (document) => {
     setDownloading(true);
     setFeedback("");
@@ -103,21 +103,21 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = document.name || 'documento';
+      link.download = document.name || 'document';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      setFeedback("Documento descargado exitosamente");
+      setFeedback("Document downloaded successfully");
     } catch (error) {
-      console.error('Error descargando documento:', error);
-      setFeedback("Error al descargar el documento. Verifica que el archivo esté disponible.");
+      console.error('Error downloading document:', error);
+      setFeedback("Error downloading document. Verify that the file is available.");
     } finally {
       setDownloading(false);
     }
   };
 
-  // Función para visualizar documento
+  // Function to view document
   const handleViewDocument = async (document) => {
     setLoadingView(true);
     setDocumentToView(document);
@@ -131,10 +131,10 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
       
       if (!isPdf && !isImage) {
-        throw new Error('Formato de archivo no compatible con visualización directa');
+        throw new Error('File format not compatible with direct viewing');
       }
       
-      console.log('URL de visualización:', url);
+      console.log('View URL:', url);
       setDocumentViewUrl(url);
       
       return () => {
@@ -143,45 +143,45 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         }
       };
     } catch (error) {
-      console.error('Error obteniendo documento para visualización:', error);
+      console.error('Error getting document for viewing:', error);
       setFeedback(
-        error.message === 'Formato de archivo no compatible con visualización directa'
-          ? "Este tipo de archivo no se puede visualizar directamente. Por favor, use la opción de descarga."
-          : "Error al cargar el documento para visualización."
+        error.message === 'File format not compatible with direct viewing'
+          ? "This file type cannot be viewed directly. Please use the download option."
+          : "Error loading document for viewing."
       );
     } finally {
       setLoadingView(false);
     }
   };
 
-  // Cargar observaciones de un documento
+  // Load document observations
   const loadObservations = async (documentId) => {
     setLoadingObservations(true);
     try {
       const obs = await getDocumentObservationsByDocument(documentId);
       setObservations(Array.isArray(obs) ? obs : []);
     } catch (error) {
-      console.error('Error cargando observaciones:', error);
+      console.error('Error loading observations:', error);
       setObservations([]);
     } finally {
       setLoadingObservations(false);
     }
   };
 
-  // Seleccionar documento para ver/agregar observaciones
+  // Select document to view/add observations
   const handleSelectDocument = async (document) => {
     setSelectedDocument(document);
     await loadObservations(document.id);
   };
 
-  // Abrir modal solo para ver observaciones
+  // Open modal only to view observations
   const handleOpenObservations = async (document) => {
     setSelectedDocument(document);
     setShowObservationsModal(true);
     await loadObservations(document.id);
   };
 
-  // Agregar nueva observación
+  // Add new observation
   const handleAddObservation = async () => {
     if (!selectedDocument || !newObservation.trim()) return;
     
@@ -195,28 +195,28 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       
       setNewObservation("");
       await loadObservations(selectedDocument.id);
-      setFeedback("Observación agregada exitosamente");
+      setFeedback("Observation added successfully");
     } catch (error) {
-      console.error('Error agregando observación:', error);
-      setFeedback("Error al agregar observación");
+      console.error('Error adding observation:', error);
+      setFeedback("Error adding observation");
     } finally {
       setSavingObservation(false);
     }
   };
 
-  // Eliminar observación
+  // Delete observation
   const handleDeleteObservation = async (observationId) => {
     try {
       await deleteDocumentObservation(observationId);
       await loadObservations(selectedDocument.id);
-      setFeedback("Observación eliminada");
+      setFeedback("Observation deleted");
     } catch (error) {
-      console.error('Error eliminando observación:', error);
-      setFeedback("Error al eliminar observación");
+      console.error('Error deleting observation:', error);
+      setFeedback("Error deleting observation");
     }
   };
 
-  // Manejar selección de archivo
+  // Handle file selection
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -224,15 +224,15 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
     }
   };
 
-  // Subir documento desde el modal
+  // Upload document from modal
   const handleUploadFromModal = async () => {
     if (!selectedDocumentType || !selectedFile) {
-      setFeedback("Selecciona tipo y archivo para subir un documento");
+      setFeedback("Select type and file to upload a document");
       return;
     }
 
     if (!requestId || !requestType) {
-      setFeedback("Error: No se ha especificado el ID o tipo de solicitud");
+      setFeedback("Error: Request ID or type not specified");
       return;
     }
 
@@ -252,10 +252,10 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       } else if (requestType === "construction") {
         formData.append("construction_request_id", requestId);
       } else {
-        throw new Error("Tipo de solicitud no válido");
+        throw new Error("Invalid request type");
       }
       
-      console.log("Enviando documento con FormData:", {
+      console.log("Sending document with FormData:", {
         file: selectedFile.name,
         type_document_id: selectedDocumentType,
         name: selectedFile.name,
@@ -268,23 +268,23 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       setSelectedDocumentType("");
       setSelectedFile(null);
       setShowModal(false);
-      setFeedback("Documento cargado exitosamente");
+      setFeedback("Document uploaded successfully");
       loadDocuments();
     } catch (error) {
-      console.error("Error al cargar el documento:", error);
-      setFeedback(`Error al cargar el documento: ${error.message || "Error desconocido"}`);
+      console.error("Error uploading document:", error);
+      setFeedback(`Error uploading document: ${error.message || "Unknown error"}`);
     } finally {
       setUploading(false);
     }
   };
 
-  // Eliminar documento
+  // Delete document
   const handleDelete = async (docId) => {
     setLoading(true);
     setFeedback("");
     try {
       await deleteDocument(docId);
-      setFeedback("Documento eliminado");
+      setFeedback("Document deleted");
       setDocuments((prev) => prev.filter((d) => d.id !== docId));
       
       if (selectedDocument && selectedDocument.id === docId) {
@@ -292,12 +292,12 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         setObservations([]);
       }
     } catch {
-      setFeedback("Error al eliminar el documento");
+      setFeedback("Error deleting document");
     }
     setLoading(false);
   };
 
-  // Cerrar modales
+  // Close modals
   const closeModal = () => {
     setShowModal(false);
     setSelectedDocumentType("");
@@ -309,7 +309,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
     setShowObservationsModal(false);
     setSelectedDocument(null);
     setObservations([]);
-    setSelectedObservationType("Pendiente de revisión");
+    setSelectedObservationType("Pending review");
   };
   
   if (!isEnabled) {
@@ -317,7 +317,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       <div className="container-fluid py-4">
         <div className="alert alert-warning text-center">
           <i className="fas fa-exclamation-triangle me-2"></i>
-          Por favor, guarde la información de la solicitud en la pestaña "Formulario" para poder cargar documentos.
+          Please save the request information in the "Form" tab to upload documents.
         </div>
       </div>
     );
@@ -328,10 +328,10 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         {/* ... El resto del JSX del componente ... */}
         {/* (Este JSX es idéntico al que estaba en los archivos originales) */}
         <div className="row">
-          {/* Columna izquierda - Lista de documentos */}
+          {/* Left column - Documents list */}
           <div className="col-7">
             <div className="d-flex flex-column gap-3">
-            {/* Botón para cargar documento */}
+            {/* Button to upload document */}
             <div className="d-flex justify-content-start mb-3">
               <button
                 type="button"
@@ -341,17 +341,17 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                 style={{ borderRadius: '25px' }}
               >
                 <i className="fas fa-upload me-2"></i>
-                Cargar Documento
+                Upload Document
               </button>
             </div>
 
-            {/* Lista de documentos cargados */}
+            {/* List of uploaded documents */}
             {loading ? (
               <div className="text-center py-4">
                 <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Cargando...</span>
+                  <span className="visually-hidden">Loading...</span>
                 </div>
-                <p className="mt-2">Cargando documentos...</p>
+                <p className="mt-2">Loading documents...</p>
               </div>
             ) : documents.length > 0 ? (
               <div className={styles.documentsList}>
@@ -368,7 +368,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                           <div className="flex-grow-1">
                             <div className="fw-bold">{doc.name}</div>
                             <div className="text-muted small d-flex gap-2">
-                              <span>{doc.type_document?.name || "Sin tipo"}</span>
+                              <span>{doc.type_document?.name || "No type"}</span>
                               {doc.file_size && (
                                 <>
                                   <span>•</span>
@@ -391,7 +391,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                           style={{ borderRadius: '15px' }}
                         >
                           <i className="fas fa-eye me-1"></i>
-                          {loadingView ? "Cargando..." : "Ver"}
+                          {loadingView ? "Loading..." : "View"}
                         </button>
                         <button
                           className="btn btn-outline-info btn-sm"
@@ -402,7 +402,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                           style={{ borderRadius: '15px' }}
                         >
                           <i className="fas fa-comments me-1"></i>
-                          Comentarios
+                          Comments
                         </button>
                         <button 
                           className="btn btn-outline-danger btn-sm"
@@ -414,7 +414,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                           style={{ borderRadius: '15px' }}
                         >
                           <i className="fas fa-trash me-1"></i>
-                          Eliminar
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -423,9 +423,9 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
               </div>
             ) : (
               <div className="text-center py-4">
-                <p className="text-muted">No hay documentos cargados</p>
+                <p className="text-muted">No documents uploaded</p>
                 <small className="text-muted d-block">
-                  Solicitud #{requestId} - {requestType?.toUpperCase()}
+                  Request #{requestId} - {requestType?.toUpperCase()}
                 </small>
               </div>
             )}
@@ -436,7 +436,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
             </div>
           </div>
 
-        {/* Columna derecha - Comentarios */}
+        {/* Right column - Comments */}
           <div className="col-5">
           <div className={styles.comment_box_container}>
               <div
@@ -448,15 +448,15 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
             
             {selectedDocument ? (
               <>
-                <h4 className={styles.comment_title}>Comentarios</h4>
+                <h4 className={styles.comment_title}>Comments</h4>
                 <p className="text-muted text-center mb-3">
-                  Documento: <strong>{selectedDocument.name}</strong>
+                  Document: <strong>{selectedDocument.name}</strong>
                 </p>
                 
-                {/* Formulario para nueva observación */}
+                {/* Form for new observation */}
                 <div className="w-100">
                   <div className="mb-3">
-                    <label className="form-label small text-muted">Tipo de observación:</label>
+                    <label className="form-label small text-muted">Observation type:</label>
               <select
                       className="form-select form-select-sm"
                       value={selectedObservationType}
@@ -470,7 +470,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   </div>
               <textarea
                 className={styles.comment_textarea}
-                    placeholder="Agregar nuevo comentario..."
+                    placeholder="Add new comment..."
                     value={newObservation}
                     onChange={(e) => setNewObservation(e.target.value)}
                     rows={3}
@@ -481,27 +481,27 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                     onClick={handleAddObservation}
                     disabled={!newObservation.trim() || savingObservation}
                   >
-                    {savingObservation ? "AGREGANDO..." : "AGREGAR COMENTARIO"}
+                    {savingObservation ? "ADDING..." : "ADD COMMENT"}
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h4 className={styles.comment_title}>Comentarios de Documentos</h4>
-                <p className="text-muted text-center">Selecciona un documento de la lista para agregar comentarios.</p>
+                <h4 className={styles.comment_title}>Document Comments</h4>
+                <p className="text-muted text-center">Select a document from the list to add comments.</p>
               </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Modal para cargar documento */}
+      {/* Modal to upload document */}
       {showModal && (
         <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered" style={{ zIndex: 1051 }}>
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Cargar Documento</h5>
+                <h5 className="modal-title">Upload Document</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -511,7 +511,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label className="form-label">Tipo de documento</label>
+                  <label className="form-label">Document type</label>
                   <select
                     className="form-select"
                     value={selectedDocumentType}
@@ -520,7 +520,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                 required
                   >
                     <option value="">
-                      {typeDocuments.length === 0 ? "No hay tipos de documento disponibles" : "Seleccione tipo"}
+                      {typeDocuments.length === 0 ? "No document types available" : "Select type"}
                     </option>
                     {typeDocuments.map((td) => (
                       <option value={td.id} key={td.id}>{td.name}</option>
@@ -528,7 +528,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Archivo</label>
+                  <label className="form-label">File</label>
                   <input
                     type="file"
                     className="form-control"
@@ -539,7 +539,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   />
                   {selectedFile && (
                     <small className="text-muted d-block mt-1">
-                      Archivo seleccionado: {selectedFile.name}
+                      Selected file: {selectedFile.name}
                     </small>
                   )}
                 </div>
@@ -556,7 +556,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   onClick={closeModal}
                   disabled={uploading}
                 >
-                  Cancelar
+                  Cancel
                 </button>
                 <button
                   type="button"
@@ -567,10 +567,10 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   {uploading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      CARGANDO...
+                      UPLOADING...
                     </>
                   ) : (
-                    "CARGAR DOCUMENTO"
+                    "UPLOAD DOCUMENT"
                   )}
                 </button>
               </div>
@@ -580,7 +580,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         </div>
       )}
 
-      {/* Modal para ver observaciones existentes */}
+      {/* Modal to view existing observations */}
       {showObservationsModal && selectedDocument && (
         <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} tabIndex="-1">
           <div className="modal-dialog modal-lg modal-dialog-centered" style={{ zIndex: 1051 }}>
@@ -588,7 +588,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
               <div className="modal-header">
                 <h5 className="modal-title">
                   <i className="fas fa-comments me-2"></i>
-                  Comentarios - {selectedDocument.name}
+                  Comments - {selectedDocument.name}
                 </h5>
                 <button
                   type="button"
@@ -597,15 +597,15 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                 />
               </div>
               <div className="modal-body">
-                {/* Lista de observaciones */}
+                {/* Observations list */}
                 <div>
-                  <h6 className="mb-3">Observaciones existentes:</h6>
+                  <h6 className="mb-3">Existing observations:</h6>
                   {loadingObservations ? (
                     <div className="text-center py-3">
                       <div className="spinner-border spinner-border-sm text-primary" role="status">
-                        <span className="visually-hidden">Cargando...</span>
+                        <span className="visually-hidden">Loading...</span>
                       </div>
-                      <p className="mt-2 small">Cargando observaciones...</p>
+                      <p className="mt-2 small">Loading observations...</p>
                     </div>
                   ) : observations.length > 0 ? (
                     <div className="d-flex flex-column gap-2" style={{ maxHeight: '400px', overflowY: 'auto' }}>
@@ -636,7 +636,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   ) : (
                     <div className="text-center py-3">
                       <i className="fas fa-comment-slash text-muted mb-2" style={{ fontSize: '2rem' }}></i>
-                      <p className="text-muted">No hay comentarios para este documento</p>
+                      <p className="text-muted">No comments for this document</p>
                   </div>
                   )}
                 </div>
@@ -647,7 +647,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   className="btn btn-secondary"
                   onClick={closeObservationsModal}
                 >
-                  Cerrar
+                  Close
                 </button>
               </div>
             </div>
@@ -656,7 +656,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         </div>
       )}
 
-      {/* Modal para visualizar documento */}
+      {/* Modal to view document */}
       {showViewModal && documentToView && (
         <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} tabIndex="-1">
           <div className="modal-dialog modal-xl modal-dialog-centered" style={{ zIndex: 1051 }}>
@@ -664,7 +664,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
               <div className="modal-header">
                 <h5 className="modal-title">
                   <i className="fas fa-eye me-2"></i>
-                  Visualizar Documento - {documentToView.name}
+                  View Document - {documentToView.name}
                 </h5>
                 <button
                   type="button"
@@ -684,9 +684,9 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                   <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
                     <div className="text-center">
                       <div className="spinner-border text-primary" role="status">
-                        <span className="visually-hidden">Cargando...</span>
+                        <span className="visually-hidden">Loading...</span>
                       </div>
-                      <p className="mt-2">Cargando documento...</p>
+                      <p className="mt-2">Loading document...</p>
                     </div>
                 </div>
                 ) : documentViewUrl ? (
@@ -698,22 +698,22 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                       border: 'none',
                       borderRadius: '0 0 0.375rem 0.375rem'
                     }}
-                    title={`Visualización de ${documentToView.name}`}
+                    title={`View ${documentToView.name}`}
                     onError={() => {
-                      setFeedback("Error al cargar el documento. El formato puede no ser compatible con la visualización.");
+                      setFeedback("Error loading document. The format may not be compatible with viewing.");
                     }}
                   />
                 ) : (
                   <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
                     <div className="text-center">
                       <i className="fas fa-exclamation-triangle text-warning mb-2" style={{ fontSize: '2rem' }}></i>
-                      <p className="text-muted">No se pudo cargar el documento para visualización.</p>
+                      <p className="text-muted">Could not load document for viewing.</p>
                       <button
                         className="btn btn-primary"
                         onClick={() => handleViewDocument(documentToView)}
                       >
                         <i className="fas fa-redo me-1"></i>
-                        Reintentar
+                        Retry
                       </button>
                     </div>
                   </div>
@@ -732,7 +732,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                     setDocumentViewUrl("");
                   }}
                 >
-                  Cerrar
+                  Close
                 </button>
                 {documentToView && (
                   <button
@@ -742,7 +742,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                     disabled={downloading}
                   >
                     <i className="fas fa-download me-1"></i>
-                    {downloading ? "Descargando..." : "Descargar"}
+                    {downloading ? "Downloading..." : "Download"}
                   </button>
                 )}
               </div>

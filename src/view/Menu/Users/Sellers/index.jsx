@@ -10,7 +10,7 @@ import { getSellers } from "../../../../Api/seller";
 import { getCompanies } from "../../../../Api/admin";
 
 const Sellers = () => {
-  // Estado para la paginación y filtros
+  // State for pagination and filters
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [sellersData, setSellersData] = useState([]);
@@ -37,7 +37,7 @@ const Sellers = () => {
       try {
         const data = await getCompanies({ skip: 0, limit: 100 });
         setCompanies(data);
-        // Crear un diccionario para acceso rápido por id
+        // Create a dictionary for quick access by id
         const map = {};
         data.forEach(c => { map[c.id] = c.name; });
         setCompanyMap(map);
@@ -57,9 +57,9 @@ const Sellers = () => {
         limit: itemsPerPage,
       };
       if (search) params.search = search;
-      // Habilitar filtro de estado
+      // Enable status filter
       if (estado && estado !== "") {
-        params.is_active = estado === "Activo" ? true : false;
+        params.is_active = estado === "Active" ? true : false;
       }
       const data = await getSellers(params);
       setSellersData(Array.isArray(data.items) ? data.items : []);
@@ -99,7 +99,7 @@ const Sellers = () => {
     >
       <div className="d-flex flex-column align-items-start w-100 mb-4 px-4 mt-5">
         <p className="mb-4 fs-2 fw-bolder my_title_color">
-          Vendedores
+          Sellers
         </p>
       </div>
       <div className="d-flex justify-content-between w-100 mb-4 px-4">
@@ -110,7 +110,7 @@ const Sellers = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Crear Vendedor
+              Create Seller
             </span>
           </button>
         </div>
@@ -119,12 +119,12 @@ const Sellers = () => {
             <img src={FilterIcon} alt="filter" width={18} />
           </button> */}
           <select className="form-select my_title_color" name="Estado" value={estado} onChange={handleEstadoChange} style={{ padding: "0 2rem" }}>
-            <option value="">Estado</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
+            <option value="">Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
           </select>
           <div className={`input-group ${styles.searchGroup}`}>
-            <input type="text" className={`form-control ${styles.searchInput}`} placeholder="Buscar" value={search} onChange={handleSearchChange} />
+            <input type="text" className={`form-control ${styles.searchInput}`} placeholder="Search" value={search} onChange={handleSearchChange} />
             <button className="btn btn-primary" type="button" onClick={handleSearch}>
               <img src={LoupeIcon} alt="" width={18} />
             </button>
@@ -132,7 +132,7 @@ const Sellers = () => {
         </div>
       </div>
 
-      {/* Tabla de vendedores */}
+      {/* Sellers table */}
       <div
         className={`${"w-100 px-4 mb-3"} table_height`}
       >
@@ -140,22 +140,22 @@ const Sellers = () => {
           <thead className="sticky-top">
             <tr>
               <th style={{ color: "#000" }}>ID</th>
-              <th style={{ color: "#000" }}>Nombre Completo</th>
+              <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
-              <th style={{ color: "#000" }}>Celular</th>
-              <th style={{ color: "#000" }}>Identificación</th>
-              {/* <th style={{ color: "#000" }}>Dirección</th> */}
-              <th style={{ color: "#000" }}>Compañía</th>
-              {/* <th style={{ color: "#000" }}>Rol</th> */}
-              <th style={{ color: "#000" }}>Estado</th>
-              <th style={{ color: "#000" }}>Opciones</th>
+              <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Identification</th>
+              {/* <th style={{ color: "#000" }}>Address</th> */}
+              <th style={{ color: "#000" }}>Company</th>
+              {/* <th style={{ color: "#000" }}>Role</th> */}
+              <th style={{ color: "#000" }}>Status</th>
+              <th style={{ color: "#000" }}>Options</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={10}>Cargando...</td></tr>
+              <tr><td colSpan={10}>Loading...</td></tr>
             ) : sellersData.length === 0 ? (
-              <tr><td colSpan={10}>No hay vendedores</td></tr>
+              <tr><td colSpan={10}>No sellers</td></tr>
             ) : (
               sellersData.map((seller) => (
                 <tr key={seller.id}>
@@ -169,7 +169,7 @@ const Sellers = () => {
                   {/* <td>{Array.isArray(seller.roles) && seller.roles.length > 0 ? seller.roles[0] : '-'}</td> */}
                   <td>
                     <span className={`badge ${seller.is_active ? 'bg-success' : 'bg-secondary'}`}>
-                      {seller.is_active ? "Activo" : "Inactivo"}
+                      {seller.is_active ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>

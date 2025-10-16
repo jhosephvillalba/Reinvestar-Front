@@ -330,13 +330,13 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
       };
       delete dataToSend.estimated_fico_score;
 
-      console.log("Datos a enviar (update):", dataToSend);
+      console.log("Data to send (update):", dataToSend);
       await updateDscr(solicitud.id, dataToSend);
-      setFeedback("¡Solicitud actualizada exitosamente!");
+      setFeedback("Request updated successfully!");
       setIsEditMode(false);
     } catch (error) {
-      console.error("Error en update:", error);
-      setFeedback("Error al actualizar la solicitud. Inténtalo de nuevo.");
+      console.error("Error in update:", error);
+      setFeedback("Error updating request. Please try again.");
     }
     setLoading(false);
   };
@@ -379,13 +379,13 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
       console.log("Datos a enviar (create):", dataToSend);
       const response = await createDscr(dataToSend);
       setIsEditMode(false);
-      setFeedback("¡DSCR creado exitosamente!");
+      setFeedback("DSCR created successfully!");
       if (typeof goToDocumentsTab === 'function') {
         goToDocumentsTab(response.id, 'dscr');
       }
     } catch (error) {
-      console.error("Error en create:", error);
-      setFeedback("Error al crear el DSCR. Inténtalo de nuevo.");
+      console.error("Error in create:", error);
+      setFeedback("Error creating DSCR. Please try again.");
     }
     setLoading(false);
   };
@@ -428,10 +428,10 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
           request_id: solicitud.id
         }
       });
-      setFeedback("¡Email enviado exitosamente!");
+      setFeedback("Email sent successfully!");
     } catch (error) {
-      console.error('Error enviando email:', error);
-      setFeedback("Error al enviar el email. Inténtalo de nuevo.");
+      console.error('Error sending email:', error);
+      setFeedback("Error sending email. Please try again.");
     } finally {
       setSending(false);
     }
@@ -482,7 +482,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
               disabled={sending || !cliente?.email}
               title={!cliente?.email ? "No hay email del cliente" : "Enviar enlace al cliente"}
             >
-              {sending ? "Enviando..." : "Enviar"}
+              {sending ? "Sending..." : "Send"}
             </button>
           </>
         ) : (
@@ -986,7 +986,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
         </div>
 
         {feedback && (
-          <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+          <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
             {feedback}
           </div>
         )}
@@ -1001,7 +1001,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
                   style={{ minWidth: "200px" }}
                   disabled={loading}
                 >
-                {loading ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
+                {loading ? "SAVING..." : "SAVE CHANGES"}
                 </button>
             ) : (
               <button
@@ -1010,7 +1010,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
                 style={{ minWidth: "200px" }}
                 onClick={() => setIsEditMode(true)}
               >
-                EDITAR
+                EDIT
               </button>
             )
           ) : (
@@ -1020,7 +1020,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
               style={{ minWidth: "200px" }}
               disabled={loading}
             >
-              {loading ? "CREANDO..." : "CREAR DSCR"}
+              {loading ? "CREATING..." : "CREATE DSCR"}
               </button>
             )}
           </div>

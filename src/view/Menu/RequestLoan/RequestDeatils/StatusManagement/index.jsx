@@ -15,7 +15,7 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
   }));
 
   const handleSaveStatus = async () => {
-    if (!window.confirm(`¿Estás seguro de cambiar el estado a ${statusOptions.find(s => s.value === selectedStatus)?.label}?`)) {
+    if (!window.confirm(`Are you sure you want to change the status to ${statusOptions.find(s => s.value === selectedStatus)?.label}?`)) {
       return;
     }
 
@@ -24,26 +24,26 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
     setFeedback("");
 
     try {
-      // Llamar al nuevo servicio de cambio de estado
+      // Call the new status change service
       await changeRequestStatus({
         request_type: requestType,
         request_id: requestId,
         new_status: selectedStatus
       });
       
-      // Llamar a la función de refresco del padre
+      // Call parent's refresh function
       if (onDataNeedsRefresh) {
         onDataNeedsRefresh();
       }
       
-      setFeedback("Estado actualizado exitosamente");
+      setFeedback("Status updated successfully");
       
-      // Limpiar el error si existía
+      // Clear error if it existed
       setError("");
       
     } catch (error) {
-      console.error('Error actualizando estado:', error);
-      setError(error.message || "Error al actualizar el estado");
+      console.error('Error updating status:', error);
+      setError(error.message || "Error updating status");
       setFeedback("");
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
     <div className="container-fluid p-4">
       <div className="row">
         <div className="col-12">
-          <h4 className="my_title_color fw-bold mb-4">Gestión de Estado</h4>
+          <h4 className="my_title_color fw-bold mb-4">Status Management</h4>
         </div>
       </div>
 
@@ -66,19 +66,19 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
         <div className="col-12">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title mb-4">Estado Actual</h5>
+              <h5 className="card-title mb-4">Current Status</h5>
               <div className="d-flex align-items-center mb-4">
                 <span className={`badge ${getStatusColor(currentStatus)} fs-6 me-3`}>
-                  {statusOptions.find(s => s.value === currentStatus)?.label || 'Desconocido'}
+                  {statusOptions.find(s => s.value === currentStatus)?.label || 'Unknown'}
                 </span>
               </div>
 
-              <h5 className="card-title mb-4">Cambiar Estado</h5>
+              <h5 className="card-title mb-4">Change Status</h5>
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label htmlFor="statusSelect" className="form-label fw-bold">
-                      Seleccionar Nuevo Estado
+                      Select New Status
                     </label>
                     <select
                       id="statusSelect"
@@ -104,12 +104,12 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Guardando...
+                        Saving...
                       </>
                     ) : (
                       <>
                         <i className="fas fa-save me-2"></i>
-                        Guardar Estado
+                        Save Status
                       </>
                     )}
                   </button>
@@ -119,9 +119,9 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
               {loading && (
                 <div className="alert alert-info mt-3">
                   <div className="spinner-border spinner-border-sm me-2" role="status">
-                    <span className="visually-hidden">Cargando...</span>
+                    <span className="visually-hidden">Loading...</span>
                   </div>
-                  Actualizando estado...
+                  Updating status...
                 </div>
               )}
 
@@ -148,16 +148,16 @@ const StatusManagement = ({ requestId, requestType, currentStatus, onDataNeedsRe
           <div className="alert alert-info">
             <h5 className="alert-heading">
               <i className="fas fa-info-circle me-2"></i>
-              Información sobre los Estados
+              Status Information
             </h5>
             <ul className="mb-0">
-              <li><strong>Pendiente:</strong> La solicitud está en espera de revisión inicial.</li>
-              <li><strong>En Revisión:</strong> La solicitud está siendo evaluada por el equipo.</li>
-              <li><strong>En Pricing:</strong> Se está determinando la tasa y condiciones.</li>
-              <li><strong>Aprobada:</strong> Cliente recibe carta de intención y aprueba con su firma.</li>
-              <li><strong>Rechazada:</strong> La solicitud no cumple con los requisitos.</li>
-              <li><strong>Cancelada:</strong> El cliente ha cancelado la solicitud.</li>
-              <li><strong>Cerrada:</strong> El proceso ha finalizado.</li>
+              <li><strong>Pending:</strong> The request is awaiting initial review.</li>
+              <li><strong>Under Review:</strong> The request is being evaluated by the team.</li>
+              <li><strong>Pricing:</strong> The rate and conditions are being determined.</li>
+              <li><strong>Approved:</strong> Client receives letter of intent and approves with their signature.</li>
+              <li><strong>Rejected:</strong> The request does not meet the requirements.</li>
+              <li><strong>Cancelled:</strong> The client has cancelled the request.</li>
+              <li><strong>Closed:</strong> The process has been completed.</li>
             </ul>
           </div>
         </div>

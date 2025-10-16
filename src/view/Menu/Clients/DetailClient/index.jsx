@@ -49,7 +49,7 @@ const DetailClient = () => {
 
   const handleNotification = (msg, duration = 1500) => {
     setFeedback(msg);
-    if (msg.includes("exitosamente")) {
+    if (msg.includes("successfully")) {
       setTimeout(() => {
         navegate("/clients");
       }, duration);
@@ -67,7 +67,7 @@ const DetailClient = () => {
   const handleCancelUpdate = () => {
     setClient(currentData);
     setEditForm(!editform);
-    handleNotification("Se canceló la actualización de datos"); 
+    handleNotification("Data update cancelled"); 
   }
 
   const handleEnableForm = () => {
@@ -97,12 +97,12 @@ const DetailClient = () => {
     setError(null);
     
     try {
-      // Validaciones
+      // Validations
       if (!client.full_name || !client.phone || !client.company_id || !client.address) {
-        throw new Error("Todos los campos son obligatorios");
+        throw new Error("All fields are required");
       }
 
-      // Mapeo de campos al formato esperado por la API
+      // Mapping fields to API expected format
       const payload = {
         full_name: client.full_name,
         email: client.email,
@@ -120,9 +120,9 @@ const DetailClient = () => {
       await updateClient(id, payload);
       setCurrentData({ ...client });
       setEditForm(true);
-      handleNotification("¡Cliente actualizado exitosamente!");
+      handleNotification("Client updated successfully!");
     } catch (err) {
-      handleNotification(err.message || "Error al actualizar el cliente. Intenta de nuevo.");
+      handleNotification(err.message || "Error updating client. Please try again.");
     }
     setLoading(false);
   }
@@ -138,7 +138,7 @@ const DetailClient = () => {
                   <img src={Back} alt="back" width={35} />
                 </button>
                 <h2 className={`${styles.title} fw-bolder my_title_color`}>
-                  {`${editform ? "Detalle" : "Actualizar"} cliente - ${client.full_name}`}
+                  {`${editform ? "Client Details" : "Update Client"} - ${client.full_name}`}
                 </h2>
               </div>
             </div>
@@ -148,7 +148,7 @@ const DetailClient = () => {
                   <form onSubmit={handleSumit} autoComplete="off">
                                          <div className="row g-3">
                         <div className="col-12 col-md-6">
-                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Nombre del cliente</label>
+                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Client Name</label>
                           <input
                             type="text"
                             className={`form-control ${styles.input}`}
@@ -170,7 +170,7 @@ const DetailClient = () => {
                           />
                         </div>
                         <div className="col-12 col-md-6">
-                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Celular</label>
+                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone</label>
                           <input
                             type="tel"
                             className={`form-control ${styles.input}`}
@@ -181,7 +181,7 @@ const DetailClient = () => {
                           />
                         </div>
                         <div className="col-12 col-md-6">
-                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Empresa</label>
+                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Company</label>
                           <select
                             name="company_id"
                             className={`form-select ${styles.input}`}
@@ -190,14 +190,14 @@ const DetailClient = () => {
                             disabled={editform}
                             required
                           >
-                            <option value="">Seleccione una empresa</option>
+                            <option value="">Select a company</option>
                             {companies && companies.map(({ id, name }) => (
                               <option value={id} key={id}>{name}</option>
                             ))}
                           </select>
                         </div>
                         <div className="col-12">
-                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Dirección</label>
+                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
                           <input
                             type="text"
                             className={`form-control ${styles.input}`}
@@ -210,7 +210,7 @@ const DetailClient = () => {
                      </div>
                     
                                          {feedback && (
-                       <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+                       <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
                          {feedback}
                        </div>
                      )}
@@ -226,7 +226,7 @@ const DetailClient = () => {
                            minWidth: "180px",
                          }}
                        >
-                         {loading ? "Guardando..." : "GUARDAR CAMBIOS"}
+                         {loading ? "Saving..." : "SAVE CHANGES"}
                        </button>
                      )}
                    </form>
@@ -238,7 +238,7 @@ const DetailClient = () => {
                        style={{ minWidth: "180px" }}
                        onClick={handleEnableForm}
                      >
-                       ACTUALIZAR
+                       UPDATE
                      </button>
                    )}
                 </div>
@@ -247,12 +247,12 @@ const DetailClient = () => {
           </>
         ) : (
           <div className="text-center w-100 py-5 text-muted">
-            No se encontraron datos del cliente.
+            Client data not found.
           </div>
         )}
         <Notification show={show} message={message}/>
-        <Modal show={modalShow} setShow={setModalShow} title={"¡Cambios sin Guardar!"}>
-          Existen cambios sin guardar deseas salir.
+        <Modal show={modalShow} setShow={setModalShow} title={"Unsaved Changes!"}>
+          There are unsaved changes. Do you want to leave?
         </Modal>
       </div>
     </>

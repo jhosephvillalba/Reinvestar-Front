@@ -9,8 +9,8 @@ const Pagination = ({ currentPage, totalPages, handlePaginate }) => {
           <button
             className="page-link d-flex align-items-center justify-content-center"
             onClick={() => handlePaginate(currentPage - 1)}
-            aria-label="Anterior"
-            title="Anterior"
+            aria-label="Previous"
+            title="Previous"
           >
             <FaChevronLeft size={14} />
           </button>
@@ -35,8 +35,8 @@ const Pagination = ({ currentPage, totalPages, handlePaginate }) => {
           <button
             className="page-link d-flex align-items-center justify-content-center"
             onClick={() => handlePaginate(currentPage + 1)}
-            aria-label="Siguiente"
-            title="Siguiente"
+            aria-label="Next"
+            title="Next"
           >
             <FaChevronRight size={14} />
           </button>

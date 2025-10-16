@@ -69,7 +69,7 @@
     font-size: 1rem;
   }
   
-  /* Caja de comentarios */
+  /* Comment box */
   .comment_box_container {
     background: #fff;
     border-radius: 30px;
@@ -299,7 +299,7 @@
   cursor: not-allowed;
 }
 
-/* Estilos para las cards de documentos */
+/* Styles for document cards */
 .documentCard {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -318,7 +318,7 @@
   border-color: #d1d5db;
 }
 
-/* Documento seleccionado */
+/* Selected document */
 .selectedDocument {
   border-color: #1e3a8a !important;
   background-color: #f8fafc !important;
@@ -357,7 +357,7 @@
   font-weight: bold;
 }
 
-/* Scrollbar personalizado para la lista de documentos */
+/* Custom scrollbar for documents list */
 .documents-list::-webkit-scrollbar {
   width: 6px;
 }

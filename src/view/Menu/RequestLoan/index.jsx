@@ -14,7 +14,7 @@ import * as apiSeller from "../../../Api/seller";
 import { getProcessors, assignProcessor, getProcessorsByRequest } from "../../../Api/procesor";
 
 const RequestLoan = () => {
-  // Estado para la paginación
+  // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [requestType, setRequestType] = useState("dscr");
@@ -30,16 +30,16 @@ const RequestLoan = () => {
   const [globalSuccess, setGlobalSuccess] = useState("");
   const [existingAssignments, setExistingAssignments] = useState([]);
 
-  // Nuevos estados para filtros
+  // New states for filters
   const [sellers, setSellers] = useState([]);
   const [selectedSeller, setSelectedSeller] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Estado para el usuario actual
+  // State for current user
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Cargar usuario actual al inicio
+  // Load current user at start
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -47,20 +47,20 @@ const RequestLoan = () => {
     }
   }, []);
 
-  // Cargar vendedores solo si el usuario es admin, coordinador o procesador
+  // Load sellers only if user is admin, coordinator or processor
   useEffect(() => {
     if (currentUser && (currentUser.roles?.[0] === "Admin" || currentUser.roles?.[0] === "Coordinador" || currentUser.roles?.[0] === "Procesador")) {
       loadSellers();
     }
   }, [currentUser]);
 
-  // Cargar solicitudes cuando cambien los filtros
+  // Load requests when filters change
   useEffect(() => {
     if (!requestType) return;
     
     const timeoutId = setTimeout(() => {
       handleRequests(requestType);
-    }, 300); // Debounce de 300ms
+    }, 300); // 300ms debounce
     
     return () => clearTimeout(timeoutId);
   }, [requestType, currentPage, selectedSeller, selectedStatus, searchTerm]);
@@ -70,7 +70,7 @@ const RequestLoan = () => {
       const response = await apiSeller.getSellers();
       setSellers(response?.items || []);
     } catch (error) {
-      console.error('Error cargando vendedores:', error);
+      console.error('Error loading sellers:', error);
       setSellers([]);
     }
   };
@@ -79,7 +79,7 @@ const RequestLoan = () => {
     try {
       const params = {};
       
-      // Agregar el ID de solicitud correspondiente según el tipo
+      // Add corresponding request ID according to type
       switch (requestType) {
         case "dscr":
           params.dscr_request_id = parseInt(requestId);
@@ -91,13 +91,13 @@ const RequestLoan = () => {
           params.construction_request_id = parseInt(requestId);
           break;
         default:
-          console.error('Tipo de solicitud no válido:', requestType);
+          console.error('Invalid request type:', requestType);
           return [];
       }
       
       const data = await getProcessorsByRequest(params);
       
-      // Asegurar que data sea un array
+      // Ensure data is an array
       let assignmentsData = [];
       if (Array.isArray(data)) {
         assignmentsData = data;
@@ -107,16 +107,16 @@ const RequestLoan = () => {
         assignmentsData = data.results;
       }
       
-      // Filtrar solo asignaciones activas
+      // Filter only active assignments
       const activeAssignments = assignmentsData.filter(assignment => 
         assignment.status === "ASSIGNED" && assignment.is_active
       );
 
-      // Eliminar duplicados basándose en processor_id, manteniendo solo la asignación más reciente
+      // Remove duplicates based on processor_id, keeping only the most recent assignment
       const uniqueAssignments = [];
       const seenProcessorIds = new Set();
       
-      // Ordenar por fecha de asignación (más reciente primero)
+      // Sort by assignment date (most recent first)
       activeAssignments.sort((a, b) => new Date(b.assigned_at) - new Date(a.assigned_at));
       
       activeAssignments.forEach(assignment => {
@@ -127,11 +127,11 @@ const RequestLoan = () => {
         }
       });
       
-      console.log('Asignaciones existentes filtradas y sin duplicados:', uniqueAssignments);
+      console.log('Existing assignments filtered and deduplicated:', uniqueAssignments);
       setExistingAssignments(uniqueAssignments);
       return uniqueAssignments;
     } catch (error) {
-      console.error('Error cargando asignaciones existentes:', error);
+      console.error('Error loading existing assignments:', error);
       setExistingAssignments([]);
       return [];
     }
@@ -144,7 +144,7 @@ const RequestLoan = () => {
 
   const handleRequestTypeChange = (e) => {
     setRequestType(e.target.value);
-    setCurrentPage(1); // Resetear página al cambiar tipo
+    setCurrentPage(1); // Reset page when changing type
   };
 
   const handleRequests = async (requestType) => {
@@ -176,30 +176,30 @@ const RequestLoan = () => {
       
       setRequestsData(data);
     } catch (error) {
-      console.error('Error cargando solicitudes:', error);
+      console.error('Error loading requests:', error);
       setRequestsData([]);
     }
   };
 
   const openAssignPopup = async (requestId, requestType) => {
-    // Limpiar todos los estados primero
+    // Clear all states first
     setAssignRequest({ id: requestId, type: requestType });
     setShowAssignPopup(true);
     setAssignSuccess("");
     setAssignError("");
     setSelectedProcessor(null);
     setExistingAssignments([]);
-    setProcessors([]); // Limpiar procesadores también
+    setProcessors([]); // Clear processors as well
     
     try {
-      // Cargar procesadores y asignaciones existentes en paralelo
+      // Load processors and existing assignments in parallel
       const [processorsData, assignmentsData] = await Promise.all([
         getProcessors(),
         loadExistingAssignments(requestId, requestType)
       ]);
       
-      console.log(`[DEBUG] Cargando procesadores para solicitud ${requestId} de tipo ${requestType}:`, processorsData);
-      console.log(`[DEBUG] Asignaciones existentes para solicitud ${requestId}:`, assignmentsData);
+      console.log(`[DEBUG] Loading processors for request ${requestId} of type ${requestType}:`, processorsData);
+      console.log(`[DEBUG] Existing assignments for request ${requestId}:`, assignmentsData);
       
       setProcessors(
         Array.isArray(processorsData)
@@ -211,7 +211,7 @@ const RequestLoan = () => {
               : []
       );
     } catch (error) {
-      console.error('Error cargando datos:', error);
+      console.error('Error loading data:', error);
       setProcessors([]);
       setExistingAssignments([]);
     }
@@ -223,14 +223,14 @@ const RequestLoan = () => {
     setAssignSuccess("");
     setAssignError("");
     setExistingAssignments([]);
-    setProcessors([]); // Limpiar procesadores al cerrar
+    setProcessors([]); // Clear processors on close
     
-    // Elimina manualmente el backdrop de Bootstrap si existe
+    // Manually remove Bootstrap backdrop if it exists
     const backdrops = document.querySelectorAll('.modal-backdrop');
     backdrops.forEach(b => b.parentNode && b.parentNode.removeChild(b));
     document.body.classList.remove('modal-open');
     
-    // Si hubo éxito, muestra notificación global
+    // If successful, show global notification
     if (assignSuccess) {
       setGlobalSuccess(assignSuccess);
       setTimeout(() => setGlobalSuccess(""), 3000);
@@ -240,9 +240,9 @@ const RequestLoan = () => {
   const handleAssign = async () => {
     if (!selectedProcessor) return;
     
-    // Validar si ya hay un procesador asignado
+    // Validate if there is already a processor assigned
     if (existingAssignments.length > 0) {
-      setAssignError("Ya hay un procesador asignado a esta solicitud. Debe desasignar el procesador actual antes de asignar otro.");
+      setAssignError("There is already a processor assigned to this request. You must unassign the current processor before assigning another.");
       return;
     }
     
@@ -256,24 +256,24 @@ const RequestLoan = () => {
         fixflip_request_id: assignRequest.type === "fixflip" ? parseInt(assignRequest.id, 10) : undefined,
         construction_request_id: assignRequest.type === "construction" ? parseInt(assignRequest.id, 10) : undefined
       });
-      setAssignSuccess("¡Procesador asignado exitosamente!");
+      setAssignSuccess("Processor assigned successfully!");
       
-      // Recargar las asignaciones después de asignar
+      // Reload assignments after assigning
       await loadExistingAssignments(assignRequest.id, assignRequest.type);
       
-      // Cerrar modal después de 2 segundos
+      // Close modal after 2 seconds
       setTimeout(() => {
         closeModalAndCleanup();
       }, 2000);
     } catch (error) {
-      console.error('Error asignando procesador:', error);
-      setAssignError("Error al asignar procesador. Verifica que el procesador esté disponible.");
+      console.error('Error assigning processor:', error);
+      setAssignError("Error assigning processor. Verify that the processor is available.");
     } finally {
       setAssigning(false);
     }
   };
 
-  // Lógica de paginación
+  // Pagination logic
   const totalItems = requestsData && requestsData.total ? requestsData.total : (Array.isArray(requestsData) ? requestsData.length : 0);
   const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
 
@@ -282,18 +282,18 @@ const RequestLoan = () => {
     handleRequests(requestType || "dscr");
   };
 
-  // Formateador de estados
+  // Status formatter
   const formatStatus = (status) => {
-    if (!status) return <span className="text-muted">No definido</span>;
+    if (!status) return <span className="text-muted">Not defined</span>;
     
     const statusMap = {
-      'PENDING': { label: 'Pendiente', color: 'bg-warning text-dark' },
-      'IN_REVIEW': { label: 'En Revisión', color: 'bg-info text-white' },
-      'PRICING': { label: 'En Pricing', color: 'bg-primary text-white' },
-      'ACCEPTED': { label: 'Aprobada', color: 'bg-success text-white' },
-      'REJECTED': { label: 'Rechazada', color: 'bg-danger text-white' },
-      'CANCELLED': { label: 'Cancelada', color: 'bg-secondary text-white' },
-      'CLOSED': { label: 'Cerrada', color: 'bg-dark text-white' }
+      'PENDING': { label: 'Pending', color: 'bg-warning text-dark' },
+      'IN_REVIEW': { label: 'Under Review', color: 'bg-info text-white' },
+      'PRICING': { label: 'Pricing', color: 'bg-primary text-white' },
+      'ACCEPTED': { label: 'Approved', color: 'bg-success text-white' },
+      'REJECTED': { label: 'Rejected', color: 'bg-danger text-white' },
+      'CANCELLED': { label: 'Cancelled', color: 'bg-secondary text-white' },
+      'CLOSED': { label: 'Closed', color: 'bg-dark text-white' }
     };
 
     const statusInfo = statusMap[status] || { label: status, color: 'bg-secondary text-white' };
@@ -305,53 +305,53 @@ const RequestLoan = () => {
     );
   };
 
-  // Formateador de valores monetarios
+  // Monetary value formatter
   const formatMonetaryValue = (value) => {
     if (!value || isNaN(Number(value)) || Number(value) === 0) {
-      return <span className="text-muted">Pendiente</span>;
+      return <span className="text-muted">Pending</span>;
     }
     const amount = Number(value);
     let label, color;
     
     if (amount < 100000) {
-      label = "Bajo";
+      label = "Low";
       color = "text-success";
     } else if (amount < 500000) {
-      label = "Medio";
+      label = "Medium";
       color = "text-primary";
     } else {
-      label = "Alto";
+      label = "High";
       color = "text-danger";
     }
     
     return <span className={color}>{label}</span>;
   };
 
-  // Formateador de porcentajes
+  // Percentage formatter
   const formatPercent = (value) => {
     if (!value || isNaN(Number(value)) || Number(value) === 0) {
-      return <span className="text-muted">Pendiente</span>;
+      return <span className="text-muted">Pending</span>;
     }
     const percent = Number(value);
     let label, color;
     
     if (percent < 50) {
-      label = "Conservador";
+      label = "Conservative";
       color = "text-success";
     } else if (percent < 75) {
-      label = "Moderado";
+      label = "Moderate";
       color = "text-primary";
     } else {
-      label = "Agresivo";
+      label = "Aggressive";
       color = "text-danger";
     }
     
     return <span className={color}>{label}</span>;
   };
 
-  // Renderiza la tabla según el tipo de solicitud
+  // Renders table according to request type
   const renderTable = () => {
-    // Usar los datos de DSCR para todas las tablas temporalmente
+    // Use DSCR data for all tables temporarily
     const data = requestsData;
     if (requestType === "fixflip") {
       return (
@@ -359,15 +359,15 @@ const RequestLoan = () => {
           <thead className="sticky-top">
             <tr>
               <th style={{ color: "#000" }}>ID</th>
-              <th style={{ color: "#000" }}>Radicado</th>
-              <th style={{ color: "#000" }}>Nombre Completo</th>
+              <th style={{ color: "#000" }}>Filed</th>
+              <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
-              <th style={{ color: "#000" }}>Celular</th>
-              <th style={{ color: "#000" }}>Monto del préstamo</th>
-              <th style={{ color: "#000" }}>Precio de compra</th>
+              <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Loan Amount</th>
+              <th style={{ color: "#000" }}>Purchase Price</th>
               <th style={{ color: "#000" }}>ARV</th>
-              <th style={{ color: "#000" }}>Estado</th>
-              <th style={{ color: "#000" }}>Opciones</th>
+              <th style={{ color: "#000" }}>Status</th>
+              <th style={{ color: "#000" }}>Options</th>
             </tr>
           </thead>
           <tbody>
@@ -395,7 +395,7 @@ const RequestLoan = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={10}>No hay solicitudes fixflip</td>
+                <td colSpan={10}>No fixflip requests</td>
               </tr>
             )}
           </tbody>
@@ -407,15 +407,15 @@ const RequestLoan = () => {
           <thead className="sticky-top">
             <tr>
               <th style={{ color: "#000" }}>ID</th>
-              <th style={{ color: "#000" }}>Radicado</th>
-              <th style={{ color: "#000" }}>Nombre Completo</th>
+              <th style={{ color: "#000" }}>Filed</th>
+              <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
-              <th style={{ color: "#000" }}>Celular</th>
-              <th style={{ color: "#000" }}>Monto del préstamo</th>
-              <th style={{ color: "#000" }}>Valor de la propiedad</th>
-              <th style={{ color: "#000" }}>Costo de construcción</th>
-              <th style={{ color: "#000" }}>Estado</th>
-              <th style={{ color: "#000" }}>Opciones</th>
+              <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Loan Amount</th>
+              <th style={{ color: "#000" }}>Property Value</th>
+              <th style={{ color: "#000" }}>Construction Cost</th>
+              <th style={{ color: "#000" }}>Status</th>
+              <th style={{ color: "#000" }}>Options</th>
             </tr>
           </thead>
           <tbody>
@@ -443,28 +443,28 @@ const RequestLoan = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={10}>No hay solicitudes construction</td>
+                <td colSpan={10}>No construction requests</td>
               </tr>
             )}
           </tbody>
         </table>
       );
     } else {
-      // Por defecto DSCR
+      // Default DSCR
       return (
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
               <th style={{ color: "#000" }}>ID</th>
-              <th style={{ color: "#000" }}>Radicado</th>
-              <th style={{ color: "#000" }}>Nombre Completo</th>
+              <th style={{ color: "#000" }}>Filed</th>
+              <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
-              <th style={{ color: "#000" }}>Celular</th>
-              <th style={{ color: "#000" }}>Monto Alquiler</th>
-              <th style={{ color: "#000" }}>Valor de tasación</th>
-              <th style={{ color: "#000" }}>LTV Solicitado</th>
-              <th style={{ color: "#000" }}>Estado</th>
-              <th style={{ color: "#000" }}>Opciones</th>
+              <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Rent Amount</th>
+              <th style={{ color: "#000" }}>Appraisal Value</th>
+              <th style={{ color: "#000" }}>Requested LTV</th>
+              <th style={{ color: "#000" }}>Status</th>
+              <th style={{ color: "#000" }}>Options</th>
             </tr>
           </thead>
           <tbody>
@@ -492,7 +492,7 @@ const RequestLoan = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={10}>No hay solicitudes dscr</td>
+                <td colSpan={10}>No dscr requests</td>
               </tr>
             )}
           </tbody>
@@ -501,7 +501,7 @@ const RequestLoan = () => {
     }
   };
 
-  // Función para verificar si el usuario puede ver el filtro de vendedores
+  // Function to verify if user can see seller filter
   const canViewSellerFilter = () => {
     return currentUser && (currentUser.roles?.[0] === "Admin" || currentUser.roles?.[0] === "Coordinador" || currentUser.roles?.[0] === "Procesador");
   };
@@ -513,7 +513,7 @@ const RequestLoan = () => {
     >
       <div className="d-flex flex-column align-items-start w-100 mb-4 px-4 mt-5">
         <p className="mb-4 fs-2 fw-bolder my_title_color">
-          Solicitudes de crédito
+          Loan Requests
         </p>
       </div>
       <div className="d-flex justify-content-between w-100 mb-4 px-4">
@@ -524,7 +524,7 @@ const RequestLoan = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Crear solicitud
+              Create Request
             </span>
           </button>
         </div>
@@ -539,7 +539,7 @@ const RequestLoan = () => {
           >
             <option value="dscr">DSCR</option>
             <option value="fixflip">Fix & Flip</option>
-            <option value="construction">Construcción</option>
+            <option value="construction">Construction</option>
           </select>
           {canViewSellerFilter() && (
             <select 
@@ -547,7 +547,7 @@ const RequestLoan = () => {
               value={selectedSeller}
               onChange={(e) => setSelectedSeller(e.target.value)}
             >
-              <option value="">Vendedores</option>
+              <option value="">Sellers</option>
               {sellers.map((seller) => (
                 <option key={seller.id} value={seller.id}>
                   {seller.full_name}
@@ -560,21 +560,21 @@ const RequestLoan = () => {
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
-            <option value="">Estados</option>
-            <option value="PENDING">Pendiente</option>
-            <option value="IN_REVIEW">En Revisión</option>
-            <option value="PRICING">En Pricing</option>
-            <option value="ACCEPTED">Aprobada</option>
-            <option value="REJECTED">Rechazada</option>
-            <option value="CANCELLED">Cancelada</option>
-            <option value="CLOSED">Cerrada</option>
+            <option value="">Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="IN_REVIEW">Under Review</option>
+            <option value="PRICING">Pricing</option>
+            <option value="ACCEPTED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="CANCELLED">Cancelled</option>
+            <option value="CLOSED">Closed</option>
           </select>
 
           <div className={`input-group ${styles.searchGroup}`}>
             <input 
               type="text" 
               className={`form-control ${styles.searchInput}`} 
-              placeholder="Buscar" 
+              placeholder="Search" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -585,13 +585,13 @@ const RequestLoan = () => {
         </div>
       </div>
 
-      {/* Tabla de clientes */}
+      {/* Clients table */}
       <div className={`${"w-100 px-4 mb-3"} table_height`}>
         {renderTable()}
       </div>
       <Pagination currentPage={currentPage} totalPages={totalPages} handlePaginate={paginate} />
       
-      {/* Modal de asignación de procesadores */}
+      {/* Processor assignment modal */}
       {showAssignPopup && (
         <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered" style={{ zIndex: 1051 }}>
@@ -599,7 +599,7 @@ const RequestLoan = () => {
               <div className="modal-header">
                 <h5 className="modal-title">
                   <i className="bi bi-person-plus me-2"></i>
-                  {existingAssignments.length > 0 ? "Procesador Asignado" : "Asignar Procesador"}
+                  {existingAssignments.length > 0 ? "Assigned Processor" : "Assign Processor"}
                 </h5>
                 <button
                   type="button"
@@ -609,7 +609,7 @@ const RequestLoan = () => {
                 />
               </div>
               <div className="modal-body">
-                {/* Notificaciones */}
+                {/* Notifications */}
                 {assignSuccess && (
                   <div className="alert alert-success alert-dismissible fade show" role="alert">
                     <i className="bi bi-check-circle me-2"></i>
@@ -625,12 +625,12 @@ const RequestLoan = () => {
                   </div>
                 )}
 
-                {/* Selector de procesador */}
+                {/* Processor selector */}
                 <div className="mb-3">
                   <label className="form-label fw-bold">
-                    Seleccionar Procesador
+                    Select Processor
                     {existingAssignments.length > 0 && (
-                      <span className="text-muted ms-2">(Deshabilitado - Ya hay un procesador asignado)</span>
+                      <span className="text-muted ms-2">(Disabled - There is already a processor assigned)</span>
                     )}
                   </label>
                   <select 
@@ -639,7 +639,7 @@ const RequestLoan = () => {
                     onChange={e => setSelectedProcessor(e.target.value)}
                     disabled={assigning || existingAssignments.length > 0}
                   >
-                    <option value="">Selecciona un procesador</option>
+                    <option value="">Select a processor</option>
                     {(Array.isArray(processors) ? processors : []).map(proc => (
                       <option key={proc.id} value={proc.id}>
                         {proc.full_name || proc.name}
@@ -648,7 +648,7 @@ const RequestLoan = () => {
                   </select>
                 </div>
 
-                {/* Información del procesador seleccionado */}
+                {/* Selected processor information */}
                 {selectedProcessor && (() => {
                   const proc = (Array.isArray(processors) ? processors : []).find(p => String(p.id) === String(selectedProcessor));
                   if (!proc) return null;
@@ -656,19 +656,19 @@ const RequestLoan = () => {
                     <div className="mb-3 p-3 border rounded bg-light">
                       <h6 className="fw-bold text-primary mb-2">
                         <i className="bi bi-person me-2"></i>
-                        Procesador Seleccionado
+                        Selected Processor
                       </h6>
                       <div className="row">
                         <div className="col-md-6">
-                          <p className="mb-1"><strong>Nombre:</strong> {proc.full_name || proc.name}</p>
+                          <p className="mb-1"><strong>Name:</strong> {proc.full_name || proc.name}</p>
                           <p className="mb-1"><strong>Email:</strong> {proc.email || '-'}</p>
                         </div>
                         <div className="col-md-6">
-                          <p className="mb-1"><strong>Teléfono:</strong> {proc.phone || '-'}</p>
+                          <p className="mb-1"><strong>Phone:</strong> {proc.phone || '-'}</p>
                           <p className="mb-1">
-                            <strong>Estado:</strong> 
+                            <strong>Status:</strong> 
                             <span className={`badge ${proc.is_active ? 'bg-success' : 'bg-secondary'} ms-2`}>
-                              {proc.is_active ? "Activo" : "Inactivo"}
+                              {proc.is_active ? "Active" : "Inactive"}
                             </span>
                           </p>
                         </div>
@@ -677,11 +677,11 @@ const RequestLoan = () => {
                   );
                 })()}
 
-                {/* Información del procesador asignado */}
+                {/* Assigned processor information */}
                 {existingAssignments.length > 0 && (
                   <div className="alert alert-warning">
                     <i className="bi bi-exclamation-triangle me-2"></i>
-                    <strong>Procesador ya asignado:</strong>
+                    <strong>Processor already assigned:</strong>
                     {existingAssignments.map((assignment, index) => (
                       <div key={index} className="mt-2">
                         <div className="d-flex justify-content-between align-items-center">
@@ -689,26 +689,26 @@ const RequestLoan = () => {
                             <strong>{assignment.processor?.full_name || assignment.processor?.name}</strong>
                             <br />
                             <small className="text-muted">
-                              Email: {assignment.processor?.email || 'No disponible'}
+                              Email: {assignment.processor?.email || 'Not available'}
                             </small>
                           </div>
-                          <span className="badge bg-success">Asignado</span>
+                          <span className="badge bg-success">Assigned</span>
                         </div>
                       </div>
                     ))}
                     <div className="mt-2">
                       <small className="text-muted">
                         <i className="bi bi-info-circle me-1"></i>
-                        Para asignar otro procesador, primero debe desasignar el actual.
+                        To assign another processor, you must first unassign the current one.
                       </small>
                     </div>
                   </div>
                 )}
 
-                {/* Información de la solicitud */}
+                {/* Request information */}
                 <div className="alert alert-info">
                   <i className="bi bi-info-circle me-2"></i>
-                  <strong>Solicitud:</strong> #{assignRequest.id} - {assignRequest.type?.toUpperCase()}
+                  <strong>Request:</strong> #{assignRequest.id} - {assignRequest.type?.toUpperCase()}
                 </div>
               </div>
               <div className="modal-footer">
@@ -719,7 +719,7 @@ const RequestLoan = () => {
                   disabled={assigning}
                 >
                   <i className="bi bi-x me-2"></i>
-                  Cancelar
+                  Cancel
                 </button>
                 <button 
                   type="button" 
@@ -730,17 +730,17 @@ const RequestLoan = () => {
                   {assigning ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Asignando...
+                      Assigning...
                     </>
                   ) : existingAssignments.length > 0 ? (
                     <>
                       <i className="bi bi-exclamation-triangle me-2"></i>
-                      Ya hay procesador asignado
+                      Processor already assigned
                     </>
                   ) : (
                     <>
                       <i className="bi bi-person-plus me-2"></i>
-                      Asignar Procesador
+                      Assign Processor
                     </>
                   )}
                 </button>
@@ -750,7 +750,7 @@ const RequestLoan = () => {
         </div>
       )}
       
-      {/* Notificación global */}
+      {/* Global notification */}
       {globalSuccess && (
         <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: 1060 }}>
           <div className="alert alert-success alert-dismissible fade show" role="alert">

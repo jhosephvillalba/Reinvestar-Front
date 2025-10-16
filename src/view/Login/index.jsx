@@ -20,21 +20,21 @@ const Login = () => {
       const data = await login({ email, password });
       if (data && data.access_token) {
         localStorage.setItem("token", data.access_token);
-        // Obtener el usuario y su rol
+        // Get user and their role
         const user = await getMe();
         localStorage.setItem("user", JSON.stringify(user));
         
-        // Redirigir según el rol
+        // Redirect based on role
         if (user && user.roles && user.roles[0] === "Procesador") {
           navigate("/requests");
         } else {
           navigate("/dashboard");
         }
       } else {
-        setError("Credenciales incorrectas");
+        setError("Invalid credentials");
       }
     } catch (err) {
-      setError("Credenciales incorrectas o error de red");
+      setError("Invalid credentials or network error");
     }
     setLoading(false);
   };
@@ -50,7 +50,7 @@ const Login = () => {
         position: 'relative'
       }}
     >
-      {/* Overlay oscuro para mejorar legibilidad */}
+      {/* Dark overlay to improve readability */}
       <div 
         style={{
           position: 'absolute',
@@ -63,7 +63,7 @@ const Login = () => {
         }}
       ></div>
       
-      {/* Formulario de login centrado */}
+      {/* Centered login form */}
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
         style={{
@@ -73,7 +73,7 @@ const Login = () => {
           position: 'relative'
         }}
       >
-        {/* Logo REINVESTAR oficial */}
+        {/* Official REINVESTAR logo */}
         <div className="text-center mb-4">
           <img
             src={LogoLogin}
@@ -86,7 +86,7 @@ const Login = () => {
           />
         </div>
 
-        {/* Título del formulario */}
+        {/* Form title */}
         <div className="text-start mb-4">
           <h2 
             className="fw-bold"
@@ -94,17 +94,17 @@ const Login = () => {
               fontSize: '1.3rem'
             }}
           >
-            Iniciar Sesión
+            Sign In
           </h2>
         </div>
 
-        {/* Formulario */}
+        {/* Form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <input
               type="text"
               className="form-control rounded-pill border-2"
-              placeholder="Ingresar Usuario"
+              placeholder="Enter Username"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -121,7 +121,7 @@ const Login = () => {
             <input
               type="password"
               className="form-control rounded-pill border-2"
-              placeholder="Ingresar Contraseña"
+              placeholder="Enter Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
@@ -133,7 +133,7 @@ const Login = () => {
             />
           </div>
 
-          {/* Enlace de contraseña olvidada */}
+          {/* Forgot password link */}
           <div className="text-center mb-4">
             <NavLink 
               to={'/recover-password'} 
@@ -144,18 +144,18 @@ const Login = () => {
                 fontWeight: '500'
               }}
             >
-              ¿Olvidaste tu contraseña?
+              Forgot your password?
             </NavLink>
           </div>
 
-          {/* Mensaje de error */}
+          {/* Error message */}
           {error && (
             <div className="alert alert-danger py-2 mb-3 rounded-pill">
               {error}
             </div>
           )}
 
-          {/* Botón de inicio de sesión */}
+          {/* Sign in button */}
           <button 
             type="submit" 
             className="btn w-100 rounded-pill fw-bold text-white"
@@ -168,7 +168,7 @@ const Login = () => {
               minHeight: '48px'
             }}
           >
-            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
       </div>

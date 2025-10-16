@@ -277,10 +277,10 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
         status: "PENDING"
       };
 			await updateConstruction(solicitud.id, dataToSend);
-			setFeedback("¡Solicitud actualizada exitosamente!");
+			setFeedback("Request updated successfully!");
 			setIsEditMode(false);
 		} catch (error) {
-			setFeedback("Error al actualizar la solicitud. Inténtalo de nuevo.");
+			setFeedback("Error updating request. Please try again.");
 		}
 		setLoading(false);
 	};
@@ -354,12 +354,12 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
         total_liquidity: form.total_liquidity ? Number(form.total_liquidity) : 0
       };
       const response = await createConstruction(dataToSend);
-      setFeedback("¡Construction creado exitosamente!");
+      setFeedback("Construction created successfully!");
       if (typeof goToDocumentsTab === 'function') {
         goToDocumentsTab(response.id, 'construction');
       }
     } catch (error) {
-      setFeedback("Error al crear el Construction. Inténtalo de nuevo.");
+      setFeedback("Error creating Construction. Please try again.");
 		}
 		setLoading(false);
 	};
@@ -403,10 +403,10 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
 					request_id: solicitud.id
 				}
 			});
-			setFeedback("¡Email enviado exitosamente!");
+			setFeedback("Email sent successfully!");
 		} catch (error) {
-			console.error('Error enviando email:', error);
-			setFeedback("Error al enviar el email. Inténtalo de nuevo.");
+			console.error('Error sending email:', error);
+			setFeedback("Error sending email. Please try again.");
 		} finally {
 			setSending(false);
 		}
@@ -460,7 +460,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
 							onClick={handleSendLink}
 							disabled={sending}
 						>
-							{sending ? "Enviando..." : "Enviar por Email"}
+							{sending ? "Sending..." : "Send by Email"}
 						</button>
 					</>
 					) : (
@@ -882,7 +882,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
 			</div>
 
       {feedback && (
-        <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+        <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
           {feedback}
 				</div>
       )}
@@ -897,7 +897,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
                 style={{ minWidth: "200px" }}
 							disabled={loading}
 						>
-							{loading ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
+							{loading ? "SAVING..." : "SAVE CHANGES"}
 						</button>
 					) : (
 						<button
@@ -906,7 +906,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
                 style={{ minWidth: "200px" }}
 							onClick={() => setIsEditMode(true)}
 						>
-							EDITAR
+							EDIT
 						</button>
             )
           ) : (
@@ -916,7 +916,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab, solicitud, cliente, edi
               style={{ minWidth: "200px" }}
               disabled={loading}
             >
-              {loading ? "CREANDO..." : "CREAR FIXFLIP"}
+              {loading ? "CREATING..." : "CREATE CONSTRUCTION"}
             </button>
 					)}
 				</div>

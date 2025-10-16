@@ -27,7 +27,7 @@ const Notification = ({ show, message=""}) => {
       >
         <div className="toast-header">
           <img src={Icon} className="rounded me-2" alt="..." />
-          <strong className="me-auto">Mensaje</strong>
+          <strong className="me-auto">Message</strong>
           <small>Just now</small>
           <button
             type="button"

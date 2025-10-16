@@ -128,9 +128,9 @@ const FormRequest = () => {
         current_hoa: !!nuevo.current_hoa,
         subject_under_llc: !!nuevo.subject_under_llc,
       }));
-      setFeedback("Cliente registrado y seleccionado exitosamente");
+      setFeedback("Client registered and selected successfully");
     } catch (err) {
-      setFeedback("Error al registrar el cliente");
+      setFeedback("Error registering client");
     }
     setLoading(false);
   };
@@ -160,9 +160,9 @@ const FormRequest = () => {
       });
       setClientId(nuevo.id);
       setClienteEncontrado(true);
-      setFeedback("Cliente registrado exitosamente");
+      setFeedback("Client registered successfully");
     } catch (err) {
-      setFeedback("Error al registrar el cliente");
+      setFeedback("Error registering client");
     }
     setLoading(false);
   };

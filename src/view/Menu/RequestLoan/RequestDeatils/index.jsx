@@ -48,7 +48,7 @@ const DetalleSolicitud = () => {
     }
   }, [id, type]);
 
-  // Cargar usuario actual al inicio
+  // Load current user at start
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -60,18 +60,18 @@ const DetalleSolicitud = () => {
     navegate("/requests");
   };
 
-  // Función para verificar si el usuario puede ver el tab de procesadores
+  // Function to verify if user can see processor tab
   const canViewProcessorTab = () => {
     return currentUser && currentUser.roles?.[0] !== "Procesador";
   };
 
-  // Función para verificar si el usuario puede ver el tab de estado
+  // Function to verify if user can see status tab
   const canViewStatusTab = () => {
     return currentUser && currentUser.roles?.[0] !== "Vendedor";
   };
 
-  // Redirigir al tab home si el usuario es procesador y está en el tab de procesadores
-  // o si es vendedor y está en el tab de estado
+  // Redirect to home tab if user is processor and is on processor tab
+  // or if is seller and is on status tab
   useEffect(() => {
     if (currentUser) {
       const userRole = currentUser.roles?.[0];
@@ -91,7 +91,7 @@ const DetalleSolicitud = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color mb-0`}>
-              Detalle de Solicitud
+              Request Details
             </h2>
           </div>
           
@@ -101,15 +101,15 @@ const DetalleSolicitud = () => {
               {solicitud.radicado && (
                 <>
                   <span className={styles.separator}>|</span>
-                  <span>Radicado: <strong>{solicitud.radicado}</strong></span>
+                  <span>Filed: <strong>{solicitud.radicado}</strong></span>
                 </>
               )}
               <span className={styles.separator}>|</span>
-              <span>Tipo: <strong>{type?.toUpperCase()}</strong></span>
+              <span>Type: <strong>{type?.toUpperCase()}</strong></span>
               {solicitud.status && (
                 <>
                   <span className={styles.separator}>|</span>
-                  <span>Estado: <strong>{solicitud.status}</strong></span>
+                  <span>Status: <strong>{solicitud.status}</strong></span>
                 </>
               )}
             </div>
@@ -130,7 +130,7 @@ const DetalleSolicitud = () => {
                 aria-selected={activeTab === "home"}
                 onClick={() => setActiveTab("home")}
               >
-                Solicitud
+                Request
               </button>
             </li>
             <li className="nav-item" role="presentation">
@@ -145,7 +145,7 @@ const DetalleSolicitud = () => {
                 aria-selected={activeTab === "profile"}
                 onClick={() => setActiveTab("profile")}
               >
-                Documentos
+                Documents
               </button>
             </li>
             {canViewProcessorTab() && (
@@ -161,7 +161,7 @@ const DetalleSolicitud = () => {
                   aria-selected={activeTab === "processor"}
                   onClick={() => setActiveTab("processor")}
                 >
-                  Procesador
+                  Processor
                 </button>
               </li>
             )}
@@ -177,7 +177,7 @@ const DetalleSolicitud = () => {
                 aria-selected={activeTab === "contact"}
                 onClick={() => setActiveTab("contact")}
               >
-                Actividad
+                Activity
               </button>
             </li>
             {solicitud?.status && ["PRICING", "ACCEPTED", "REJECTED", "CANCELLED", "CLOSED"].includes(solicitud.status.toUpperCase()) && (
@@ -193,7 +193,7 @@ const DetalleSolicitud = () => {
                   aria-selected={activeTab === "intention"}
                   onClick={() => setActiveTab("intention")}
                 >
-                  Carta de Intención
+                  Letter of Intent
                 </button>
               </li>
             )}
@@ -210,7 +210,7 @@ const DetalleSolicitud = () => {
                   aria-selected={activeTab === "status"}
                   onClick={() => setActiveTab("status")}
                 >
-                  Estado
+                  Status
                 </button>
               </li>
             )}
@@ -226,7 +226,7 @@ const DetalleSolicitud = () => {
               
               <div className={`d-flex justify-content-center aling-items-center ${styles.container_section_request} mt-5`}>
                 {loading ? (
-                  <div>Cargando...</div>
+                  <div>Loading...</div>
                 ) : solicitud && type === "dscr" ? (
                   <DscrForm solicitud={solicitud} cliente={solicitud.client} editable={true} />
                 ) : solicitud && type === "fixflip" ? (
@@ -234,7 +234,7 @@ const DetalleSolicitud = () => {
                 ) : solicitud && type === "construction" ? (
                   <ConstructionForm solicitud={solicitud} cliente={solicitud.client} editable={true} />
                 ) : (
-                  <div>No se encontró la solicitud</div>
+                  <div>Request not found</div>
                 )}
               </div>
             </div>

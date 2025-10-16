@@ -127,7 +127,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
     if (name === "estimated_fico_score") {
       if (value && (Number(value) < 300 || Number(value) > 850)) {
-        setFicoError("El valor de FICO debe estar entre 300 y 850");
+        setFicoError("FICO value must be between 300 and 850");
       } else {
         setFicoError("");
       }
@@ -156,38 +156,38 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
     return "";
   };
 
-  // Función para enviar email usando template
+  // Function to send email using template
   const handleSendEmail = async (link) => {
     if (!link || !client_id) return;
     
     setSending(true);
     try {
-      // Obtener datos del cliente
+      // Get client data
       const clientData = await getClientById(client_id);
       if (!clientData?.email) {
-        setFeedback("No se encontró el email del cliente.");
+        setFeedback("Client email not found.");
         return;
       }
 
-      // Enviar email usando template
+      // Send email using template
       await sendTemplateEmail({
-        template_id: 0, // ID del template de solicitud
+        template_id: 0, // Request template ID
         template_type: "request_link",
         to_email: clientData.email,
-        from_email: "noreply@reinvestar.com", // Email del sistema
-        content_type: "text/html", // Asegurar que se envíe como HTML
+        from_email: "noreply@reinvestar.com", // System email
+        content_type: "text/html", // Ensure it's sent as HTML
         variables: {
           client_name: clientData.full_name,
           request_link: link,
           request_type: "DSCR",
-          request_id: null // No tenemos el ID aún en CreateRequest
+          request_id: null // We don't have the ID yet in CreateRequest
         }
       });
       
-      setFeedback("¡Email enviado exitosamente!");
+      setFeedback("Email sent successfully!");
     } catch (error) {
-      console.error('Error enviando email:', error);
-      setFeedback("Error al enviar el email. Inténtalo de nuevo.");
+      console.error('Error sending email:', error);
+      setFeedback("Error sending email. Please try again.");
     } finally {
       setSending(false);
     }
@@ -196,24 +196,24 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!client_id) {
-      setFeedback("Debes seleccionar un cliente válido antes de crear la solicitud.");
+      setFeedback("You must select a valid client before creating the request.");
       return;
     }
     if (form.estimated_fico_score && (Number(form.estimated_fico_score) < 300 || Number(form.estimated_fico_score) > 850)) {
-      setFicoError("El valor de FICO debe estar entre 300 y 850");
+      setFicoError("FICO value must be between 300 and 850");
       return;
     }
     setLoading(true);
     setFeedback("");
     try {
-      // Obtener user_id del token
+      // Get user_id from token
       const user_id = getUserIdFromToken();
       if (!user_id) {
-        setFeedback("Error de autenticación. Por favor, inicia sesión nuevamente.");
+        setFeedback("Authentication error. Please sign in again.");
         return;
       }
 
-      // Preparar datos de la solicitud con el nuevo payload
+      // Prepare request data with new payload
       const dataToSend = {
         borrower_name: form.borrower_name || "",
         legal_status: form.legal_status || "",
@@ -243,7 +243,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
         flood_insurance: form.flood_insurance ? Number(form.flood_insurance) : 0,
         pay_off_amount: form.pay_off_amount ? Number(form.pay_off_amount) : 0,
         
-        // Campos adicionales requeridos
+        // Additional required fields
         loan_type: form.loan_type || "",
         property_type: form.property_type || "",
         closing_date: toISOOrNull(form.closing_date),
@@ -309,11 +309,11 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
         user_id: user_id
       };
 
-      // Crear la solicitud DSCR
+      // Create DSCR request
       const response = await createDscr(dataToSend);
-      console.log('Respuesta createDscr:', response);
+      console.log('createDscr response:', response);
 
-      // Crear el enlace automáticamente
+      // Create link automatically
       const linkData = {
         valid_days: 30,
         dscr_request_id: response.id,
@@ -322,26 +322,26 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       };
 
       const linkResponse = await createRequestLink(linkData);
-      console.log('Respuesta createRequestLink:', linkResponse);
+      console.log('createRequestLink response:', linkResponse);
 
       if (linkResponse?.link_token) {
         const fullLink = `${URL_EXTERNAL_FORM}/dscr/${linkResponse.link_token}`;
         setExternalLink(fullLink);
-        // Enviar email automáticamente
+        // Send email automatically
         await handleSendEmail(fullLink);
       }
 
-      // Actualizar UI y limpiar formulario
-      setFeedback("¡DSCR creado exitosamente!");
+      // Update UI and clear form
+      setFeedback("DSCR created successfully!");
       setForm({ ...initialState });
 
-      // Navegar a documentos si es necesario
+      // Navigate to documents if needed
       if (typeof goToDocumentsTab === 'function') {
         goToDocumentsTab(response.id, 'dscr');
       }
 
     } catch (error) {
-      console.error('Error completo:', error);
+      console.error('Complete error:', error);
       if (error.response?.data?.detail) {
         setFeedback(Array.isArray(error.response.data.detail) 
           ? error.response.data.detail[0]?.msg 
@@ -349,7 +349,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       } else if (error.message) {
         setFeedback(error.message);
       } else {
-        setFeedback("Error al crear el DSCR. Inténtalo de nuevo.");
+        setFeedback("Error creating DSCR. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -359,7 +359,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
   return (
     <form className="container-fluid pb-5 mb-5" onSubmit={handleSubmit}>
       <div className="d-flex align-items-center mb-4 gap-3">
-        <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Solicitud DSCR</h4>
+        <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>DSCR Request</h4>
         {externalLink && (
           <>
             <span className="small text-muted" style={{ wordBreak: 'break-all' }}>{externalLink}</span>
@@ -368,7 +368,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
               className="btn btn-outline-secondary btn-sm ms-2"
               onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
             >
-              {copied ? "¡Copiado!" : "Copiar"}
+              {copied ? "Copied!" : "Copy"}
             </button>
           </>
         )}
@@ -401,7 +401,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
             value={form.legal_status} 
             onChange={handleChange}
           >
-              <option value="">Seleccione...</option>
+              <option value="">Select...</option>
               <option value="CITIZEN">CITIZEN</option>
               <option value="GREEN CARD">GREEN CARD</option>
               <option value="EMD">EMD</option>
@@ -472,7 +472,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
             value={form.state} 
             onChange={handleChange}
           >
-            <option value="">Seleccione...</option>
+            <option value="">Select...</option>
             <option value="AL">Alabama</option>
             <option value="AK">Alaska</option>
             <option value="AZ">Arizona</option>
@@ -596,7 +596,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
               value={form.previous_state} 
               onChange={handleChange}
             >
-              <option value="">Seleccione...</option>
+              <option value="">Select...</option>
               <option value="AL">Alabama</option>
               <option value="AK">Alaska</option>
               <option value="AZ">Arizona</option>
@@ -831,7 +831,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       </div>
 
       {feedback && (
-        <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+        <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
           {feedback}
         </div>
       )}
@@ -839,7 +839,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       <div className="row">
         <div className="col-12 mt-4">
           <button type="submit" className="btn btn-primary px-4 py-2" style={{ minWidth: "200px" }} disabled={loading}>
-            {loading ? "CREANDO..." : "Guardar"}
+            {loading ? "CREATING..." : "Save"}
           </button>
         </div>
       </div>

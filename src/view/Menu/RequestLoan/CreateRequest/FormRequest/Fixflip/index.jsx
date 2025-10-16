@@ -8,7 +8,7 @@ import { sendTemplateEmail } from "../../../../../../Api/emailTemplate";
 import { getUserIdFromToken } from "../../../../../../utils/auth";
 
 const initialState = {
-  // Campos básicos del formulario
+  // Basic form fields
   borrower_name: "",
   legal_status: "",
   property_address: "",
@@ -30,7 +30,7 @@ const initialState = {
   total_cost: "",
   estimated_after_completion_value: "",
   
-  // Campos adicionales requeridos por el payload
+  // Additional fields required by payload
   date: "",
   loan_type: "",
   closing_date: "",
@@ -232,7 +232,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       console.log("Server response:", response);
 
       if (response && response.id) {
-        setFeedback("Solicitud creada exitosamente");
+        setFeedback("Request created successfully");
 
         // Create external link
         let generatedLink = "";
@@ -281,11 +281,11 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
           goToDocumentsTab(response.id, 'fixflip');
         }
       } else {
-        setFeedback("Error al crear la solicitud");
+        setFeedback("Error creating request");
       }
     } catch (error) {
       console.error("Error:", error);
-      setFeedback("Error al crear la solicitud: " + (error.message || "Error desconocido"));
+      setFeedback("Error creating request: " + (error.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -294,10 +294,10 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
   return (
     <form onSubmit={handleSubmit} className="container-fluid" noValidate>
       <div className="d-flex align-items-center mb-4 gap-3">
-        <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Fix & Flip - Información Básica</h4>
+        <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Fix & Flip - Basic Information</h4>
       </div>
 
-      {/* Formulario simplificado con solo los campos especificados */}
+      {/* Simplified form with only specified fields */}
       <div className="row g-3">
         <div className="col-md-6">
           <label className="form-label my_title_color">BORROWER'S NAME</label>
@@ -669,7 +669,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       </div>
 
       {feedback && (
-        <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
+        <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>
           {feedback}
         </div>
       )}
@@ -682,7 +682,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
             style={{ minWidth: "200px" }}
             disabled={loading}
           >
-            {loading ? "CREANDO..." : "CREAR FIXFLIP"}
+            {loading ? "CREATING..." : "CREATE FIXFLIP"}
           </button>
         </div>
         </div>

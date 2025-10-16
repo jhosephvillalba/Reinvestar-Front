@@ -26,7 +26,7 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
       setObservations(data);
       setError(null);
     } catch (err) {
-      setError('Error al cargar observaciones');
+      setError('Error loading observations');
       console.error(err);
     } finally {
       setLoading(false);
@@ -42,13 +42,13 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
         status: "PENDIENTE_REVISION",
         comment: newObservation,
         document_id: documentId,
-        user_id: user.id // Asumiendo que tenemos acceso al objeto user
+        user_id: user.id // Assuming we have access to user object
       });
       setObservations([...observations, observation]);
       setNewObservation('');
       setError(null);
     } catch (err) {
-      setError('Error al agregar observación');
+      setError('Error adding observation');
       console.error(err);
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
       setObservations(observations.filter(obs => obs.id !== observationId));
       setError(null);
     } catch (err) {
-      setError('Error al eliminar observación');
+      setError('Error deleting observation');
       console.error(err);
     } finally {
       setLoading(false);
@@ -75,23 +75,23 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
         className={styles.toggleButton}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {observations.length > 0 ? `Observaciones (${observations.length})` : 'Observación'}
+        {observations.length > 0 ? `Observations (${observations.length})` : 'Observation'}
       </button>
 
       {isOpen && (
         <div className={styles.observationsPanel}>
           <div className={styles.observationsList}>
             {loading && observations.length === 0 ? (
-              <p>Cargando observaciones...</p>
+              <p>Loading observations...</p>
             ) : observations.length === 0 ? (
-              <p>No hay observaciones</p>
+              <p>No observations</p>
             ) : (
               observations.map(obs => (
                 <div key={obs.id} className={styles.observationItem}>
                       <p>{obs.comment}</p>
                       <small>
-                        Estado: {obs.status.replace('_', ' ')} | 
-                        Creado: {new Date(obs.created_at).toLocaleString()}
+                        Status: {obs.status.replace('_', ' ')} | 
+                        Created: {new Date(obs.created_at).toLocaleString()}
                       </small>
                   {obs.status === 'active' && (
                     <button 
@@ -99,7 +99,7 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
                       onClick={() => handleDeleteObservation(obs.id)}
                       disabled={loading}
                     >
-                      Eliminar
+                      Delete
                     </button>
                   )}
                 </div>
@@ -112,7 +112,7 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
               className={styles.observationInput}
               value={newObservation}
               onChange={(e) => setNewObservation(e.target.value)}
-              placeholder="Escribe una nueva observación..."
+              placeholder="Write a new observation..."
               disabled={loading}
             />
             <button
@@ -120,7 +120,7 @@ const DocumentObservations = ({ documentId, requestId, requestType }) => {
               onClick={handleAddObservation}
               disabled={!newObservation.trim() || loading}
             >
-              Agregar Observación
+              Add Observation
             </button>
             {error && <p className={styles.error}>{error}</p>}
           </div>

@@ -54,28 +54,28 @@ const CreateSeller = () => {
     setCompanyError("");
     setRoleError("");
     
-    // Validación básica
+    // Basic validation
     if (!formData.nombreCompleto || !formData.email || !formData.celular || !formData.identificacion || !formData.direccion || !formData.contrasena || !formData.company_id) {
-      if (!formData.company_id) setCompanyError("Debes seleccionar una compañía");
-      setFeedback("Todos los campos son obligatorios, incluyendo la compañía");
+      if (!formData.company_id) setCompanyError("You must select a company");
+      setFeedback("All fields are required, including company");
       setLoading(false);
       return;
     }
 
-    // Validación de contraseña
+    // Password validation
     if (formData.contrasena.length < 8) {
-      setFeedback("La contraseña debe tener al menos 8 caracteres");
+      setFeedback("Password must be at least 8 characters");
       setLoading(false);
       return;
     }
     
     if (formData.contrasena !== formData.confirmarContrasena) {
-      setFeedback("Las contraseñas no coinciden");
+      setFeedback("Passwords do not match");
       setLoading(false);
       return;
     }
 
-    // Mapeo de campos al formato esperado por la API
+    // Mapping fields to API expected format
     const payload = {
       full_name: formData.nombreCompleto,
       email: formData.email,
@@ -88,34 +88,34 @@ const CreateSeller = () => {
     };
     
     if (!payload.role) {
-      setRoleError("El campo rol es obligatorio");
+      setRoleError("Role field is required");
       setLoading(false);
       return;
     }
     
     try {
       await createSeller(payload);
-      setFeedback("¡Vendedor creado exitosamente!");
+      setFeedback("Seller created successfully!");
       setTimeout(() => {
         navegate('/sellers');
       }, 1500);
     } catch (error) {
-      console.error('Error al crear vendedor:', error);
+      console.error('Error creating seller:', error);
       if (error.response?.data?.detail) {
-        // Manejar errores específicos del backend
+        // Handle specific backend errors
         const errorDetails = error.response.data.detail;
         if (Array.isArray(errorDetails)) {
           const passwordError = errorDetails.find(err => err.loc?.includes('password'));
           if (passwordError) {
-            setFeedback(`Error en contraseña: ${passwordError.msg}`);
+            setFeedback(`Password error: ${passwordError.msg}`);
           } else {
-            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error al crear el vendedor'}`);
+            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error creating seller'}`);
           }
         } else {
           setFeedback(`Error: ${errorDetails}`);
         }
       } else {
-        setFeedback("Error al crear el vendedor. Inténtalo de nuevo.");
+        setFeedback("Error creating seller. Please try again.");
       }
     }
     setLoading(false);
@@ -124,8 +124,8 @@ const CreateSeller = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("Imagen seleccionada:", file.name);
-      alert(`Imagen "${file.name}" seleccionada`);
+      console.log("Image selected:", file.name);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -137,7 +137,7 @@ const CreateSeller = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color`}>
-              Crear vendedor
+              Create Seller
             </h2>
           </div>
         </div>
@@ -150,7 +150,7 @@ const CreateSeller = () => {
             <form onSubmit={handleSubmit}>
               <div className="row mb-2">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Nombre completo</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -173,7 +173,7 @@ const CreateSeller = () => {
 
               <div className="row mb-3">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Celular</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone</label>
                   <input
                     type="tel"
                     className={`form-control  ${styles.input}`}
@@ -183,7 +183,7 @@ const CreateSeller = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identificación</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identification</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -196,7 +196,7 @@ const CreateSeller = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Dirección</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
                   <input
                     type="text"
                     className={`form-control  ${styles.input}`}
@@ -209,7 +209,7 @@ const CreateSeller = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Compañía</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Company</label>
                   <select
                     className={`form-select ${styles.input} ${companyError ? 'is-invalid' : ''}`}
                     name="company_id"
@@ -217,7 +217,7 @@ const CreateSeller = () => {
                     onChange={handleInputChange}
                     required
                   >
-                    <option value="">Seleccione una compañía</option>
+                    <option value="">Select a company</option>
                     {companies && companies.map(({ id, name }) => (
                       <option value={id} key={id}>{name}</option>
                     ))}
@@ -231,10 +231,10 @@ const CreateSeller = () => {
 
               <div className="row mb-5">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Contraseña *</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Password *</label>
                   <input
                     type="password"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder="Minimum 8 characters"
                     className={`form-control  ${styles.input}`}
                     name="contrasena"
                     value={formData.contrasena}
@@ -243,15 +243,15 @@ const CreateSeller = () => {
                   />
                   {formData.contrasena && formData.contrasena.length < 8 && (
                     <small className="text-warning">
-                      La contraseña debe tener al menos 8 caracteres
+                      Password must be at least 8 characters
                     </small>
                   )}
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirmar contraseña *</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm Password *</label>
                   <input
                     type="password"
-                    placeholder="Confirma tu contraseña"
+                    placeholder="Confirm your password"
                     className={`form-control  ${styles.input}`}
                     name="confirmarContrasena"
                     value={formData.confirmarContrasena}
@@ -259,14 +259,14 @@ const CreateSeller = () => {
                   />
                   {formData.confirmarContrasena && formData.contrasena !== formData.confirmarContrasena && (
                     <small className="text-danger">
-                      Las contraseñas no coinciden
+                      Passwords do not match
                     </small>
                   )}
                 </div>
               </div>
 
               {feedback && (
-                <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
+                <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
               )}
 
               <button
@@ -280,7 +280,7 @@ const CreateSeller = () => {
                   minWidth: "180px",
                 }}
               >
-                {loading ? "Creando..." : "CREAR"}
+                {loading ? "Creating..." : "CREATE"}
               </button>
             </form>
           </div>

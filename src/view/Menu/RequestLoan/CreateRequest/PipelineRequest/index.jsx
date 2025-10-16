@@ -4,33 +4,33 @@ import VerifyIcon from "../../../../../assets/verify-icon.png";
 
 const pipelineData = [
     {
-        tipo: "Estado",
-        descripcion: "Se ha cambiado el estado a APROBADO",
+        tipo: "Status",
+        descripcion: "Status has been changed to APPROVED",
         fecha: "01-05-2025 - 3:20 am"
     },
     {
-        tipo: "Comentario",
-        descripcion: "Por favor revisar que se firme el documento lo antes posible",
+        tipo: "Comment",
+        descripcion: "Please check that the document is signed as soon as possible",
         fecha: "01-05-2025 - 3:20 am"
     },
     {
-        tipo: "Documento",
-        descripcion: "El documento de la propiedad no es legible, por favor cargar nuevamente",
+        tipo: "Document",
+        descripcion: "The property document is not legible, please upload again",
         fecha: "01-05-2025 - 3:20 am"
     },
     {
-        tipo: "Estado",
-        descripcion: "Se ha cambiado el estado a PENDIENTE",
+        tipo: "Status",
+        descripcion: "Status has been changed to PENDING",
         fecha: "01-05-2025 - 3:20 am"
     },
     {
-        tipo: "Proceso",
-        descripcion: "Se ha asignado la solicitud al Procesador para su gestión",
+        tipo: "Process",
+        descripcion: "The request has been assigned to the Processor for management",
         fecha: "01-05-2025 - 3:20 am"
     },
     {
-        tipo: "Estado",
-        descripcion: "Se ha cambiado el estado a CREADO",
+        tipo: "Status",
+        descripcion: "Status has been changed to CREATED",
         fecha: "01-05-2025 - 3:20 am"
     }
 ];
@@ -42,7 +42,7 @@ const PipelineRequest = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Aquí puedes enviar los datos a una API o manejarlos como necesites
+        // Here you can send data to an API or handle it as needed
         console.log({ tipo, comentario, enviarCliente });
     };
 
@@ -79,22 +79,22 @@ const PipelineRequest = () => {
                     >
                       <img src={VerifyIcon} alt="verify-icon" />
                     </div>
-                    <h4 className={styles.comment_title}>Crear comentario</h4>
+                    <h4 className={styles.comment_title}>Create Comment</h4>
                     <select
                         className={styles.comment_select}
                         value={tipo}
                         onChange={e => setTipo(e.target.value)}
                         required
                     >
-                        <option value="">Tipo de Actividad</option>
-                        <option value="Comentario">Comentario</option>
-                        <option value="Estado">Estado</option>
-                        <option value="Documento">Documento</option>
-                        <option value="Proceso">Proceso</option>
+                        <option value="">Activity Type</option>
+                        <option value="Comment">Comment</option>
+                        <option value="Status">Status</option>
+                        <option value="Document">Document</option>
+                        <option value="Process">Process</option>
                     </select>
                     <textarea
                         className={styles.comment_textarea}
-                        placeholder="Observaciones sobre el documento a reportar novedad"
+                        placeholder="Observations about the document to report news"
                         rows={4}
                         value={comentario}
                         onChange={e => setComentario(e.target.value)}
@@ -102,7 +102,7 @@ const PipelineRequest = () => {
                     />
                     <div className={styles.comment_checkbox_row}>
                         <label className={styles.comment_checkbox_label}>
-                            ENVIAR AL CLIENTE
+                            SEND TO CLIENT
                             <input
                                 type="checkbox"
                                 className={styles.comment_checkbox}
@@ -111,7 +111,7 @@ const PipelineRequest = () => {
                             />
                         </label>
                     </div>
-                    <button className={styles.comment_button} type="submit">ENVIAR</button>
+                    <button className={styles.comment_button} type="submit">SEND</button>
                 </form>
             </div>
         </div>

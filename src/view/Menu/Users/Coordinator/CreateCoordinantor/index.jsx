@@ -55,28 +55,28 @@ const CreateCoordinators = () => {
     setCompanyError("");
     setRoleError("");
     
-    // Validación básica
+    // Basic validation
     if (!formData.nombreCompleto || !formData.email || !formData.celular || !formData.identificacion || !formData.direccion || !formData.contrasena || !formData.company_id) {
-      if (!formData.company_id) setCompanyError("Debes seleccionar una compañía");
-      setFeedback("Todos los campos son obligatorios, incluyendo la compañía");
+      if (!formData.company_id) setCompanyError("You must select a company");
+      setFeedback("All fields are required, including company");
       setLoading(false);
       return;
     }
 
-    // Validación de contraseña
+    // Password validation
     if (formData.contrasena.length < 8) {
-      setFeedback("La contraseña debe tener al menos 8 caracteres");
+      setFeedback("Password must be at least 8 characters");
       setLoading(false);
       return;
     }
     
     if (formData.contrasena !== formData.confirmarContrasena) {
-      setFeedback("Las contraseñas no coinciden");
+      setFeedback("Passwords do not match");
       setLoading(false);
       return;
     }
 
-    // Mapeo de campos al formato esperado por la API
+    // Mapping fields to API expected format
     const payload = {
       full_name: formData.nombreCompleto,
       email: formData.email,
@@ -89,38 +89,38 @@ const CreateCoordinators = () => {
     };
     
     if (!payload.role) {
-      setRoleError("El campo rol es obligatorio");
+      setRoleError("Role field is required");
       setLoading(false);
       return;
     }
     
     try {
       await createCoordinator(payload);
-      setFeedback("¡Coordinador creado exitosamente!");
+      setFeedback("Coordinator created successfully!");
       setTimeout(() => {
         navegate('/coordinators');
       }, 1500);
     } catch (error) {
-      console.error('Error al crear coordinador:', error);
+      console.error('Error creating coordinator:', error);
       if (error.response?.data?.detail) {
-        // Manejar errores específicos del backend
+        // Handle specific backend errors
         const errorDetails = error.response.data.detail;
         if (Array.isArray(errorDetails)) {
           const emailError = errorDetails.find(err => err.loc?.includes('email'));
           const passwordError = errorDetails.find(err => err.loc?.includes('password'));
           
           if (emailError) {
-            setFeedback(`Error en email: ${emailError.msg}`);
+            setFeedback(`Email error: ${emailError.msg}`);
           } else if (passwordError) {
-            setFeedback(`Error en contraseña: ${passwordError.msg}`);
+            setFeedback(`Password error: ${passwordError.msg}`);
           } else {
-            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error al crear el coordinador'}`);
+            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error creating coordinator'}`);
           }
         } else {
           setFeedback(`Error: ${errorDetails}`);
         }
       } else {
-        setFeedback("Error al crear el coordinador. Inténtalo de nuevo.");
+        setFeedback("Error creating coordinator. Please try again.");
       }
     }
     setLoading(false);
@@ -129,8 +129,8 @@ const CreateCoordinators = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("Imagen seleccionada:", file.name);
-      alert(`Imagen "${file.name}" seleccionada`);
+      console.log("Image selected:", file.name);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -142,7 +142,7 @@ const CreateCoordinators = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color`}>
-              Crear Coordinador
+              Create Coordinator
             </h2>
           </div>
         </div>
@@ -160,7 +160,7 @@ const CreateCoordinators = () => {
                   </label> */}
                   <input
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="nombreCompleto"
                     value={formData.nombreCompleto}
@@ -188,7 +188,7 @@ const CreateCoordinators = () => {
                   {/* <label className="form-label text-muted small">Celular</label> */}
                   <input
                     type="tel"
-                    placeholder="Celular"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="celular"
                     value={formData.celular}
@@ -202,7 +202,7 @@ const CreateCoordinators = () => {
                   </label> */}
                   <input
                     type="text"
-                    placeholder="Identificación"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identificacion"
                     value={formData.identificacion}
@@ -219,7 +219,7 @@ const CreateCoordinators = () => {
                   </label> */}
                   <input
                     type="text"
-                    placeholder=" Dirección"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="direccion"
                     value={formData.direccion}
@@ -239,7 +239,7 @@ const CreateCoordinators = () => {
                     required
                     disabled={loading}
                   >
-                    <option value="">Seleccione una compañía</option>
+                    <option value="">Select a company</option>
                     {companies && companies.map(({ id, name }) => (
                       <option value={id} key={id}>{name}</option>
                     ))}
@@ -252,7 +252,7 @@ const CreateCoordinators = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="password"
-                    placeholder="Contraseña (mínimo 8 caracteres)"
+                    placeholder="Password (minimum 8 characters)"
                     className={`form-control  ${styles.input}`}
                     name="contrasena"
                     value={formData.contrasena}
@@ -262,14 +262,14 @@ const CreateCoordinators = () => {
                   />
                   {formData.contrasena && formData.contrasena.length < 8 && (
                     <small className="text-warning">
-                      La contraseña debe tener al menos 8 caracteres
+                      Password must be at least 8 characters
                     </small>
                   )}
                 </div>
                 <div className="col-md-6 mb-3">
                   <input
                     type="password"
-                    placeholder="Confirmar contraseña"
+                    placeholder="Confirm Password"
                     className={`form-control  ${styles.input}`}
                     name="confirmarContrasena"
                     value={formData.confirmarContrasena}
@@ -278,7 +278,7 @@ const CreateCoordinators = () => {
                   />
                   {formData.confirmarContrasena && formData.contrasena !== formData.confirmarContrasena && (
                     <small className="text-danger">
-                      Las contraseñas no coinciden
+                      Passwords do not match
                     </small>
                   )}
                 </div>
@@ -289,7 +289,7 @@ const CreateCoordinators = () => {
                 <div className="alert alert-danger py-2 mb-3">{roleError}</div>
               )}
               {feedback && (
-                <div className={`alert ${feedback.includes('exitosamente') ? 'alert-success' : 'alert-danger'} py-2 mb-3`}>{feedback}</div>
+                <div className={`alert ${feedback.includes('successfully') ? 'alert-success' : 'alert-danger'} py-2 mb-3`}>{feedback}</div>
               )}
 
               <button
@@ -304,7 +304,7 @@ const CreateCoordinators = () => {
                 }}
                 disabled={loading}
               >
-                {loading ? "CREANDO..." : "CREAR"}
+                {loading ? "CREATING..." : "CREATE"}
               </button>
             </form>
           </div>

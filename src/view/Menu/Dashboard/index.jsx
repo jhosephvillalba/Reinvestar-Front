@@ -65,8 +65,8 @@ const Dashboard = () => {
         }
       });
     } catch (err) {
-      console.error('Error al cargar datos:', err);
-      setError('Error al cargar los datos del dashboard');
+      console.error('Error loading data:', err);
+      setError('Error loading dashboard data');
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ const Dashboard = () => {
       setTimeline(Array.isArray(timelineData) ? timelineData : []);
       setSelectedRequest({ type, id });
     } catch (err) {
-      console.error('Error al cargar la línea de tiempo:', err);
+      console.error('Error loading timeline:', err);
       setTimeline([]);
     }
   };
@@ -106,47 +106,41 @@ const Dashboard = () => {
   const getRequestStatusData = () => {
     const { summary } = dashboardData;
     return [
-      { name: 'Pendientes', value: summary.pending_approval, color: '#FFC862' },
-      { name: 'En Proceso', value: summary.in_process, color: '#1B2559' },
-      { name: 'Aprobadas', value: summary.approved, color: '#10b981' },
-      { name: 'Rechazadas', value: summary.rejected, color: '#ef4444' }
+      { name: 'Pending', value: summary.pending_approval, color: '#FFC862' },
+      { name: 'In Process', value: summary.in_process, color: '#1B2559' },
+      { name: 'Approved', value: summary.approved, color: '#10b981' },
+      { name: 'Rejected', value: summary.rejected, color: '#ef4444' }
     ].filter(item => item.value > 0);
   };
 
-  // Generate line chart data for request trends (simulated monthly data)
+  // Generate line chart data for request trends (using real backend data)
   const getRequestTrendData = () => {
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
     const { summary } = dashboardData;
     
-    // Simulate trend data based on current totals
-    return months.map((month, index) => ({
-      month,
-      dscr: Math.floor((summary.dscr_requests / 6) * (index + 1) + Math.random() * 5),
-      fixflip: Math.floor((summary.fixflip_requests / 6) * (index + 1) + Math.random() * 3),
-      construction: Math.floor((summary.construction_requests / 6) * (index + 1) + Math.random() * 2)
-    }));
+    // If backend provides trend data, use it; otherwise show current totals
+    if (dashboardData.request_trends && Array.isArray(dashboardData.request_trends)) {
+      return dashboardData.request_trends;
+    }
+    
+    // Fallback: show current values as a single data point
+    return [
+      {
+        month: 'Current',
+        dscr: summary.dscr_requests || 0,
+        fixflip: summary.fixflip_requests || 0,
+        construction: summary.construction_requests || 0
+      }
+    ];
   };
 
-  // Generate line chart data for pipeline trends
-  const getPipelineTrendData = () => {
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-    const { vendor_pipeline } = dashboardData;
-    
-    return months.map((month, index) => ({
-      month,
-      dscr: Math.floor((getPipelineTotal(vendor_pipeline.dscr) / 6) * (index + 1) + Math.random() * 3),
-      fixflip: Math.floor((getPipelineTotal(vendor_pipeline.fixflip) / 6) * (index + 1) + Math.random() * 2),
-      construction: Math.floor((getPipelineTotal(vendor_pipeline.construction) / 6) * (index + 1) + Math.random() * 1)
-    }));
-  };
 
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
+          <span className="visually-hidden">Loading...</span>
         </div>
-        <p className="mt-3">Cargando Dashboard...</p>
+        <p className="mt-3">Loading Dashboard...</p>
       </div>
     );
   }
@@ -159,7 +153,7 @@ const Dashboard = () => {
           <p>{error}</p>
           <hr />
           <button className="btn btn-outline-danger" onClick={loadDashboardData}>
-            Reintentar
+            Retry
           </button>
         </div>
       </div>
@@ -170,7 +164,6 @@ const Dashboard = () => {
   const requestTypeData = getRequestTypeData();
   const requestStatusData = getRequestStatusData();
   const requestTrendData = getRequestTrendData();
-  const pipelineTrendData = getPipelineTrendData();
 
   return (
     <div className={styles.dashboardContainer}>
@@ -179,8 +172,8 @@ const Dashboard = () => {
         <div className="col-12">
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h1 className="h3 mb-0 my_title_color fw-bolder">Dashboard Ejecutivo</h1>
-              <p className="text-muted mb-0">Resumen integral de solicitudes y rendimiento</p>
+              <h1 className="h3 mb-0 my_title_color fw-bolder">Executive Dashboard</h1>
+              <p className="text-muted mb-0">Comprehensive overview of requests and performance</p>
             </div>
             <div className="d-flex gap-2">
               <button 
@@ -188,23 +181,23 @@ const Dashboard = () => {
                 onClick={() => navigate('/requests/new-request')}
               >
                 <i className="fas fa-plus me-2"></i>
-                Nueva Solicitud
+                New Request
               </button>
               <button 
                 className="btn btn-outline-secondary"
                 onClick={() => navigate('/requests')}
               >
                 <i className="fas fa-list me-2"></i>
-                Ver Solicitudes
+                View Requests
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Primera fila - Métricas principales */}
+      {/* First row - Main metrics */}
       <div className="row mb-4">
-        {/* Total Solicitudes - Métrica principal */}
+        {/* Total Requests - Main metric */}
         <div className="col-lg-3 mb-4">
           <div className={styles.mainMetricCard}>
             <div className={styles.metricIcon}>
@@ -212,13 +205,13 @@ const Dashboard = () => {
                   </div>
             <div className={styles.metricContent}>
               <h3 className={styles.metricValue}>{summary.total_requests.toLocaleString()}</h3>
-              <p className={styles.metricTitle}>Total Solicitudes</p>
-              <small className={styles.metricSubtitle}>Todas las solicitudes</small>
+              <p className={styles.metricTitle}>Total Requests</p>
+              <small className={styles.metricSubtitle}>All requests</small>
             </div>
           </div>
         </div>
 
-        {/* Solicitudes En Proceso */}
+        {/* Requests In Process */}
         <div className="col-lg-3 mb-4">
           <div className={styles.metricCard}>
             <div className={styles.metricIcon} style={{backgroundColor: '#FFC862'}}>
@@ -226,13 +219,13 @@ const Dashboard = () => {
                   </div>
             <div className={styles.metricContent}>
               <h4 className={styles.metricValue}>{summary.in_process.toLocaleString()}</h4>
-              <p className={styles.metricTitle}>En Proceso</p>
-              <small className={styles.metricSubtitle}>Solicitudes activas</small>
+              <p className={styles.metricTitle}>In Process</p>
+              <small className={styles.metricSubtitle}>Active requests</small>
                 </div>
                 </div>
               </div>
 
-        {/* Solicitudes Aprobadas */}
+        {/* Approved Requests */}
         <div className="col-lg-3 mb-4">
           <div className={styles.metricCard}>
             <div className={styles.metricIcon} style={{backgroundColor: '#10b981'}}>
@@ -240,13 +233,13 @@ const Dashboard = () => {
             </div>
             <div className={styles.metricContent}>
               <h4 className={styles.metricValue}>{summary.approved.toLocaleString()}</h4>
-              <p className={styles.metricTitle}>Aprobadas</p>
-              <small className={styles.metricSubtitle}>Solicitudes aprobadas</small>
+              <p className={styles.metricTitle}>Approved</p>
+              <small className={styles.metricSubtitle}>Approved requests</small>
             </div>
           </div>
         </div>
 
-        {/* Solicitudes Pendientes */}
+        {/* Pending Requests */}
         <div className="col-lg-3 mb-4">
           <div className={styles.metricCard}>
             <div className={styles.metricIcon} style={{backgroundColor: '#f59e0b'}}>
@@ -254,275 +247,257 @@ const Dashboard = () => {
                   </div>
             <div className={styles.metricContent}>
               <h4 className={styles.metricValue}>{summary.pending_approval.toLocaleString()}</h4>
-              <p className={styles.metricTitle}>Pendientes</p>
-              <small className={styles.metricSubtitle}>Esperando aprobación</small>
-                </div>
-                </div>
-              </div>
-            </div>
-
-      {/* Segunda fila - Gráfico combinado de tendencias de solicitudes */}
-      <div className="row mb-4">
-        {/* Tendencias Combinadas - Un solo gráfico */}
-        <div className="col-12 mb-4">
-          <div className={styles.chartCard}>
-            <div className={styles.chartHeader}>
-              <h5 className={styles.chartTitle}>
-                <i className="fas fa-chart-line me-2" style={{color: '#FFC862'}}></i>
-                Tendencias de Solicitudes por Tipo
-              </h5>
-              <p className={styles.chartSubtitle}>Evolución mensual comparativa de DSCR, Fixflip y Construction</p>
-          </div>
-            <div className={styles.combinedLineChart}>
-              <svg width="100%" height="300" viewBox="0 0 800 300">
-                <defs>
-                  <linearGradient id="dscrGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#FFC862" stopOpacity="0.3"/>
-                    <stop offset="100%" stopColor="#FFC862" stopOpacity="0.05"/>
-                  </linearGradient>
-                  <linearGradient id="fixflipGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#1B2559" stopOpacity="0.3"/>
-                    <stop offset="100%" stopColor="#1B2559" stopOpacity="0.05"/>
-                  </linearGradient>
-                  <linearGradient id="constructionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#2c3e50" stopOpacity="0.3"/>
-                    <stop offset="100%" stopColor="#2c3e50" stopOpacity="0.05"/>
-                  </linearGradient>
-                </defs>
-                
-                {/* Grid lines */}
-                <g className="grid-lines">
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <line
-                      key={`grid-${i}`}
-                      x1={50 + (i * 120)}
-                      y1="50"
-                      x2={50 + (i * 120)}
-                      y2="250"
-                      stroke="#e5e7eb"
-                      strokeWidth="1"
-                      strokeDasharray="2,2"
-                    />
-                  ))}
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <line
-                      key={`hgrid-${i}`}
-                      x1="50"
-                      y1={50 + (i * 50)}
-                      x2="770"
-                      y2={50 + (i * 50)}
-                      stroke="#e5e7eb"
-                      strokeWidth="1"
-                      strokeDasharray="2,2"
-                    />
-                  ))}
-                </g>
-
-                {/* Month labels */}
-                {requestTrendData.map((point, index) => (
-                  <text
-                    key={`month-${index}`}
-                    x={50 + (index * 120)}
-                    y="280"
-                    textAnchor="middle"
-                    fontSize="12"
-                    fill="#6c757d"
-                    fontWeight="500"
-                  >
-                    {point.month}
-                  </text>
-                ))}
-
-                {/* Y-axis labels */}
-                {[0, 1, 2, 3, 4].map((i) => {
-                  const maxValue = Math.max(
-                    ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                  );
-                  const value = Math.round((maxValue / 4) * (4 - i));
-                  return (
-                    <text
-                      key={`y-${i}`}
-                      x="35"
-                      y={55 + (i * 50)}
-                      textAnchor="end"
-                      fontSize="11"
-                      fill="#6c757d"
-                    >
-                      {value}
-                    </text>
-                  );
-                })}
-
-                {/* DSCR Line and Area */}
-                <path
-                  d={requestTrendData.map((point, index) => {
-                    const x = 50 + (index * 120);
-                    const maxValue = Math.max(
-                      ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                    );
-                    const y = 250 - (point.dscr / maxValue) * 200;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ')}
-                  fill="none"
-                  stroke="#FFC862"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={requestTrendData.map((point, index) => {
-                    const x = 50 + (index * 120);
-                    const maxValue = Math.max(
-                      ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                    );
-                    const y = 250 - (point.dscr / maxValue) * 200;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ') + ' L 770 250 L 50 250 Z'}
-                  fill="url(#dscrGradient)"
-                />
-                {requestTrendData.map((point, index) => {
-                  const x = 50 + (index * 120);
-                  const maxValue = Math.max(
-                    ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                  );
-                  const y = 250 - (point.dscr / maxValue) * 200;
-                  return (
-                    <circle
-                      key={`dscr-${index}`}
-                      cx={x}
-                      cy={y}
-                      r="5"
-                      fill="#FFC862"
-                      stroke="#fff"
-                      strokeWidth="2"
-                    />
-                  );
-                })}
-
-                {/* Fixflip Line and Area */}
-                <path
-                  d={requestTrendData.map((point, index) => {
-                    const x = 50 + (index * 120);
-                    const maxValue = Math.max(
-                      ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                    );
-                    const y = 250 - (point.fixflip / maxValue) * 200;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ')}
-                  fill="none"
-                  stroke="#1B2559"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={requestTrendData.map((point, index) => {
-                    const x = 50 + (index * 120);
-                    const maxValue = Math.max(
-                      ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                    );
-                    const y = 250 - (point.fixflip / maxValue) * 200;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ') + ' L 770 250 L 50 250 Z'}
-                  fill="url(#fixflipGradient)"
-                />
-                {requestTrendData.map((point, index) => {
-                  const x = 50 + (index * 120);
-                  const maxValue = Math.max(
-                    ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                  );
-                  const y = 250 - (point.fixflip / maxValue) * 200;
-                  return (
-                    <circle
-                      key={`fixflip-${index}`}
-                      cx={x}
-                      cy={y}
-                      r="5"
-                      fill="#1B2559"
-                      stroke="#fff"
-                      strokeWidth="2"
-                    />
-                  );
-                })}
-
-                {/* Construction Line and Area */}
-                <path
-                  d={requestTrendData.map((point, index) => {
-                    const x = 50 + (index * 120);
-                    const maxValue = Math.max(
-                      ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                    );
-                    const y = 250 - (point.construction / maxValue) * 200;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ')}
-                  fill="none"
-                  stroke="#2c3e50"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={requestTrendData.map((point, index) => {
-                    const x = 50 + (index * 120);
-                    const maxValue = Math.max(
-                      ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                    );
-                    const y = 250 - (point.construction / maxValue) * 200;
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }).join(' ') + ' L 770 250 L 50 250 Z'}
-                  fill="url(#constructionGradient)"
-                />
-                {requestTrendData.map((point, index) => {
-                  const x = 50 + (index * 120);
-                  const maxValue = Math.max(
-                    ...requestTrendData.map(p => Math.max(p.dscr, p.fixflip, p.construction))
-                  );
-                  const y = 250 - (point.construction / maxValue) * 200;
-                  return (
-                    <circle
-                      key={`construction-${index}`}
-                      cx={x}
-                      cy={y}
-                      r="5"
-                      fill="#2c3e50"
-                      stroke="#fff"
-                      strokeWidth="2"
-                    />
-                  );
-                })}
-              </svg>
-              
-              {/* Legend */}
-              <div className={styles.combinedChartLegend}>
-                <div className={styles.legendItem}>
-                  <span className={styles.legendColor} style={{backgroundColor: '#FFC862'}}></span>
-                  <span>DSCR: {summary.dscr_requests}</span>
-                  </div>
-                <div className={styles.legendItem}>
-                  <span className={styles.legendColor} style={{backgroundColor: '#1B2559'}}></span>
-                  <span>Fixflip: {summary.fixflip_requests}</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <span className={styles.legendColor} style={{backgroundColor: '#2c3e50'}}></span>
-                  <span>Construction: {summary.construction_requests}</span>
-                </div>
-              </div>
+              <p className={styles.metricTitle}>Pending</p>
+              <small className={styles.metricSubtitle}>Awaiting approval</small>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tercera fila - Distribución y estados */}
+      {/* Second row - Request trends chart */}
       <div className="row mb-4">
-        {/* Distribución por Tipo - Gráfico de dona */}
+        <div className="col-12 mb-4">
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <h5 className={styles.chartTitle}>
+                <i className="fas fa-chart-line me-2" style={{color: '#FFC862'}}></i>
+                Request Trends by Type
+              </h5>
+              <p className={styles.chartSubtitle}>Comparative view of DSCR, Fixflip and Construction requests</p>
+            </div>
+            <div className={styles.combinedLineChart}>
+              {requestTrendData.length > 0 ? (
+                <>
+                  <svg width="100%" height="300" viewBox="0 0 800 300">
+                    <defs>
+                      <linearGradient id="dscrGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#FFC862" stopOpacity="0.3"/>
+                        <stop offset="100%" stopColor="#FFC862" stopOpacity="0.05"/>
+                      </linearGradient>
+                      <linearGradient id="fixflipGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#1B2559" stopOpacity="0.3"/>
+                        <stop offset="100%" stopColor="#1B2559" stopOpacity="0.05"/>
+                      </linearGradient>
+                      <linearGradient id="constructionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#2c3e50" stopOpacity="0.3"/>
+                        <stop offset="100%" stopColor="#2c3e50" stopOpacity="0.05"/>
+                      </linearGradient>
+                    </defs>
+                    
+                    {/* Grid lines */}
+                    <g className="grid-lines">
+                      {requestTrendData.map((_, i) => (
+                        <line
+                          key={`grid-${i}`}
+                          x1={50 + (i * (720 / Math.max(requestTrendData.length - 1, 1)))}
+                          y1="50"
+                          x2={50 + (i * (720 / Math.max(requestTrendData.length - 1, 1)))}
+                          y2="250"
+                          stroke="#e5e7eb"
+                          strokeWidth="1"
+                          strokeDasharray="2,2"
+                        />
+                      ))}
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <line
+                          key={`hgrid-${i}`}
+                          x1="50"
+                          y1={50 + (i * 50)}
+                          x2="770"
+                          y2={50 + (i * 50)}
+                          stroke="#e5e7eb"
+                          strokeWidth="1"
+                          strokeDasharray="2,2"
+                        />
+                      ))}
+                    </g>
+
+                    {/* Month labels */}
+                    {requestTrendData.map((point, index) => (
+                      <text
+                        key={`month-${index}`}
+                        x={50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)))}
+                        y="280"
+                        textAnchor="middle"
+                        fontSize="12"
+                        fill="#6c757d"
+                        fontWeight="500"
+                      >
+                        {point.month}
+                      </text>
+                    ))}
+
+                    {/* Y-axis labels */}
+                    {[0, 1, 2, 3, 4].map((i) => {
+                      const maxValue = Math.max(
+                        ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                        1
+                      );
+                      const value = Math.round((maxValue / 4) * (4 - i));
+                      return (
+                        <text
+                          key={`y-${i}`}
+                          x="35"
+                          y={55 + (i * 50)}
+                          textAnchor="end"
+                          fontSize="11"
+                          fill="#6c757d"
+                        >
+                          {value}
+                        </text>
+                      );
+                    })}
+
+                    {/* DSCR Line and Area */}
+                    <path
+                      d={requestTrendData.map((point, index) => {
+                        const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
+                        const maxValue = Math.max(
+                          ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                          1
+                        );
+                        const y = 250 - ((point.dscr || 0) / maxValue) * 200;
+                        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                      }).join(' ')}
+                      fill="none"
+                      stroke="#FFC862"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {requestTrendData.map((point, index) => {
+                      const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
+                      const maxValue = Math.max(
+                        ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                        1
+                      );
+                      const y = 250 - ((point.dscr || 0) / maxValue) * 200;
+                      return (
+                        <circle
+                          key={`dscr-${index}`}
+                          cx={x}
+                          cy={y}
+                          r="5"
+                          fill="#FFC862"
+                          stroke="#fff"
+                          strokeWidth="2"
+                        />
+                      );
+                    })}
+
+                    {/* Fixflip Line and Area */}
+                    <path
+                      d={requestTrendData.map((point, index) => {
+                        const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
+                        const maxValue = Math.max(
+                          ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                          1
+                        );
+                        const y = 250 - ((point.fixflip || 0) / maxValue) * 200;
+                        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                      }).join(' ')}
+                      fill="none"
+                      stroke="#1B2559"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {requestTrendData.map((point, index) => {
+                      const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
+                      const maxValue = Math.max(
+                        ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                        1
+                      );
+                      const y = 250 - ((point.fixflip || 0) / maxValue) * 200;
+                      return (
+                        <circle
+                          key={`fixflip-${index}`}
+                          cx={x}
+                          cy={y}
+                          r="5"
+                          fill="#1B2559"
+                          stroke="#fff"
+                          strokeWidth="2"
+                        />
+                      );
+                    })}
+
+                    {/* Construction Line and Area */}
+                    <path
+                      d={requestTrendData.map((point, index) => {
+                        const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
+                        const maxValue = Math.max(
+                          ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                          1
+                        );
+                        const y = 250 - ((point.construction || 0) / maxValue) * 200;
+                        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                      }).join(' ')}
+                      fill="none"
+                      stroke="#2c3e50"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {requestTrendData.map((point, index) => {
+                      const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
+                      const maxValue = Math.max(
+                        ...requestTrendData.map(p => Math.max(p.dscr || 0, p.fixflip || 0, p.construction || 0)),
+                        1
+                      );
+                      const y = 250 - ((point.construction || 0) / maxValue) * 200;
+                      return (
+                        <circle
+                          key={`construction-${index}`}
+                          cx={x}
+                          cy={y}
+                          r="5"
+                          fill="#2c3e50"
+                          stroke="#fff"
+                          strokeWidth="2"
+                        />
+                      );
+                    })}
+                  </svg>
+                  
+                  {/* Legend */}
+                  <div className={styles.combinedChartLegend}>
+                    <div className={styles.legendItem}>
+                      <span className={styles.legendColor} style={{backgroundColor: '#FFC862'}}></span>
+                      <span>DSCR: {summary.dscr_requests}</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span className={styles.legendColor} style={{backgroundColor: '#1B2559'}}></span>
+                      <span>Fixflip: {summary.fixflip_requests}</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span className={styles.legendColor} style={{backgroundColor: '#2c3e50'}}></span>
+                      <span>Construction: {summary.construction_requests}</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center text-muted py-4">
+                  <i className="fas fa-chart-line fs-1 mb-3 d-block"></i>
+                  No trend data available
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Third row - Distribution and status */}
+      <div className="row mb-4">
+        {/* Distribution by Type - Donut chart */}
         <div className="col-lg-6 mb-4">
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <h5 className={styles.chartTitle}>
                 <i className="fas fa-chart-pie me-2" style={{color: '#FFC862'}}></i>
-                Distribución por Tipo
+                Distribution by Type
               </h5>
-              <p className={styles.chartSubtitle}>Solicitudes por categoría</p>
+              <p className={styles.chartSubtitle}>Requests by category</p>
             </div>
             <div className={styles.pieChart}>
               {requestTypeData.length > 0 ? (
@@ -567,22 +542,22 @@ const Dashboard = () => {
               ) : (
                 <div className="text-center text-muted py-4">
                   <i className="fas fa-chart-pie fs-1 mb-3 d-block"></i>
-                  No hay datos disponibles
+                  No data available
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Estados de Solicitudes - Gráfico de barras */}
+        {/* Request Status - Bar chart */}
         <div className="col-lg-6 mb-4">
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <h5 className={styles.chartTitle}>
                 <i className="fas fa-chart-bar me-2" style={{color: '#1B2559'}}></i>
-                Estados de Solicitudes
+                Request Status
               </h5>
-              <p className={styles.chartSubtitle}>Distribución por estado</p>
+              <p className={styles.chartSubtitle}>Distribution by status</p>
             </div>
             <div className={styles.barChart}>
               {requestStatusData.length > 0 ? (
@@ -610,7 +585,7 @@ const Dashboard = () => {
               ) : (
                 <div className="text-center text-muted py-4">
                   <i className="fas fa-chart-bar fs-1 mb-3 d-block"></i>
-                  No hay datos disponibles
+                  No data available
                 </div>
               )}
             </div>
@@ -618,9 +593,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Cuarta fila - KPIs adicionales */}
+      {/* Fourth row - Additional KPIs */}
       <div className="row mb-4">
-        {/* Progreso Documentos */}
+        {/* Document Progress */}
         <div className="col-lg-3 mb-4">
           <div className={styles.kpiCard}>
             <div className={styles.kpiIcon} style={{backgroundColor: '#10b981'}}>
@@ -628,13 +603,13 @@ const Dashboard = () => {
             </div>
             <div className={styles.kpiContent}>
               <h4 className={styles.kpiValue}>{summary.document_progress}%</h4>
-              <p className={styles.kpiTitle}>Progreso Documentos</p>
-              <small className={styles.kpiSubtitle}>Completitud general</small>
+              <p className={styles.kpiTitle}>Document Progress</p>
+              <small className={styles.kpiSubtitle}>Overall completion</small>
               </div>
                 </div>
                 </div>
 
-        {/* Solicitudes Rechazadas */}
+        {/* Rejected Requests */}
         <div className="col-lg-3 mb-4">
           <div className={styles.kpiCard}>
             <div className={styles.kpiIcon} style={{backgroundColor: '#ef4444'}}>
@@ -642,13 +617,13 @@ const Dashboard = () => {
                 </div>
             <div className={styles.kpiContent}>
               <h4 className={styles.kpiValue}>{summary.rejected.toLocaleString()}</h4>
-              <p className={styles.kpiTitle}>Rechazadas</p>
-              <small className={styles.kpiSubtitle}>Solicitudes rechazadas</small>
+              <p className={styles.kpiTitle}>Rejected</p>
+              <small className={styles.kpiSubtitle}>Rejected requests</small>
               </div>
             </div>
           </div>
 
-        {/* Rendimiento Vendedores */}
+        {/* Vendor Performance */}
         <div className="col-lg-3 mb-4">
           <div className={styles.kpiCard}>
             <div className={styles.kpiIcon} style={{backgroundColor: '#FFC862'}}>
@@ -656,13 +631,13 @@ const Dashboard = () => {
         </div>
             <div className={styles.kpiContent}>
               <h4 className={styles.kpiValue}>{vendors_performance.length}</h4>
-              <p className={styles.kpiTitle}>Vendedores Activos</p>
-              <small className={styles.kpiSubtitle}>Total de vendedores</small>
+              <p className={styles.kpiTitle}>Active Vendors</p>
+              <small className={styles.kpiSubtitle}>Total vendors</small>
       </div>
             </div>
                             </div>
 
-        {/* Procesadores Activos */}
+        {/* Active Processors */}
         <div className="col-lg-3 mb-4">
           <div className={styles.kpiCard}>
             <div className={styles.kpiIcon} style={{backgroundColor: '#1B2559'}}>
@@ -670,29 +645,29 @@ const Dashboard = () => {
                           </div>
             <div className={styles.kpiContent}>
               <h4 className={styles.kpiValue}>{processors_workload.length}</h4>
-              <p className={styles.kpiTitle}>Procesadores</p>
-              <small className={styles.kpiSubtitle}>Total de procesadores</small>
+              <p className={styles.kpiTitle}>Processors</p>
+              <small className={styles.kpiSubtitle}>Total processors</small>
               </div>
             </div>
           </div>
         </div>
 
-      {/* Quinta fila - Gráficos de rendimiento */}
+      {/* Fifth row - Performance charts */}
       <div className="row mb-4">
-        {/* Rendimiento de Vendedores */}
+        {/* Vendor Performance */}
         <div className="col-lg-6 mb-4">
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <h5 className={styles.chartTitle}>
                 <i className="fas fa-chart-bar me-2" style={{color: '#FFC862'}}></i>
-                Rendimiento de Vendedores
+                Vendor Performance
               </h5>
-              <p className={styles.chartSubtitle}>Tasa de aprobación por vendedor</p>
+              <p className={styles.chartSubtitle}>Approval rate by vendor</p>
             </div>
             <div className={styles.performanceChart}>
               {vendors_performance.slice(0, 8).map((vendor, index) => (
                 <div key={vendor.id} className={styles.performanceBar}>
-                  <div className={styles.barLabel}>{vendor.name?.substring(0, 15) || 'Vendedor ' + (index + 1)}</div>
+                  <div className={styles.barLabel}>{vendor.name?.substring(0, 15) || 'Vendor ' + (index + 1)}</div>
                   <div className={styles.barContainer}>
                     <div 
                       className={styles.bar} 
@@ -710,20 +685,20 @@ const Dashboard = () => {
         </div>
       </div>
 
-        {/* Carga de Trabajo Procesadores */}
+        {/* Processor Workload */}
         <div className="col-lg-6 mb-4">
           <div className={styles.chartCard}>
             <div className={styles.chartHeader}>
               <h5 className={styles.chartTitle}>
                 <i className="fas fa-chart-bar me-2" style={{color: '#1B2559'}}></i>
-                Carga de Trabajo Procesadores
+                Processor Workload
               </h5>
-              <p className={styles.chartSubtitle}>Asignaciones activas por procesador</p>
+              <p className={styles.chartSubtitle}>Active assignments per processor</p>
             </div>
             <div className={styles.performanceChart}>
               {processors_workload.slice(0, 8).map((processor, index) => (
                 <div key={processor.id} className={styles.performanceBar}>
-                  <div className={styles.barLabel}>{processor.name?.substring(0, 15) || 'Procesador ' + (index + 1)}</div>
+                  <div className={styles.barLabel}>{processor.name?.substring(0, 15) || 'Processor ' + (index + 1)}</div>
                   <div className={styles.barContainer}>
                     <div 
                       className={styles.bar} 
@@ -742,14 +717,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Pipeline de Vendedores - Mantener funcionalidad existente */}
+      {/* Vendor Pipeline - Keep existing functionality */}
       <div className="row mb-4">
         <div className="col-12">
           <div className={styles.tableCard}>
             <div className={styles.tableHeader}>
               <h5 className="card-title mb-0 fw-bold my_title_color">
                 <i className="fas fa-project-diagram me-2"></i>
-                Pipeline de Vendedores
+                Vendor Pipeline
               </h5>
             </div>
             <div className={styles.tableBody}>
@@ -771,7 +746,7 @@ const Dashboard = () => {
                         vendor_pipeline.dscr.map((stage, index) => (
                           <div key={index} className={styles.pipelineStage}>
                             <div>
-                              <small className="text-muted d-block">{stage.stage || 'Sin etapa'}</small>
+                              <small className="text-muted d-block">{stage.stage || 'No stage'}</small>
                               <strong className="text-success">${(stage.total_amount || 0).toLocaleString()}</strong>
                             </div>
                             <span className="badge bg-primary">{stage.count || 0}</span>
@@ -780,7 +755,7 @@ const Dashboard = () => {
                       ) : (
                         <div className="text-center text-muted py-3">
                           <i className="fas fa-chart-line fs-3 mb-2 d-block"></i>
-                          No hay datos de pipeline DSCR
+                          No DSCR pipeline data
                         </div>
                       )}
                     </div>
@@ -804,7 +779,7 @@ const Dashboard = () => {
                         vendor_pipeline.fixflip.map((stage, index) => (
                           <div key={index} className={styles.pipelineStage}>
                             <div>
-                              <small className="text-muted d-block">{stage.stage || 'Sin etapa'}</small>
+                              <small className="text-muted d-block">{stage.stage || 'No stage'}</small>
                               <strong className="text-success">${(stage.total_amount || 0).toLocaleString()}</strong>
                             </div>
                             <span className="badge bg-success">{stage.count || 0}</span>
@@ -813,7 +788,7 @@ const Dashboard = () => {
                       ) : (
                         <div className="text-center text-muted py-3">
                           <i className="fas fa-chart-line fs-3 mb-2 d-block"></i>
-                          No hay datos de pipeline Fixflip
+                          No Fixflip pipeline data
                         </div>
                       )}
                     </div>
@@ -837,7 +812,7 @@ const Dashboard = () => {
                         vendor_pipeline.construction.map((stage, index) => (
                           <div key={index} className={styles.pipelineStage}>
                             <div>
-                              <small className="text-muted d-block">{stage.stage || 'Sin etapa'}</small>
+                              <small className="text-muted d-block">{stage.stage || 'No stage'}</small>
                               <strong className="text-success">${(stage.total_amount || 0).toLocaleString()}</strong>
                             </div>
                             <span className="badge bg-warning">{stage.count || 0}</span>
@@ -846,7 +821,7 @@ const Dashboard = () => {
                       ) : (
                         <div className="text-center text-muted py-3">
                           <i className="fas fa-chart-line fs-3 mb-2 d-block"></i>
-                          No hay datos de pipeline Construction
+                          No Construction pipeline data
                         </div>
                       )}
                     </div>
@@ -858,7 +833,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Línea de tiempo de la solicitud seleccionada - Mantener funcionalidad existente */}
+      {/* Selected request timeline - Keep existing functionality */}
       {selectedRequest && timeline.length > 0 && (
         <div className="row mb-4">
           <div className="col-12">
@@ -866,7 +841,7 @@ const Dashboard = () => {
               <div className={styles.tableHeader}>
                 <h5 className="card-title mb-0 fw-bold my_title_color">
                   <i className="fas fa-clock me-2"></i>
-                  Línea de Tiempo de la Solicitud
+                  Request Timeline
                 </h5>
                 <button 
                   className="btn btn-outline-secondary btn-sm"
@@ -887,8 +862,8 @@ const Dashboard = () => {
                       <div className="flex-grow-1">
                         <div className="d-flex justify-content-between align-items-start">
                           <div>
-                            <h6 className="mb-1 fw-bold my_title_color">{event.title || 'Sin título'}</h6>
-                            <p className="mb-1 text-muted">{event.description || 'Sin descripción'}</p>
+                            <h6 className="mb-1 fw-bold my_title_color">{event.title || 'No title'}</h6>
+                            <p className="mb-1 text-muted">{event.description || 'No description'}</p>
                             {event.status && (
                               <span className={`badge ${event.status === 'approved' ? 'bg-success' : event.status === 'rejected' ? 'bg-danger' : event.status === 'pending' ? 'bg-warning' : 'bg-info'}`}>
                                 {event.status}
@@ -896,7 +871,7 @@ const Dashboard = () => {
                             )}
                           </div>
                           <small className="text-muted">
-                            {event.timestamp ? new Date(event.timestamp).toLocaleDateString() : 'Fecha no disponible'}
+                            {event.timestamp ? new Date(event.timestamp).toLocaleDateString() : 'Date not available'}
                           </small>
                         </div>
                       </div>

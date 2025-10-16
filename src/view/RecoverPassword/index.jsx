@@ -13,8 +13,8 @@ const RecoverPassword = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault(); 
-        // Aquí podrías agregar la lógica para enviar el correo de recuperación
-        console.log('Correo enviado a:', email.email);
+        // Here you could add the logic to send the recovery email
+        console.log('Email sent to:', email.email);
         
         setTimeout(() => {
             navigate('/recover-confirmation');
@@ -33,7 +33,7 @@ const RecoverPassword = () => {
         position: 'relative'
       }}
     >
-      {/* Overlay oscuro para mejorar legibilidad */}
+      {/* Dark overlay to improve readability */}
       <div 
         style={{
           position: 'absolute',
@@ -46,7 +46,7 @@ const RecoverPassword = () => {
         }}
       ></div>
       
-      {/* Formulario de recuperación centrado */}
+      {/* Centered recovery form */}
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
         style={{
@@ -55,7 +55,7 @@ const RecoverPassword = () => {
           position: 'relative'
         }}
       >
-        {/* Logo REINVESTAR oficial */}
+        {/* Official REINVESTAR logo */}
         <div className="text-center mb-4">
           <img
             src={LogoLogin}
@@ -68,7 +68,7 @@ const RecoverPassword = () => {
           />
         </div>
 
-        {/* Título del formulario */}
+        {/* Form title */}
         <div className="text-start mb-4">
           <h2 
             className="fw-bold"
@@ -76,14 +76,14 @@ const RecoverPassword = () => {
               fontSize: '1.3rem'
             }}
           >
-            Recuperar contraseña
+            Recover Password
           </h2>
           <p className="text-muted fs-6 mb-0">
-            Ingresa tu correo para recibir instrucciones
+            Enter your email to receive instructions
           </p>
         </div>
 
-        {/* Formulario */}
+        {/* Form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <input
@@ -92,7 +92,7 @@ const RecoverPassword = () => {
               value={email.email}
               onChange={handleChange}
               className="form-control rounded-pill border-2"
-              placeholder="Correo electrónico"
+              placeholder="Email address"
               required
               autoFocus
               style={{
@@ -103,7 +103,7 @@ const RecoverPassword = () => {
             />
           </div>
 
-          {/* Botón de envío */}
+          {/* Submit button */}
           <button 
             type="submit" 
             className="btn w-100 rounded-pill fw-bold text-white mb-3"
@@ -115,10 +115,10 @@ const RecoverPassword = () => {
               minHeight: '48px'
             }}
           >    
-            Enviar enlace
+            Send link
           </button>
 
-          {/* Enlace para volver al login */}
+          {/* Link to return to login */}
           <div className="text-center">
             <button 
               type="button"
@@ -130,7 +130,7 @@ const RecoverPassword = () => {
                 fontWeight: '500'
               }}
             >
-              Volver al inicio de sesión
+              Back to sign in
             </button>
           </div>
         </form>

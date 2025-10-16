@@ -2,7 +2,7 @@ import Logo from "../../assets/LogoReinvestar.svg";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import styles from "./style.module.css";
 
-// Importar íconos SVG
+// Import SVG icons
 import DashboardIcon from "../../assets/sidebar_icons/Dashboard.svg";
 import SolicitudesIcon from "../../assets/sidebar_icons/Solicitudes.svg";
 import ClientesIcon from "../../assets/sidebar_icons/Clientes.svg";
@@ -17,7 +17,7 @@ import ProfileIcon from "../../assets/circle-user.svg";
 
 // image- profile (removed - using Bootstrap icon instead)
 
-// Mantener referencias antiguas por compatibilidad visual si hiciera falta
+// Keep old references for visual compatibility if needed
 import { useEffect, useState } from "react";
 import React from "react";
 
@@ -31,13 +31,13 @@ const mainRoutes = [
   {
     id: 2,
     link: "/requests",
-    name: "Solicitudes",
+    name: "Requests",
     icon: SolicitudesIcon,
   },
   {
     id: 3,
     link: "/clients",
-    name: "Clientes",
+    name: "Clients",
     icon: ClientesIcon,
   },
 ];
@@ -46,25 +46,25 @@ const userRoutes = [
   {
     id: 5,
     link: "/system",
-    name: "Sistema",
+    name: "System",
     icon: SistemaIcon,
   },
   {
     id: 6,
     link: "/sellers",
-    name: "Vendedores",
+    name: "Sellers",
     icon: VendedoresIcon,
   },
   {
     id: 7,
     link: "/processors",
-    name: "Procesadores",
+    name: "Processors",
     icon: ProcesadoresIcon,
   },
   {
     id: 8,
     link: "/coordinators",
-    name: "Coordinadores",
+    name: "Coordinators",
     icon: CoordinadoresIcon,
   },
 ];
@@ -73,7 +73,7 @@ const otherRoutes = [
   {
     id: 9,
     link: "/parameters",
-    name: "Parámetros",
+    name: "Parameters",
     icon: ParametrosIcon,
   },
 ];
@@ -88,7 +88,7 @@ const Layout = ({ children }) => {
     setUser(JSON.parse(userData));
   }, []);
 
-  // Redirección automática para vendedores
+  // Automatic redirection for sellers
   useEffect(() => {
     if (user && user.roles && user.roles[0] === "Vendedor") {
       if (location.pathname === "/" || location.pathname === "/dashboard") {
@@ -104,7 +104,7 @@ const Layout = ({ children }) => {
     navigate("/login");
   };
 
-  // Filtrado de menú según el rol
+  // Menu filtering based on role
   let filteredMainRoutes = [];
   let filteredUserRoutes = [];
   let filteredOtherRoutes = [];
@@ -113,30 +113,30 @@ const Layout = ({ children }) => {
     const role = user.roles[0];
 
     if (role.toLowerCase() === 'vendedor') {
-      // Para vendedores, solo mostrar Solicitudes y Clientes
+      // For sellers, only show Requests and Clients
       filteredMainRoutes = mainRoutes.filter(
-        route => route.name === 'Solicitudes' || route.name === 'Clientes'
+        route => route.name === 'Requests' || route.name === 'Clients'
       );
-      filteredUserRoutes = []; // Ocultar sección de Usuarios
-      filteredOtherRoutes = []; // Ocultar sección de Configuraciones
+      filteredUserRoutes = []; // Hide Users section
+      filteredOtherRoutes = []; // Hide Settings section
     } else if (role.toLowerCase() === 'procesador') {
-      // Para procesadores, solo mostrar Solicitudes
+      // For processors, only show Requests
       filteredMainRoutes = mainRoutes.filter(
-        route => route.name === 'Solicitudes'
+        route => route.name === 'Requests'
       );
-      filteredUserRoutes = []; // Ocultar sección de Usuarios
-      filteredOtherRoutes = []; // Ocultar sección de Configuraciones
+      filteredUserRoutes = []; // Hide Users section
+      filteredOtherRoutes = []; // Hide Settings section
     } else if (role.toLowerCase() === 'coordinador') {
-      // Para coordinadores, ver todo excepto Parámetros, Sistema y Coordinadores
+      // For coordinators, show everything except Parameters, System and Coordinators
       filteredMainRoutes = mainRoutes;
       filteredUserRoutes = userRoutes.filter(
-        route => route.name !== 'Sistema' && route.name !== 'Coordinadores'
+        route => route.name !== 'System' && route.name !== 'Coordinators'
       );
       filteredOtherRoutes = otherRoutes.filter(
-        route => route.name !== 'Parámetros'
+        route => route.name !== 'Parameters'
       );
     } else {
-      // Para otros roles, mostrar todo
+      // For other roles, show everything
       filteredMainRoutes = mainRoutes;
       filteredUserRoutes = userRoutes;
       filteredOtherRoutes = otherRoutes;
@@ -153,10 +153,10 @@ const Layout = ({ children }) => {
 
         <nav className="flex-grow-1 mx-3" style={{ height: '71px' }}>
           {/* <div className={`${"nav-section-title"} mb-2`}>
-            <p className="title_section" style={{color:'#9CA3AF'}}>Menú</p>
+            <p className="title_section" style={{color:'#9CA3AF'}}>Menu</p>
           </div> */}
           
-          {/* Rutas principales */}
+          {/* Main routes */}
           {filteredMainRoutes.map((route) => (
             <NavLink
               key={route.id}
@@ -168,10 +168,10 @@ const Layout = ({ children }) => {
             </NavLink>
           ))}
 
-          {/* Sección de Usuarios */}
+          {/* Users section */}
           {filteredUserRoutes.length > 0 && (
             <div className={`${"nav-section-title"} mb-2 mt-4`}>
-              <p className="title_section" style={{color:'#9CA3AF'}}>Usuarios</p>
+              <p className="title_section" style={{color:'#9CA3AF'}}>Users</p>
             </div>
           )}
           {filteredUserRoutes.map((route) => (
@@ -185,10 +185,10 @@ const Layout = ({ children }) => {
             </NavLink>
           ))}
 
-          {/* Sección de Configuraciones */}
+          {/* Settings section */}
           {filteredOtherRoutes.length > 0 && (
             <div className={`${"nav-section-title"} mb-2 mt-4`}>
-              <p className="title_section" style={{color:'#9CA3AF'}}>Configuraciones</p>
+              <p className="title_section" style={{color:'#9CA3AF'}}>Settings</p>
             </div>
           )}
           {filteredOtherRoutes.map((route) => (
@@ -209,7 +209,7 @@ const Layout = ({ children }) => {
           onClick={handleLogout}
         >
           <img src={LogoutIcon} alt="logout" className="me-3 sidebar-icon" />
-          <span>Cerrar sesión</span>
+          <span>Sign Out</span>
         </a>
       </aside>
 
@@ -220,7 +220,7 @@ const Layout = ({ children }) => {
           <div className={styles.header_buttons}>
 
             <div className="user-info ms-2">
-              <span>Hola, {user.full_name}</span>
+              <span>Hello, {user.full_name}</span>
               <img src={ProfileIcon} alt="profile" width={20} />
             </div>
           </div>

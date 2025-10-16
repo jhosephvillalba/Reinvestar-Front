@@ -12,7 +12,7 @@ const PrivateRoute = () => {
     const checkAuth = async () => {
       try {
         const userData = await getMe();
-        console.log("Usuario autenticado:", userData);
+        console.log("Authenticated user:", userData);
 
         if (userData) {
           setIsAuthenticated(true);
@@ -23,7 +23,7 @@ const PrivateRoute = () => {
           setUser(null);
         }
       } catch (e) {
-        console.error("Error al autenticar:", e);
+        console.error("Authentication error:", e);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
@@ -35,14 +35,14 @@ const PrivateRoute = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Cargando autenticación...</div>;
+    return <div>Loading authentication...</div>;
   }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Redirigir a procesadores a /requests si intentan acceder a /dashboard
+  // Redirect processors to /requests if they try to access /dashboard
   if (user?.roles?.[0] === "Procesador" && location.pathname === "/dashboard") {
     return <Navigate to="/requests" replace />;
   }

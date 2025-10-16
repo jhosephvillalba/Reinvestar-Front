@@ -60,7 +60,7 @@ const DetailUserSystem = () => {
             is_active: data.is_active !== undefined ? data.is_active : true
           });
         })
-        .catch(() => setFeedback("Error al cargar el usuario"))
+        .catch(() => setFeedback("Error loading user"))
         .finally(() => setLoading(false));
     }
   }, [id]);
@@ -86,7 +86,7 @@ const DetailUserSystem = () => {
   const handleChangePasswordToggle = () => {
     setChangePassword(!changePassword);
     if (!changePassword) {
-      // Si se activa el cambio de contraseña, limpiar los campos
+      // If password change is activated, clear the fields
       setFormData(prev => ({
         ...prev,
         password: "",
@@ -102,25 +102,25 @@ const DetailUserSystem = () => {
     setCompanyError("");
     setRoleError("");
     if (!formData.full_name || !formData.phone || !formData.identification || !formData.address || !formData.company_id) {
-      if (!formData.company_id) setCompanyError("Debes seleccionar una compañía");
-      setFeedback("Todos los campos son obligatorios, incluyendo la compañía");
+      if (!formData.company_id) setCompanyError("You must select a company");
+      setFeedback("All fields are required, including company");
       setLoading(false);
       return;
     }
-    // Validar contraseña solo si se quiere cambiar
+    // Validate password only if changing it
     if (changePassword) {
       if (!formData.password || !formData.confirmarContrasena) {
-        setFeedback("Si quieres cambiar la contraseña, ambos campos son obligatorios");
+        setFeedback("If you want to change the password, both fields are required");
         setLoading(false);
         return;
       }
       if (formData.password.length < 8) {
-        setFeedback("La contraseña debe tener al menos 8 caracteres");
+        setFeedback("Password must be at least 8 characters");
         setLoading(false);
         return;
       }
       if (formData.password !== formData.confirmarContrasena) {
-        setFeedback("Las contraseñas no coinciden");
+        setFeedback("Passwords do not match");
         setLoading(false);
         return;
       }
@@ -135,35 +135,35 @@ const DetailUserSystem = () => {
       url_profile_photo: formData.url_profile_photo,
       role: formData.role,
       is_active: formData.is_active,
-      // Siempre enviar password: nueva contraseña si se quiere cambiar, o cadena vacía si no
+      // Always send password: new password if changing, or empty string if not
       password: changePassword && formData.password && formData.password.length >= 8 
         ? formData.password 
         : ""
     };
     
     if (!payload.role) {
-      setRoleError("El campo rol es obligatorio");
+      setRoleError("Role field is required");
       setLoading(false);
       return;
     }
     try {
-      console.log("Payload a enviar:", payload);
+      console.log("Payload to send:", payload);
       console.log("changePassword:", changePassword);
       console.log("formData.password:", formData.password);
       
       await updateAdmin(id, payload);
-      setFeedback("¡Usuario actualizado exitosamente!");
+      setFeedback("User updated successfully!");
       setEditMode(false);
       setTimeout(() => {
         navegate('/system');
       }, 1500);
     } catch (error) {
-      console.error("Error completo:", error);
+      console.error("Complete error:", error);
       if (error.response) {
         console.error("Error response:", error.response.data);
-        setFeedback(`Error al actualizar: ${error.response.data.detail?.[0]?.msg || 'Error desconocido'}`);
+        setFeedback(`Error updating: ${error.response.data.detail?.[0]?.msg || 'Unknown error'}`);
       } else {
-        setFeedback("Error al actualizar el usuario. Inténtalo de nuevo.");
+        setFeedback("Error updating user. Please try again.");
       }
     }
     setLoading(false);
@@ -173,7 +173,7 @@ const DetailUserSystem = () => {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({ ...prev, url_profile_photo: file.name }));
-      alert(`Imagen "${file.name}" seleccionada`);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -185,7 +185,7 @@ const DetailUserSystem = () => {
             <img src={Back} alt="back" width={35} />
           </button>
           <h2 className={`${styles.title} fw-bolder my_title_color`}>
-            {id ? "Detalle del usuario" : "Crear usuario"}
+            {id ? "User Details" : "Create User"}
           </h2>
         </div>
       </div>
@@ -198,7 +198,7 @@ const DetailUserSystem = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="full_name"
                     value={formData.full_name}
@@ -221,7 +221,7 @@ const DetailUserSystem = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="tel"
-                    placeholder="Celular"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="phone"
                     value={formData.phone}
@@ -232,7 +232,7 @@ const DetailUserSystem = () => {
                 <div className="col-md-6 mb-2">
                   <input
                     type="text"
-                    placeholder="Identificación"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identification"
                     value={formData.identification}
@@ -245,7 +245,7 @@ const DetailUserSystem = () => {
                 <div className="col-12 mb-2">
                   <input
                     type="text"
-                    placeholder="Dirección"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="address"
                     value={formData.address}
@@ -264,7 +264,7 @@ const DetailUserSystem = () => {
                     required
                     disabled={!editMode}
                   >
-                    <option value="">Seleccione una compañía</option>
+                    <option value="">Select a company</option>
                     {companies && companies.map(({ id, name }) => (
                       <option value={id} key={id}>{name}</option>
                     ))}
@@ -273,7 +273,7 @@ const DetailUserSystem = () => {
                 </div>
               </div>
 
-                             {/* Campo de Estado */}
+                             {/* Status Field */}
                <div className="row mb-4">
                  <div className="col-12 mb-2">
                    <div className="form-check">
@@ -287,16 +287,16 @@ const DetailUserSystem = () => {
                        disabled={!editMode}
                      />
                      <label className="form-check-label my_title_color" htmlFor="is_active">
-                       Usuario Activo
+                       Active User
                      </label>
                    </div>
                    <small className="text-muted">
-                     {editMode ? "Desmarca esta casilla para desactivar el usuario" : "Estado actual del usuario"}
+                     {editMode ? "Uncheck this box to deactivate the user" : "Current user status"}
                    </small>
                  </div>
                </div>
 
-               {/* Checkbox para cambiar contraseña */}
+               {/* Checkbox to change password */}
                {editMode && (
                  <div className="row mb-4">
                    <div className="col-12 mb-2">
@@ -309,11 +309,11 @@ const DetailUserSystem = () => {
                          onChange={handleChangePasswordToggle}
                        />
                        <label className="form-check-label my_title_color" htmlFor="changePassword">
-                         Cambiar contraseña
+                         Change Password
                        </label>
                      </div>
                      <small className="text-muted">
-                       Marca esta casilla si quieres cambiar la contraseña del usuario
+                       Check this box if you want to change the user's password
                      </small>
                    </div>
                  </div>
@@ -322,39 +322,39 @@ const DetailUserSystem = () => {
               {roleError && (
                 <div className="alert alert-danger py-2 mb-3">{roleError}</div>
               )}
-                             {/* Campos de contraseña - solo visibles si se quiere cambiar */}
+                             {/* Password fields - only visible if changing */}
                {changePassword && (
                  <div className="row mb-5">
                    <div className="col-md-6 mb-3">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Nueva contraseña *</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>New Password *</label>
                      <input
                        type="password"
-                       placeholder="Nueva contraseña"
+                       placeholder="New Password"
                        className={`form-control  ${styles.input}`}
                        name="password"
                        value={formData.password}
                        onChange={handleInputChange}
                        required
                      />
-                     <small className="text-muted">Campo obligatorio para cambiar contraseña</small>
+                     <small className="text-muted">Required field to change password</small>
                    </div>
                    <div className="col-md-6 mb-3">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirmar nueva contraseña *</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm New Password *</label>
                      <input
                        type="password"
-                       placeholder="Confirmar nueva contraseña"
+                       placeholder="Confirm New Password"
                        className={`form-control  ${styles.input}`}
                        name="confirmarContrasena"
                        value={formData.confirmarContrasena}
                        onChange={handleInputChange}
                        required
                      />
-                     <small className="text-muted">Campo obligatorio para cambiar contraseña</small>
+                     <small className="text-muted">Required field to change password</small>
                    </div>
                  </div>
                )}
               {feedback && (
-                <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
+                <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
               )}
               {editMode && (
                 <button
@@ -368,7 +368,7 @@ const DetailUserSystem = () => {
                     minWidth: "180px",
                   }}
                 >
-                  {loading ? "Guardando..." : "GUARDAR CAMBIOS"}
+                  {loading ? "Saving..." : "SAVE CHANGES"}
                 </button>
               )}
             </form>
@@ -380,7 +380,7 @@ const DetailUserSystem = () => {
                 style={{ minWidth: "180px" }}
                 onClick={handleUpdate}
               >
-                ACTUALIZAR
+                UPDATE
               </button>
             )}
           </div>
@@ -435,7 +435,7 @@ const DetailUserSystem = () => {
                   cursor: "pointer",
                 }}
               >
-                SUBIR IMAGEN
+                UPLOAD IMAGE
               </label>
             </div>
           </div>

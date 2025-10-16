@@ -10,7 +10,7 @@ import { getClients } from "../../../Api/client";
 import { getCompanies } from "../../../Api/admin";
 
 const Clients = () => {
-  // Estado para la paginación y filtros
+  // State for pagination and filters
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [clientsData, setClientsData] = useState([]);
@@ -49,20 +49,20 @@ const Clients = () => {
       if (companyId) params.company_id = companyId;
       const data = await getClients(params);
       
-      // Asegurar que clientsData sea siempre un array
+      // Ensure clientsData is always an array
       if (Array.isArray(data)) {
         setClientsData(data);
         setTotalClients(data.length);
       } else if (data && Array.isArray(data.items)) {
-        // Si la API devuelve { items: [...], total: N }
+        // If API returns { items: [...], total: N }
         setClientsData(data.items);
         setTotalClients(data.total || data.items.length);
       } else if (data && Array.isArray(data.results)) {
-        // Si la API devuelve { results: [...], total: N }
+        // If API returns { results: [...], total: N }
         setClientsData(data.results);
         setTotalClients(data.total || data.results.length);
       } else {
-        // Fallback: establecer array vacío
+        // Fallback: set empty array
         setClientsData([]);
         setTotalClients(0);
       }
@@ -100,13 +100,13 @@ const Clients = () => {
       style={{ backgroundColor: "#fff" }}
     >
       <div className="d-flex flex-column align-items-start w-100 mb-4 px-4 mt-5">
-        <p className="mb-4 fs-2 fw-bolder my_title_color">Listado de clientes</p>
+        <p className="mb-4 fs-2 fw-bolder my_title_color">Client List</p>
       </div>
       <div className="d-flex justify-content-between w-100 mb-4 px-4">
         <div>
           <button className="btn btn-primary d-flex align-items-center" onClick={handlerRedirectCreate}>
             <i className={`bi bi-plus-lg ${style.icon}`}></i>
-            <span className={`${style.text} my_title_color`}>Crear cliente</span>
+            <span className={`${style.text} my_title_color`}>Create Client</span>
           </button>
         </div>
         <div className="d-flex gap-3">
@@ -114,7 +114,7 @@ const Clients = () => {
             <img src={FilterIcon} alt="filter" width={18}/>
           </button> */}
           <select className="form-select my_title_color" name="company" value={companyId} onChange={handleCompanyChange}>
-            <option value="">Empresa</option>
+            <option value="">Company</option>
             {companies && companies.map(({ id, name }) => (
               <option value={id} key={id}>{name}</option>
             ))}
@@ -123,7 +123,7 @@ const Clients = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Buscar"
+              placeholder="Search"
               value={search}
               onChange={handleSearchChange}
             />
@@ -138,28 +138,28 @@ const Clients = () => {
         </div>
       </div>
 
-      {/* Tabla de clientes */}
+      {/* Clients table */}
       <div className={`${"w-100 px-4 mb-3"} table_height`}>
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
               <th style={{color:"#000"}}>ID</th>
-              <th style={{color:"#000"}}>Nombre Completo</th>
+              <th style={{color:"#000"}}>Full Name</th>
               <th style={{color:"#000"}}>Email</th>
-              <th style={{color:"#000"}}>Celular</th>
-              {/* <th style={{color:"#000"}}>Dirección</th> */}
-              <th style={{color:"#000"}}>Cant. propiedades</th>
-              <th style={{color:"#000"}}>Tot. Solicitudes</th>
-              <th style={{color:"#000"}}>Solicitudes activas</th>
-              <th style={{color:"#000"}}>Estado</th>
-              <th style={{color:"#000"}}>Opciones</th>
+              <th style={{color:"#000"}}>Phone</th>
+              {/* <th style={{color:"#000"}}>Address</th> */}
+              <th style={{color:"#000"}}>Properties Qty.</th>
+              <th style={{color:"#000"}}>Total Requests</th>
+              <th style={{color:"#000"}}>Active Requests</th>
+              <th style={{color:"#000"}}>Status</th>
+              <th style={{color:"#000"}}>Options</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={10}>Cargando...</td></tr>
+              <tr><td colSpan={10}>Loading...</td></tr>
             ) : !Array.isArray(clientsData) || clientsData.length === 0 ? (
-              <tr><td colSpan={10}>No hay clientes</td></tr>
+              <tr><td colSpan={10}>No clients</td></tr>
             ) : (
               clientsData.map((client) => (
                 <tr key={client.id}>

@@ -25,16 +25,16 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
   const [content, setContent] = useState("");
   const formRef = useRef(null);
 
-  // Estados válidos para mostrar la carta de intención (basado en StatusEnum)
+  // Valid states to show letter of intent (based on StatusEnum)
   const validStates = [
-    'PRICING',         // En Pricing
-    'ACCEPTED',        // Aceptada
-    'REJECTED',        // Rechazada
-    'CANCELLED',       // Cancelada
-    'CLOSED'          // Cerrada
+    'PRICING',         // Pricing
+    'ACCEPTED',        // Accepted
+    'REJECTED',        // Rejected
+    'CANCELLED',       // Cancelled
+    'CLOSED'          // Closed
   ];
 
-  // Verificar si el estado actual permite mostrar la carta de intención
+  // Verify if current status allows showing the letter of intent
   const shouldShowIntentionLetter = () => {
     if (!solicitud?.status) {
       console.log('IntentionLetter: No status found');
@@ -53,29 +53,29 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     return isValid;
   };
 
-  // Función para obtener el mensaje según el estado
+  // Function to get message according to status
   const getStatusMessage = () => {
-    if (!solicitud?.status) return "Estado no definido";
+    if (!solicitud?.status) return "Status not defined";
     
     const status = solicitud.status.toString().toUpperCase();
     
     switch (status) {
       case 'PRICING':
-        return "La solicitud está en proceso de determinación de tasa y condiciones.";
+        return "The request is in the process of rate and conditions determination.";
       case 'ACCEPTED':
-        return "La solicitud ha sido aprobada y está lista para generar la carta de intención.";
+        return "The request has been approved and is ready to generate the letter of intent.";
       case 'REJECTED':
-        return "La solicitud no cumple con los requisitos, pero puede generar una carta de intención.";
+        return "The request does not meet the requirements, but a letter of intent can be generated.";
       case 'CANCELLED':
-        return "La solicitud ha sido cancelada por el cliente.";
+        return "The request has been cancelled by the client.";
       case 'CLOSED':
-        return "El proceso ha finalizado, puede generar la carta de intención final.";
+        return "The process has been completed, you can generate the final letter of intent.";
       default:
-        return `Estado actual: ${solicitud.status}`;
+        return `Current status: ${solicitud.status}`;
     }
   };
 
-  // Si no se debe mostrar la carta de intención, retornar null
+  // If letter of intent should not be shown, return null
   if (!shouldShowIntentionLetter()) {
     return null;
   }
@@ -99,7 +99,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
   const s = (v) => (v === undefined || v === null ? "" : String(v));
   const b = (v) => Boolean(v);
 
-  // Payload base con todos los campos del esquema
+  // Base payload with all schema fields
   const buildEmptyPayload = (tipo, requestId, title, content) => ({
     title: s(title),
     content: s(content),
@@ -117,7 +117,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     property_state: "",
     property_zip: "",
     fico: 0,
-    // Campos de dirección
+    // Address fields
     street_address: "",
     city: "",
     state: "",
@@ -230,7 +230,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     const base = buildEmptyPayload(tipo, requestId, title, content);
     if (!solicitud) return base;
 
-    console.log(`[IntentionLetter] Mapeando datos de solicitud ${tipo} #${requestId}:`, {
+    console.log(`[IntentionLetter] Mapping request data ${tipo} #${requestId}:`, {
       fico: solicitud.fico,
       estimated_fico_score: solicitud.estimated_fico_score,
       fico_score: solicitud.fico_score,
@@ -245,7 +245,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       previous_zip: solicitud.previous_zip
     });
 
-    // Comunes (si existen)
+    // Common fields (if they exist)
     base.property_type = s(solicitud.property_type);
     base.property_address = s(solicitud.property_address);
     base.property_city = s(solicitud.property_city);
@@ -253,11 +253,11 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     base.property_zip = s(solicitud.property_zip || solicitud.property_zip_code);
     base.property_value = n(solicitud.property_value);
 
-    // Campos de FICO y dirección que deben mapearse para todos los tipos
+    // FICO and address fields that must be mapped for all types
     const ficoValue = solicitud.fico || solicitud.estimated_fico_score || solicitud.fico_score;
     const estimatedFicoValue = solicitud.estimated_fico_score || solicitud.fico || solicitud.fico_score;
     
-    console.log(`[IntentionLetter] Mapeando FICO para ${tipo}:`, {
+    console.log(`[IntentionLetter] Mapping FICO for ${tipo}:`, {
       solicitud_fico: solicitud.fico,
       solicitud_estimated_fico_score: solicitud.estimated_fico_score,
       solicitud_fico_score: solicitud.fico_score,
@@ -279,7 +279,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     base.previous_state = s(solicitud.previous_state);
     base.previous_zip = s(solicitud.previous_zip);
 
-    // Tipos
+    // Types
     if (tipo === 'dscr') {
       base.borrower_name = s(solicitud.borrower_name);
       base.guarantor_name = s(solicitud.guarantor_name);
@@ -325,13 +325,13 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.primary_own_or_rent = s(solicitud.primary_own_or_rent);
       base.mortgage_late_payments = s(solicitud.mortgage_late_payments);
       base.property_units = n(solicitud.property_units);
-      // Campos derivados razonables
+      // Reasonable derived fields
       base.property_value = base.property_value || n(solicitud.appraisal_value);
       base.ltv = n(solicitud.ltv_request);
       base.closing_costs = base.total_closing_cost_estimated || base.closing_cost_estimated;
       base.loan_type = s(solicitud.loan_type);
     } else if (tipo === 'fixflip' || tipo === 'construction') {
-      // Campos base comunes en Fixflip/Construction
+      // Common base fields in Fixflip/Construction
       base.loan_amount = n(solicitud.loan_amount);
       base.interest_rate = n(solicitud.interest_rate);
       base.loan_term = n(solicitud.loan_term);
@@ -341,7 +341,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.loan_position = s(solicitud.loan_position);
       base.prepayment_terms = s(solicitud.prepayment_terms);
       
-      // Campos específicos de borrower para Fixflip/Construction
+      // Borrower specific fields for Fixflip/Construction
       base.borrower_name = s(solicitud.borrower_name);
       base.guarantor_name = s(solicitud.guarantor_name);
       base.legal_status = s(solicitud.legal_status);
@@ -350,11 +350,11 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.issued_date = toISOOrNull(solicitud.issued_date);
       base.estimated_closing_date = toISOOrNull(solicitud.estimated_closing_date);
       
-      // FICO Score específico para Fixflip/Construction
+      // FICO Score specific for Fixflip/Construction
       const fixflipFicoValue = solicitud.fico || solicitud.estimated_fico_score || solicitud.fico_score;
       const fixflipEstimatedFicoValue = solicitud.estimated_fico_score || solicitud.fico || solicitud.fico_score;
       
-      console.log(`[IntentionLetter] Mapeando FICO específico para ${tipo}:`, {
+      console.log(`[IntentionLetter] Mapping specific FICO for ${tipo}:`, {
         solicitud_fico: solicitud.fico,
         solicitud_estimated_fico_score: solicitud.estimated_fico_score,
         solicitud_fico_score: solicitud.fico_score,
@@ -381,7 +381,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.renovation_timeline = s(solicitud.renovation_timeline);
       base.rehab_timeline = s(solicitud.rehab_timeline);
       
-      // Campos específicos de Fixflip que faltaban
+      // Missing Fixflip specific fields
       base.land_acquisition_cost = n(solicitud.land_acquisition_cost);
       base.construction_rehab_budget = n(solicitud.construction_rehab_budget);
       base.total_cost = n(solicitud.total_cost);
@@ -406,7 +406,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.down_payment = n(solicitud.down_payment);
       base.total_liquidity = n(solicitud.total_liquidity);
       
-      // Fees específicos de Fixflip
+      // Fixflip specific fees
       base.origination_fee = n(solicitud.origination_fee);
       base.underwriting_fee = n(solicitud.underwriting_fee);
       base.processing_fee = n(solicitud.processing_fee);
@@ -417,7 +417,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.broker_fee = n(solicitud.broker_fee);
       base.transaction_management_fee = n(solicitud.transaction_management_fee);
       
-      // Loan details específicos de Fixflip
+      // Fixflip specific loan details
       base.total_loan_amount = n(solicitud.total_loan_amount);
       base.annual_interest_rate = n(solicitud.annual_interest_rate);
       base.requested_leverage = n(solicitud.requested_leverage);
@@ -426,7 +426,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.max_ltv = n(solicitud.max_ltv);
       base.max_ltc = n(solicitud.max_ltc);
       
-      // Address Information para Fixflip
+      // Address Information for Fixflip
       base.street_address = s(solicitud.street_address);
       base.city = s(solicitud.city);
       base.state = s(solicitud.state);
@@ -437,15 +437,15 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.previous_state = s(solicitud.previous_state);
       base.previous_zip = s(solicitud.previous_zip);
       
-      // Property Information para Fixflip
+      // Property Information for Fixflip
       base.property_type = s(solicitud.property_type);
       base.property_address = s(solicitud.property_address);
       
-      // Loan Information para Fixflip
+      // Loan Information for Fixflip
       base.interest_rate_structure = s(solicitud.interest_rate_structure);
       base.closing_date = toISOOrNull(solicitud.closing_date);
       
-      console.log(`[IntentionLetter] Mapeando campos específicos de Fixflip:`, {
+      console.log(`[IntentionLetter] Mapping Fixflip specific fields:`, {
         land_acquisition_cost: solicitud.land_acquisition_cost,
         construction_rehab_budget: solicitud.construction_rehab_budget,
         total_cost: solicitud.total_cost,
@@ -492,13 +492,13 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
       base.closing_costs = base.total_closing_costs;
 
       if (tipo === 'construction') {
-        // Campos específicos de Construction
+        // Construction specific fields
         base.construction_timeline = s(solicitud.construction_timeline);
         base.permits_status = s(solicitud.permits_status);
         base.construction_cost = n(solicitud.construction_cost);
         base.land_cost = n(solicitud.land_cost);
         
-        // Campos adicionales de Construction
+        // Additional Construction fields
         base.land_acquisition_cost = n(solicitud.land_acquisition_cost);
         base.construction_rehab_budget = n(solicitud.construction_rehab_budget);
         base.total_cost = n(solicitud.total_cost);
@@ -522,7 +522,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
         base.construction_budget_delta = n(solicitud.construction_budget_delta);
         base.total_liquidity = n(solicitud.total_liquidity);
         
-        // Fees específicos de Construction
+        // Construction specific fees
         base.origination_fee = n(solicitud.origination_fee);
         base.underwriting_fee = n(solicitud.underwriting_fee);
         base.processing_fee = n(solicitud.processing_fee);
@@ -533,7 +533,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
         base.broker_fee = n(solicitud.broker_fee);
         base.transaction_management_fee = n(solicitud.transaction_management_fee);
         
-        // Loan details específicos de Construction
+        // Construction specific loan details
         base.total_loan_amount = n(solicitud.total_loan_amount);
         base.annual_interest_rate = n(solicitud.annual_interest_rate);
         base.requested_leverage = n(solicitud.requested_leverage);
@@ -542,7 +542,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
         base.max_ltv = n(solicitud.max_ltv);
         base.max_ltc = n(solicitud.max_ltc);
         
-        console.log(`[IntentionLetter] Mapeando campos específicos de Construction:`, {
+        console.log(`[IntentionLetter] Mapping Construction specific fields:`, {
           land_acquisition_cost: solicitud.land_acquisition_cost,
           construction_rehab_budget: solicitud.construction_rehab_budget,
           total_cost: solicitud.total_cost,
@@ -569,31 +569,31 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
 
   const loadIntentLetter = async () => {
     try {
-      console.log('Cargando carta de intención:', { requestType, requestId });
+      console.log('Loading letter of intent:', { requestType, requestId });
       
-      // 1) Consultar primero por tipo e ID de solicitud usando el nuevo endpoint
+      // 1) Query first by type and request ID using the new endpoint
       if (requestType && requestId) {
         try {
       const byReq = await getIntentLettersByRequest(String(requestType), Number(requestId));
-          console.log('Respuesta de getIntentLettersByRequest:', byReq);
+          console.log('getIntentLettersByRequest response:', byReq);
       
       if (Array.isArray(byReq) && byReq.length > 0) {
         const found = byReq[0];
-            console.log('Carta encontrada:', found);
+            console.log('Letter found:', found);
             setIntentLetter(found);
             if (found?.title) setTitle(found.title);
             if (found?.content) setContent(found.content);
             return;
           } else {
-            console.log('No se encontró carta de intención');
+            console.log('Letter of intent not found');
           }
         } catch (inner) {
-          console.error('Error en getIntentLettersByRequest:', inner);
-          // Si falla, continuamos con el método genérico
+          console.error('Error in getIntentLettersByRequest:', inner);
+          // If it fails, continue with generic method
         }
       }
 
-      // 2) Fallback: usar el listado genérico (mantener compatibilidad)
+      // 2) Fallback: use generic listing (maintain compatibility)
       const data = await getIntentLetters(buildParamsByType());
       if (Array.isArray(data) && data.length > 0) {
         const found = data[0];
@@ -609,7 +609,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
         setIntentLetter(null);
       }
     } catch (e) {
-      console.error('Error cargando carta de intención:', e);
+      console.error('Error loading letter of intent:', e);
     }
   };
 
@@ -618,8 +618,8 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     
     if (requestId && requestType) {
       loadIntentLetter();
-      const suggestedTitle = `Carta de Intención - ${String(requestType).toUpperCase()} #${requestId}`;
-      const suggestedContent = `Estimado cliente,\n\nPor medio de la presente dejamos constancia de la intención de proceder con el estudio de su solicitud ${String(requestType).toUpperCase()} #${requestId}. Esta carta no constituye un compromiso final de financiamiento y está sujeta a verificación de documentos, evaluación de riesgos y aprobación final.\n\nAtentamente,\nReInvestar`;
+      const suggestedTitle = `Letter of Intent - ${String(requestType).toUpperCase()} #${requestId}`;
+      const suggestedContent = `Dear Client,\n\nWe hereby acknowledge our intent to proceed with the review of your ${String(requestType).toUpperCase()} request #${requestId}. This letter does not constitute a final financing commitment and is subject to document verification, risk assessment and final approval.\n\nSincerely,\nReInvestar`;
       setTitle((prev) => prev || suggestedTitle);
       setContent((prev) => prev || suggestedContent);
     }
@@ -634,40 +634,40 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     try {
       const payload = {
         ...formData,
-        title: title || `Carta de Intención - ${String(requestType).toUpperCase()} #${requestId}`,
-        content: content || `Carta de Intención generada para la solicitud ${String(requestType).toUpperCase()} #${requestId}.`,
+        title: title || `Letter of Intent - ${String(requestType).toUpperCase()} #${requestId}`,
+        content: content || `Letter of Intent generated for ${String(requestType).toUpperCase()} request #${requestId}.`,
         tipo: requestType,
         request_id: Number(requestId)
       };
 
       let response;
       if (intentLetter?.id) {
-        // Actualizar carta existente (PUT)
+        // Update existing letter (PUT)
         response = await updateIntentLetter(intentLetter.id, payload);
-        setFeedback("Carta de intención actualizada exitosamente");
+        setFeedback("Letter of intent updated successfully");
       } else {
-        // Crear nueva carta
+        // Create new letter
         response = await createIntentLetter(payload);
-        setFeedback("Carta de intención generada exitosamente");
+        setFeedback("Letter of intent generated successfully");
       }
       
       setIntentLetter(response);
-      return response; // Retornar la respuesta para que el componente hijo pueda manejar el éxito
+      return response; // Return response so child component can handle success
     } catch (error) {
-      console.error('Error con la carta de intención:', error);
+      console.error('Error with letter of intent:', error);
       const detail = error?.response?.data?.detail;
       const message = Array.isArray(detail)
         ? detail.map(d => d?.msg || JSON.stringify(d)).join(' | ')
-        : (typeof detail === 'string' ? detail : (error.message || 'Error al procesar la carta de intención'));
+        : (typeof detail === 'string' ? detail : (error.message || 'Error processing letter of intent'));
       setError(message);
-      throw error; // Re-lanzar el error para que el componente hijo pueda manejarlo
+      throw error; // Re-throw error so child component can handle it
     } finally {
       setLoading(false);
     }
   };
 
   const handleGenerateLetter = async () => {
-    if (!window.confirm("¿Estás seguro de generar la carta de intención?")) {
+    if (!window.confirm("Are you sure you want to generate the letter of intent?")) {
       return;
     }
     
@@ -676,26 +676,26 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     setFeedback("");
 
     try {
-      // Crear la carta automáticamente con los datos de la solicitud
+      // Create letter automatically with request data
       const payload = buildCreatePayload();
-      console.log('Creando carta de intención automáticamente:', payload);
+      console.log('Creating letter of intent automatically:', payload);
       
       const response = await createIntentLetter(payload);
       setIntentLetter(response);
-      setFeedback("Carta de intención creada exitosamente");
+      setFeedback("Letter of intent created successfully");
       
-      // Hacer scroll al formulario después de crear
+      // Scroll to form after creating
       setTimeout(() => {
         handleFocusForm();
       }, 500);
       
     } catch (error) {
-      console.error('Error creando carta de intención:', error);
+      console.error('Error creating letter of intent:', error);
       const detail = error?.response?.data?.detail;
       const message = Array.isArray(detail)
         ? detail.map(d => d?.msg || JSON.stringify(d)).join(' | ')
-        : detail || error?.message || 'Error desconocido';
-      setError(`Error al crear la carta: ${message}`);
+        : detail || error?.message || 'Unknown error';
+      setError(`Error creating letter: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -707,10 +707,10 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     setFeedback("");
 
     try {
-      // 1) Intentar generar/descargar desde el servicio oficial (PDF)
+      // 1) Try to generate/download from official service (PDF)
       const blob = await generateDocument(String(requestType), Number(requestId));
       if (blob) {
-        const fileName = `Carta_Intencion_${String(requestType).toUpperCase()}_${requestId}.pdf`;
+        const fileName = `Letter_Intent_${String(requestType).toUpperCase()}_${requestId}.pdf`;
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -719,24 +719,24 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);
-        setFeedback("Descarga iniciada");
+        setFeedback("Download started");
         return;
       }
 
-      // 2) Fallback: si existe una URL de archivo en la carta, abrirla
+      // 2) Fallback: if a file URL exists in the letter, open it
       if (intentLetter?.file_url) {
         window.open(intentLetter.file_url, '_blank');
-        setFeedback("Abriendo carta de intención...");
+        setFeedback("Opening letter of intent...");
         return;
       }
 
-      setFeedback("No hay archivo de carta de intención disponible.");
+      setFeedback("No letter of intent file available.");
     } catch (error) {
-      console.error('Error descargando carta de intención:', error);
+      console.error('Error downloading letter of intent:', error);
       const detail = error?.response?.data?.detail;
       const message = Array.isArray(detail)
         ? detail.map(d => d?.msg || JSON.stringify(d)).join(' | ')
-        : (typeof detail === 'string' ? detail : (error.message || 'Error al descargar la carta de intención'));
+        : (typeof detail === 'string' ? detail : (error.message || 'Error downloading letter of intent'));
       setError(message);
     } finally {
       setDownloading(false);
@@ -763,14 +763,14 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     try {
       const updated = await uploadIntentLetterFile(intentLetter.id, file);
       setIntentLetter(updated);
-      setFeedback("Archivo de carta de intención subido correctamente");
+      setFeedback("Letter of intent file uploaded successfully");
       setFile(null);
     } catch (e) {
-      console.error('Error subiendo archivo de carta de intención:', e);
+      console.error('Error uploading letter of intent file:', e);
       const detail = e?.response?.data?.detail;
       const message = Array.isArray(detail)
         ? detail.map(d => d?.msg || JSON.stringify(d)).join(' | ')
-        : (typeof detail === 'string' ? detail : (e.message || 'Error al subir el archivo'));
+        : (typeof detail === 'string' ? detail : (e.message || 'Error uploading file'));
       setError(message);
     } finally {
       setLoading(false);
@@ -785,13 +785,13 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
     try {
       const next = await updateIntentLetterStatus(intentLetter.id, !intentLetter?.is_approved);
       setIntentLetter(next);
-      setFeedback("Estado de aprobación actualizado");
+      setFeedback("Approval status updated");
     } catch (e) {
-      console.error('Error actualizando estado de carta de intención:', e);
+      console.error('Error updating letter of intent status:', e);
       const detail = e?.response?.data?.detail;
       const message = Array.isArray(detail)
         ? detail.map(d => d?.msg || JSON.stringify(d)).join(' | ')
-        : (typeof detail === 'string' ? detail : (e.message || 'Error al actualizar el estado'));
+        : (typeof detail === 'string' ? detail : (e.message || 'Error updating status'));
       setError(message);
     } finally {
       setUpdatingStatus(false);
@@ -800,10 +800,10 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
 
   return (
     <div className="container-fluid p-4">
-      {/* Encabezado y Botones */}
+      {/* Header and Buttons */}
       <div className="row">
         <div className="col-12 d-flex align-items-center justify-content-between mb-3">
-          <h4 className="my_title_color fw-bold mb-0">Carta de Intención</h4>
+          <h4 className="my_title_color fw-bold mb-0">Letter of Intent</h4>
           <div className="d-flex gap-2">
             {intentLetter ? (
               <>
@@ -813,7 +813,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
                   disabled={downloading || loading}
                 >
                       <i className={`fas ${downloading ? 'fa-spinner fa-spin' : 'fa-download'} me-2`}></i>
-                      {downloading ? 'Descargando...' : 'Descargar Carta'}
+                      {downloading ? 'Downloading...' : 'Download Letter'}
                 </button>
                 
               </>
@@ -824,20 +824,20 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
                 disabled={loading || downloading}
               >
                 <i className={`fas ${loading ? 'fa-spinner fa-spin' : 'fa-file-alt'} me-2`}></i>
-                {loading ? 'Creando...' : 'Crear Carta de Intención'}
+                {loading ? 'Creating...' : 'Create Letter of Intent'}
                   </button>
                 )}
           </div>
         </div>
               </div>
 
-      {/* Mensaje informativo sobre el estado */}
+      {/* Informational message about status */}
       <div className="row mb-3">
         <div className="col-12">
           <div className="alert alert-info d-flex align-items-center" role="alert">
             <i className="fas fa-info-circle me-2"></i>
             <div>
-              <strong>Carta de Intención Disponible</strong>
+              <strong>Letter of Intent Available</strong>
               <br />
               {getStatusMessage()}
             </div>
@@ -845,10 +845,10 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
                 </div>
                 </div>
 
-      {/* Formulario */}
+      {/* Form */}
       <div ref={formRef} className="row mt-3">
         <div className="col-12">
-          {console.log('Estado del formulario:', { solicitud, requestType, intentLetter, loading })}
+          {console.log('Form status:', { solicitud, requestType, intentLetter, loading })}
           {solicitud ? (
             requestType === 'dscr' ? (
               <DscrIntentionForm 
@@ -858,7 +858,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
                 loading={loading}
                 editable={!intentLetter || intentLetter.status !== 'APPROVED'}
                 onUnsavedChangesChange={(hasChanges) => {
-                  console.log('Cambios no guardados:', hasChanges);
+                  console.log('Unsaved changes:', hasChanges);
                 }}
               />
             ) : (
@@ -871,7 +871,7 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
                   loading={loading}
                   editable={!intentLetter || intentLetter.status !== 'APPROVED'}
                   onUnsavedChangesChange={(hasChanges) => {
-                    console.log('Cambios no guardados (Construction):', hasChanges);
+                    console.log('Unsaved changes (Construction):', hasChanges);
                   }}
                 />
               ) : (
@@ -884,13 +884,13 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
                   type={String(requestType)}
                   editable={!intentLetter || intentLetter.status !== 'APPROVED'}
                   onUnsavedChangesChange={(hasChanges) => {
-                    console.log('Cambios no guardados (Fixflip):', hasChanges);
+                    console.log('Unsaved changes (Fixflip):', hasChanges);
                   }}
                 />
               )
             )
           ) : (
-            <div className="text-muted">Cargando datos de la solicitud...</div>
+            <div className="text-muted">Loading request data...</div>
           )}
         </div>
       </div>

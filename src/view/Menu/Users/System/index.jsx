@@ -9,7 +9,7 @@ import Pagination from "../../../../components/Pagination";
 import { getAdmins } from "../../../../Api/admin";
 
 const System = () => {
-  // Estado para la paginación
+  // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [adminsData, setAdminsData] = useState([]);
@@ -36,9 +36,9 @@ const System = () => {
         limit: itemsPerPage,
       };
       if (search) params.search = search;
-      // Habilitar filtro de estado
+      // Enable status filter
       if (estado && estado !== "") {
-        params.is_active = estado === "Activo" ? true : false;
+        params.is_active = estado === "Active" ? true : false;
       }
       const data = await getAdmins(params);
       setAdminsData(Array.isArray(data.items) ? data.items : []);
@@ -78,7 +78,7 @@ const System = () => {
     >
       <div className="d-flex flex-column align-items-start w-100 mb-4 px-4 mt-5">
         <p className="mb-4 fs-2 fw-bolder my_title_color">
-          Usuarios Administradores
+          Administrator Users
         </p>
       </div>
       <div className="d-flex justify-content-between w-100 mb-4 px-4">
@@ -89,7 +89,7 @@ const System = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Crear Admin
+              Create Admin
             </span>
           </button>
         </div>
@@ -98,12 +98,12 @@ const System = () => {
             <img src={FilterIcon} alt="filter" width={18} />
           </button> */}
           <select className="form-select my_title_color" name="Estado" value={estado} onChange={handleEstadoChange} style={{ padding: "0 2rem" }}>
-            <option value="">Estado</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
+            <option value="">Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
           </select>
           <div className={`input-group ${styles.searchGroup}`}>
-            <input type="text" className={`form-control ${styles.searchInput}`} placeholder="Buscar" value={search} onChange={handleSearchChange} />
+            <input type="text" className={`form-control ${styles.searchInput}`} placeholder="Search" value={search} onChange={handleSearchChange} />
             <button className="btn btn-primary" type="button" onClick={handleSearch}>
               <img src={LoupeIcon} alt="" width={18} />
             </button>
@@ -111,7 +111,7 @@ const System = () => {
         </div>
       </div>
 
-      {/* Tabla de admins */}
+      {/* Admin table */}
       <div
         className={`${"w-100 px-4 mb-3"} table_height`}
       >
@@ -119,19 +119,19 @@ const System = () => {
           <thead className="sticky-top">
             <tr>
               <th style={{ color: "#000" }}>ID</th>
-              <th style={{ color: "#000" }}>Nombre Completo</th>
+              <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
-              <th style={{ color: "#000" }}>Celular</th>
-              <th style={{ color: "#000" }}>Identificación</th>
-              <th style={{ color: "#000" }}>Estado</th>
-              <th style={{ color: "#000" }}>Opciones</th>
+              <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Identification</th>
+              <th style={{ color: "#000" }}>Status</th>
+              <th style={{ color: "#000" }}>Options</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7}>Cargando...</td></tr>
+              <tr><td colSpan={7}>Loading...</td></tr>
             ) : adminsData.length === 0 ? (
-              <tr><td colSpan={7}>No hay administradores</td></tr>
+              <tr><td colSpan={7}>No administrators</td></tr>
             ) : (
               adminsData.map((admin) => (
                 <tr key={admin.id}>
@@ -142,7 +142,7 @@ const System = () => {
                   <td>{admin.identification}</td>
                   <td>
                     <span className={`badge ${admin.is_active ? 'bg-success' : 'bg-secondary'}`}>
-                      {admin.is_active ? "Activo" : "Inactivo"}
+                      {admin.is_active ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>

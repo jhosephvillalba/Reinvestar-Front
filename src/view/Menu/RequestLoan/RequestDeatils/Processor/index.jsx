@@ -18,9 +18,9 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
   const [showAssignForm, setShowAssignForm] = useState(false);
 
   useEffect(() => {
-    console.log('useEffect ejecutado con:', { requestId, requestType });
+    console.log('useEffect executed with:', { requestId, requestType });
     
-    // Limpiar el estado antes de cargar nuevos datos
+    // Clear state before loading new data
     setAssignments([]);
     setProcessors([]);
     setSelectedProcessor("");
@@ -28,16 +28,16 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
     setWorkloadData(null);
     setShowAssignForm(false);
     
-    // Solo cargar datos si tenemos requestId y requestType válidos
+    // Only load data if we have valid requestId and requestType
     if (requestId && requestType) {
-      console.log('Cargando datos para solicitud:', { requestId, requestType });
+      console.log('Loading data for request:', { requestId, requestType });
       
-      // Cargar datos inmediatamente
+      // Load data immediately
       const loadData = async () => {
         try {
           await Promise.all([loadProcessors(), loadAssignments()]);
         } catch (error) {
-          console.error('Error cargando datos:', error);
+          console.error('Error loading data:', error);
           setAssignments([]);
           setProcessors([]);
         }
@@ -45,7 +45,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
       
       loadData();
     } else {
-      console.log('Faltan parámetros para cargar datos:', { requestId, requestType });
+      console.log('Missing parameters to load data:', { requestId, requestType });
     }
   }, [requestId, requestType]);
 
@@ -53,7 +53,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
     try {
       const data = await getProcessors({ skip: 0, limit: 100 });
       
-      // Manejar la estructura de datos de procesadores
+      // Handle processor data structure
       let processors = [];
       if (Array.isArray(data)) {
         processors = data;
@@ -65,7 +65,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
       
       setProcessors(processors);
     } catch (error) {
-      console.error('Error cargando procesadores:', error);
+      console.error('Error loading processors:', error);
       setProcessors([]);
     }
   };
@@ -73,14 +73,14 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
   const loadAssignments = async () => {
     try {
       if (!requestId || !requestType) {
-        console.log('Faltan parámetros para cargar asignaciones:', { requestId, requestType });
+        console.log('Missing parameters to load assignments:', { requestId, requestType });
         setAssignments([]);
         return;
       }
 
       const params = {};
       
-      // Agregar el ID de solicitud correspondiente según el tipo
+      // Add corresponding request ID according to type
       switch (requestType) {
         case "dscr":
           params.dscr_request_id = parseInt(requestId);
@@ -92,16 +92,16 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
           params.construction_request_id = parseInt(requestId);
           break;
         default:
-          console.error('Tipo de solicitud no válido:', requestType);
+          console.error('Invalid request type:', requestType);
           setAssignments([]);
           return;
       }
       
-      console.log('Cargando asignaciones para:', { requestId, requestType, params });
+      console.log('Loading assignments for:', { requestId, requestType, params });
       const data = await getProcessorsByRequest(params);
-      console.log('Datos de asignaciones recibidos:', data);
+      console.log('Assignment data received:', data);
       
-      // Asegurar que data sea un array
+      // Ensure data is an array
       let assignmentsData = [];
       if (Array.isArray(data)) {
         assignmentsData = data;
@@ -113,15 +113,15 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
         assignmentsData = [];
       }
 
-      // Filtrar asignaciones para asegurar que solo se muestren las que corresponden a esta solicitud
-      // y que estén activas
+      // Filter assignments to ensure only those corresponding to this request
+      // and that are active are shown
       assignmentsData = assignmentsData.filter(assignment => {
-        // Verificar que la asignación tenga los datos necesarios
+        // Verify assignment has necessary data
         if (!assignment) {
           return false;
         }
 
-        // Verificar que el ID de la solicitud coincida según el tipo
+        // Verify request ID matches according to type
         let matchesRequest = false;
         switch (requestType) {
           case "dscr":
@@ -135,15 +135,15 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
             break;
         }
 
-        // Solo mostrar asignaciones que coincidan con la solicitud actual y estén activas
+        // Only show assignments that match the current request and are active
         return matchesRequest && assignment.is_active;
       });
 
-      // Eliminar duplicados basándose en processor_id, manteniendo solo la asignación más reciente
+      // Remove duplicates based on processor_id, keeping only the most recent assignment
       const uniqueAssignments = [];
       const seenProcessorIds = new Set();
       
-      // Ordenar por fecha de asignación (más reciente primero)
+      // Sort by assignment date (most recent first)
       assignmentsData.sort((a, b) => new Date(b.assigned_at) - new Date(a.assigned_at));
       
       assignmentsData.forEach(assignment => {
@@ -154,10 +154,10 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
         }
       });
       
-      console.log('Asignaciones filtradas y sin duplicados:', uniqueAssignments);
+      console.log('Filtered and deduplicated assignments:', uniqueAssignments);
       setAssignments(uniqueAssignments);
     } catch (error) {
-      console.error('Error cargando asignaciones:', error);
+      console.error('Error loading assignments:', error);
       setAssignments([]);
     }
   };
@@ -165,7 +165,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
 
   const handleAssignProcessor = async () => {
     if (!selectedProcessor) {
-      setFeedback("Debes seleccionar un procesador");
+      setFeedback("You must select a processor");
       return;
     }
 
@@ -188,21 +188,21 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
           assignmentData.construction_request_id = parseInt(requestId);
           break;
         default:
-          throw new Error("Tipo de solicitud no válido");
+          throw new Error("Invalid request type");
       }
 
       await assignProcessor(assignmentData);
-      setFeedback("Procesador asignado exitosamente");
+      setFeedback("Processor assigned successfully");
       setSelectedProcessor("");
       setShowAssignForm(false);
       loadAssignments();
       
-      // Llamar a la función de refresco del padre
+      // Call parent's refresh function
       if (onDataNeedsRefresh) {
         onDataNeedsRefresh();
       }
       
-      // Cargar información de carga de trabajo del procesador seleccionado
+      // Load selected processor workload information
       try {
         const workload = await getProcessorWorkload();
         const processorData = workload?.items?.find(item => item.processor.id === Number(selectedProcessor));
@@ -214,32 +214,32 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
           });
         }
       } catch (workloadError) {
-        console.error('Error cargando carga de trabajo:', workloadError);
-        // No mostrar error al usuario ya que la asignación fue exitosa
+        console.error('Error loading workload:', workloadError);
+        // Don't show error to user since assignment was successful
       }
     } catch (error) {
-      console.error('Error asignando procesador:', error);
-      setFeedback(error.response?.data?.detail || "Error al asignar el procesador");
+      console.error('Error assigning processor:', error);
+      setFeedback(error.response?.data?.detail || "Error assigning processor");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeactivateAssignment = async (assignment) => {
-    if (!window.confirm("¿Estás seguro de que quieres desasignar este procesador?")) {
+    if (!window.confirm("Are you sure you want to unassign this processor?")) {
       return;
     }
 
     setLoading(true);
     try {
-      // Usar processor_id del assignment o del objeto processor anidado
+      // Use processor_id from assignment or from nested processor object
       const processorId = assignment.processor_id || assignment.processor?.id;
       
       if (!processorId) {
-        throw new Error('No se pudo obtener el ID del procesador');
+        throw new Error('Could not get processor ID');
       }
       
-      // Solo enviar los parámetros necesarios sin duplicación
+      // Only send necessary parameters without duplication
       const params = {
         processor_id: Number(processorId),
         request_type: requestType,
@@ -247,17 +247,17 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
       };
 
       await deactivateProcessorAssignment(params);
-      setFeedback("Procesador desasignado exitosamente");
+      setFeedback("Processor unassigned successfully");
       loadAssignments();
       setWorkloadData(null);
 
-      // Llamar a la función de refresco del padre
+      // Call parent's refresh function
       if (onDataNeedsRefresh) {
         onDataNeedsRefresh();
       }
     } catch (error) {
-      console.error('Error desasignando procesador:', error);
-      setFeedback(error.response?.data?.detail || error.message || "Error al desasignar el procesador");
+      console.error('Error unassigning processor:', error);
+      setFeedback(error.response?.data?.detail || error.message || "Error unassigning processor");
     } finally {
       setLoading(false);
     }
@@ -267,24 +267,24 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
     <div className="container-fluid p-4">
       <div className="row">
         <div className="col-12">
-          <h4 className="my_title_color fw-bold mb-4">Procesadores de la Solicitud</h4>
+          <h4 className="my_title_color fw-bold mb-4">Request Processors</h4>
         </div>
       </div>
 
-      {/* Tabla de procesadores asignados */}
+      {/* Assigned processors table */}
       <div className="row mb-4">
         <div className="col-12">
           <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Procesador</th>
+                  <th>Processor</th>
                   <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Fecha de Asignación</th>
-                  <th>Estado</th>
+                  <th>Phone</th>
+                  <th>Assignment Date</th>
+                  <th>Status</th>
                 
-                  <th className="text-end">Acciones</th>
+                  <th className="text-end">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,7 +300,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                           {assignment.status}
                         </span>
                         {assignment.is_active && (
-                          <span className="badge bg-primary ms-1">Activo</span>
+                          <span className="badge bg-primary ms-1">Active</span>
                         )}
                       </td>
                    
@@ -315,7 +315,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                               style={{ borderRadius: '20px' }}
                             >
                               <i className="fas fa-exchange-alt me-1"></i>
-                              Cambiar
+                              Change
                             </button>
                             <button
                               type="button"
@@ -325,7 +325,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                               style={{ borderRadius: '20px' }}
                             >
                               <i className="fas fa-user-minus me-1"></i>
-                              Desasignar
+                              Unassign
                             </button>
                           </>
                         )}
@@ -335,7 +335,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                 ) : (
                   <tr>
                     <td colSpan="8" className="text-center py-4">
-                      <p className="text-muted mb-2">No hay procesadores asignados a esta solicitud</p>
+                      <p className="text-muted mb-2">No processors assigned to this request</p>
                       <button
                         type="button"
                         className={`btn ${styles.button} px-4`}
@@ -344,7 +344,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                         style={{ borderRadius: '30px' }}
                       >
                         <i className="fas fa-user-plus me-2"></i>
-                        Asignar Procesador
+                        Assign Processor
                       </button>
                     </td>
                   </tr>
@@ -355,12 +355,12 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
         </div>
       </div>
 
-      {/* Botón de asignación cuando no hay procesadores activos */}
+      {/* Assignment button when there are no active processors */}
       {!assignments.some(a => a.status === "ASSIGNED" && a.is_active) && assignments.length > 0 && (
         <div className="row mb-4">
           <div className="col-12 text-center">
             <div className="alert alert-warning">
-              <p className="mb-2">No hay procesadores activos asignados a esta solicitud</p>
+              <p className="mb-2">No active processors assigned to this request</p>
               <button
                 type="button"
                 className={`btn ${styles.button} px-4`}
@@ -369,7 +369,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                 style={{ borderRadius: '30px' }}
               >
                 <i className="fas fa-user-plus me-2"></i>
-                Asignar Procesador
+                Assign Processor
               </button>
             </div>
           </div>
@@ -377,7 +377,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
       )}
 
 
-      {/* Formulario de asignación */}
+      {/* Assignment form */}
       {showAssignForm && (
         <div className="row mb-4">
           <div className="col-12">
@@ -385,7 +385,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="card-title mb-0">
-                    {assignments.some(a => a.status === "ASSIGNED" && a.is_active) ? "Cambiar Procesador" : "Asignar Procesador"}
+                    {assignments.some(a => a.status === "ASSIGNED" && a.is_active) ? "Change Processor" : "Assign Processor"}
                   </h5>
                   <button
                     type="button"
@@ -400,13 +400,13 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                 <div className="row">
                   <div className="col-12">
                     <div className="d-flex flex-column">
-                      <label className="form-label text-muted small mb-2">Seleccionar Procesador</label>
+                      <label className="form-label text-muted small mb-2">Select Processor</label>
                       <select
                         className={styles.input}
                         value={selectedProcessor}
                         onChange={(e) => setSelectedProcessor(e.target.value)}
                       >
-                        <option value="">Seleccione un procesador</option>
+                        <option value="">Select a processor</option>
                         {processors.map((processor) => (
                           <option key={processor.id} value={processor.id}>
                             {processor.full_name} - {processor.email}
@@ -428,7 +428,7 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                       disabled={loading}
                       style={{ minWidth: '120px', borderRadius: '30px' }}
                     >
-                      Cancelar
+                      Cancel
                     </button>
                     <button
                       type="button"
@@ -440,10 +440,10 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
                       {loading ? (
                         <>
                           <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Asignando...
+                          Assigning...
                         </>
                       ) : (
-                        "Asignar"
+                        "Assign"
                       )}
                     </button>
                   </div>
@@ -455,9 +455,9 @@ const ProcessorForm = ({ requestId, requestType, onDataNeedsRefresh }) => {
       )}
 
 
-      {/* Mensajes de feedback */}
+      {/* Feedback messages */}
       {feedback && (
-        <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} mt-3`}>
+        <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} mt-3`}>
           {feedback}
         </div>
       )}

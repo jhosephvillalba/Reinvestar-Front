@@ -60,8 +60,8 @@ const DetailSeller = () => {
           });
         })
         .catch((error) => {
-          console.error('Error al cargar vendedor:', error);
-          setFeedback("Error al cargar el vendedor");
+          console.error('Error loading seller:', error);
+          setFeedback("Error loading seller");
         })
         .finally(() => setLoading(false));
     }
@@ -91,30 +91,30 @@ const DetailSeller = () => {
     setCompanyError("");
     setRoleError("");
     
-    // Validación básica
+    // Basic validation
     if (!formData.full_name || !formData.phone || !formData.identification || !formData.address || !formData.company_id) {
-      if (!formData.company_id) setCompanyError("Debes seleccionar una compañía");
-      setFeedback("Todos los campos son obligatorios, incluyendo la compañía");
+      if (!formData.company_id) setCompanyError("You must select a company");
+      setFeedback("All fields are required, including company");
       setLoading(false);
       return;
     }
 
-    // Validación de contraseña si se está cambiando (solo si se ingresa algo)
+    // Password validation if changing (only if something is entered)
     if (formData.password && formData.password.trim() !== "") {
       if (formData.password.length < 8) {
-        setFeedback("La contraseña debe tener al menos 8 caracteres");
+        setFeedback("Password must be at least 8 characters");
         setLoading(false);
         return;
       }
       
       if (formData.password !== formData.confirmarContrasena) {
-        setFeedback("Las contraseñas no coinciden");
+        setFeedback("Passwords do not match");
         setLoading(false);
         return;
       }
     }
 
-    // Payload con los nombres exactos
+    // Payload with exact field names
     const payload = {
       full_name: formData.full_name,
       email: formData.email,
@@ -125,39 +125,39 @@ const DetailSeller = () => {
       url_profile_photo: formData.url_profile_photo,
       role: formData.role,
       is_active: formData.is_active,
-      password: formData.password || "" // Siempre enviar password (cadena vacía si no se llena)
+      password: formData.password || "" // Always send password (empty string if not filled)
     };
     
     if (!payload.role) {
-      setRoleError("El campo rol es obligatorio");
+      setRoleError("Role field is required");
       setLoading(false);
       return;
     }
     
     try {
       await updateSeller(id, payload);
-      setFeedback("¡Vendedor actualizado exitosamente!");
+      setFeedback("Seller updated successfully!");
       setEditMode(false);
       setTimeout(() => {
         navegate('/sellers');
       }, 1500);
     } catch (error) {
-      console.error('Error al actualizar vendedor:', error);
+      console.error('Error updating seller:', error);
       if (error.response?.data?.detail) {
-        // Manejar errores específicos del backend
+        // Handle specific backend errors
         const errorDetails = error.response.data.detail;
         if (Array.isArray(errorDetails)) {
           const passwordError = errorDetails.find(err => err.loc?.includes('password'));
           if (passwordError) {
-            setFeedback(`Error en contraseña: ${passwordError.msg}`);
+            setFeedback(`Password error: ${passwordError.msg}`);
           } else {
-            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error al actualizar el vendedor'}`);
+            setFeedback(`Error: ${errorDetails[0]?.msg || 'Error updating seller'}`);
           }
         } else {
           setFeedback(`Error: ${errorDetails}`);
         }
       } else {
-        setFeedback("Error al actualizar el vendedor. Inténtalo de nuevo.");
+        setFeedback("Error updating seller. Please try again.");
       }
     }
     setLoading(false);
@@ -166,10 +166,10 @@ const DetailSeller = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Aquí podrías subir la imagen y obtener la URL
-      // Por ahora solo guardamos el nombre como ejemplo
+      // Here you could upload the image and get the URL
+      // For now, just save the name as an example
       setFormData((prev) => ({ ...prev, url_profile_photo: file.name }));
-      alert(`Imagen "${file.name}" seleccionada`);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -181,7 +181,7 @@ const DetailSeller = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color`}>
-              {id ? "Detalle del vendedor" : "Crear vendedor"}
+              {id ? "Seller Details" : "Create Seller"}
             </h2>
           </div>
         </div>
@@ -197,7 +197,7 @@ const DetailSeller = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="full_name"
                     value={formData.full_name}
@@ -221,7 +221,7 @@ const DetailSeller = () => {
                 <div className="col-md-6 mb-3">
                   <input
                     type="tel"
-                    placeholder="Celular"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="phone"
                     value={formData.phone}
@@ -232,7 +232,7 @@ const DetailSeller = () => {
                 <div className="col-md-6 mb-2">
                   <input
                     type="text"
-                    placeholder="Identificación"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identification"
                     value={formData.identification}
@@ -246,7 +246,7 @@ const DetailSeller = () => {
                 <div className="col-12 mb-2">
                   <input
                     type="text"
-                    placeholder="Dirección"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="address"
                     value={formData.address}
@@ -266,7 +266,7 @@ const DetailSeller = () => {
                     required
                     disabled={!editMode}
                   >
-                    <option value="">Seleccione una compañía</option>
+                    <option value="">Select a company</option>
                     {companies && companies.map(({ id, name }) => (
                       <option value={id} key={id}>{name}</option>
                     ))}
@@ -275,7 +275,7 @@ const DetailSeller = () => {
                 </div>
               </div>
 
-              {/* Campo de Estado */}
+              {/* Status Field */}
               <div className="row mb-4">
                 <div className="col-12 mb-2">
                   <div className="form-check">
@@ -289,11 +289,11 @@ const DetailSeller = () => {
                       disabled={!editMode}
                     />
                     <label className="form-check-label my_title_color" htmlFor="is_active">
-                      Vendedor Activo
+                      Active Seller
                     </label>
                   </div>
                   <small className="text-muted">
-                    {editMode ? "Desmarca esta casilla para desactivar el vendedor" : "Estado actual del vendedor"}
+                    {editMode ? "Uncheck this box to deactivate the seller" : "Current seller status"}
                   </small>
                 </div>
               </div>
@@ -304,10 +304,10 @@ const DetailSeller = () => {
 
               <div className="row mb-5">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Contraseña</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Password</label>
                   <input
                     type="password"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder="Minimum 8 characters"
                     className={`form-control  ${styles.input}`}
                     name="password"
                     value={formData.password}
@@ -317,15 +317,15 @@ const DetailSeller = () => {
                   />
                   {formData.password && formData.password.trim() !== "" && formData.password.length < 8 && (
                     <small className="text-warning">
-                      La contraseña debe tener al menos 8 caracteres
+                      Password must be at least 8 characters
                     </small>
                   )}
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirmar contraseña</label>
+                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm Password</label>
                   <input
                     type="password"
-                    placeholder="Confirma tu contraseña"
+                    placeholder="Confirm your password"
                     className={`form-control  ${styles.input}`}
                     name="confirmarContrasena"
                     value={formData.confirmarContrasena}
@@ -334,14 +334,14 @@ const DetailSeller = () => {
                   />
                   {formData.confirmarContrasena && formData.password.trim() !== "" && formData.password !== formData.confirmarContrasena && (
                     <small className="text-danger">
-                      Las contraseñas no coinciden
+                      Passwords do not match
                     </small>
                   )}
                 </div>
               </div>
 
               {feedback && (
-                <div className={`alert ${feedback.includes("exitosamente") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
+                <div className={`alert ${feedback.includes("successfully") ? "alert-success" : "alert-danger"} py-2 mb-3`}>{feedback}</div>
               )}
 
               {editMode && (
@@ -356,7 +356,7 @@ const DetailSeller = () => {
                     minWidth: "180px",
                   }}
                 >
-                  {loading ? "Guardando..." : "GUARDAR CAMBIOS"}
+                  {loading ? "Saving..." : "SAVE CHANGES"}
                 </button>
               )}
             </form>
@@ -368,7 +368,7 @@ const DetailSeller = () => {
                 style={{ minWidth: "180px" }}
                 onClick={handleUpdate}
               >
-                ACTUALIZAR
+                UPDATE
               </button>
             )}
           </div>
@@ -425,7 +425,7 @@ const DetailSeller = () => {
                   cursor: "pointer",
                 }}
               >
-                SUBIR IMAGEN
+                UPLOAD IMAGE
               </label>
             </div>
           </div>

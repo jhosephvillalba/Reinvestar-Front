@@ -231,10 +231,10 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
         total_liquidity: form.total_liquidity ? Number(form.total_liquidity) : 0
       };
 
-      // 1. Crear la solicitud usando el servicio de Construction
+      // 1. Create request using Construction service
       const constructionResponse = await createConstruction(dataToSend);
       
-      // 2. Crear el enlace automáticamente
+      // 2. Create link automatically
       const linkResponse = await createRequestLink({
         valid_days: 30,
         dscr_request_id: 0,
@@ -242,7 +242,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
         fixflip_request_id: 0
       });
 
-      // 3. Guardar el enlace generado y enviar email
+      // 3. Save generated link and send email
       if (linkResponse && linkResponse.link_token) {
         const fullLink = `${URL_EXTERNAL_FORM}/construction/${linkResponse.link_token}`;
         setExternalLink(fullLink);

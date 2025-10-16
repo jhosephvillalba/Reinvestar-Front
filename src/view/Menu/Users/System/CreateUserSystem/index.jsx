@@ -36,18 +36,18 @@ const CreateUserSystem = () => {
     setLoading(true);
     setFeedback("");
     setRoleError("");
-    // Validación básica
+    // Basic validation
     if (!formData.nombreCompleto || !formData.email || !formData.celular || !formData.identificacion || !formData.direccion || !formData.contrasena) {
-      setFeedback("Todos los campos son obligatorios");
+      setFeedback("All fields are required");
       setLoading(false);
       return;
     }
     if (formData.contrasena !== formData.confirmarContrasena) {
-      setFeedback("Las contraseñas no coinciden");
+      setFeedback("Passwords do not match");
       setLoading(false);
       return;
     }
-    // Mapeo de campos al formato esperado por la API
+    // Mapping fields to API expected format
     const payload = {
       full_name: formData.nombreCompleto,
       email: formData.email,
@@ -58,30 +58,30 @@ const CreateUserSystem = () => {
       role: "Admin"
     };
     if (!payload.role) {
-      setRoleError("El campo rol es obligatorio");
+      setRoleError("Role field is required");
       setLoading(false);
       return;
     }
     try {
       await createAdmin(payload);
-      setFeedback("¡Administrador creado exitosamente!");
+      setFeedback("Administrator created successfully!");
       setTimeout(() => {
         navegate('/system');
       }, 1500);
     } catch (error) {
-      // Manejo de errores específicos
+      // Specific error handling
       if (error.response && error.response.data && error.response.data.detail) {
         setFeedback(`Error: ${error.response.data.detail}`);
       } else if (error.response?.status === 422) {
-        setFeedback("Error de validación en los datos enviados.");
+        setFeedback("Validation error in submitted data.");
       } else if (error.response?.status === 400) {
-        setFeedback("Error en los datos enviados. Revisa la información.");
+        setFeedback("Error in submitted data. Check the information.");
       } else if (error.response?.status === 401) {
-        setFeedback("No autorizado. Verifica tu sesión.");
+        setFeedback("Unauthorized. Verify your session.");
       } else if (error.response?.status === 500) {
-        setFeedback("Error del servidor. Inténtalo más tarde.");
+        setFeedback("Server error. Try again later.");
       } else {
-        setFeedback("Error al crear el administrador. Inténtalo de nuevo.");
+        setFeedback("Error creating administrator. Please try again.");
       }
     }
     setLoading(false);
@@ -90,8 +90,8 @@ const CreateUserSystem = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("Imagen seleccionada:", file.name);
-      alert(`Imagen "${file.name}" seleccionada`);
+      console.log("Image selected:", file.name);
+      alert(`Image "${file.name}" selected`);
     }
   };
 
@@ -103,7 +103,7 @@ const CreateUserSystem = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color`}>
-              Crear Administrador
+              Create Administrator
             </h2>
           </div>
         </div>
@@ -121,7 +121,7 @@ const CreateUserSystem = () => {
                   </label> */}
                   <input
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="nombreCompleto"
                     value={formData.nombreCompleto}
@@ -149,7 +149,7 @@ const CreateUserSystem = () => {
                   {/* <label className="form-label text-muted small">Celular</label> */}
                   <input
                     type="tel"
-                    placeholder="Celular"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="celular"
                     value={formData.celular}
@@ -163,7 +163,7 @@ const CreateUserSystem = () => {
                   </label> */}
                   <input
                     type="text"
-                    placeholder="Identificación"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identificacion"
                     value={formData.identificacion}
@@ -180,7 +180,7 @@ const CreateUserSystem = () => {
                   </label> */}
                   <input
                     type="text"
-                    placeholder=" Dirección"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="direccion"
                     value={formData.direccion}
@@ -197,7 +197,7 @@ const CreateUserSystem = () => {
                   </label> */}
                   <input
                     type="password"
-                    placeholder="Contraseña"
+                    placeholder="Password"
                     className={`form-control  ${styles.input}`}
                     name="contrasena"
                     value={formData.contrasena}
@@ -211,7 +211,7 @@ const CreateUserSystem = () => {
                   </label> */}
                   <input
                     type="password"
-                    placeholder="Confirmar contraseña"
+                    placeholder="Confirm Password"
                     className={`form-control  ${styles.input}`}
                     name="confirmarContrasena"
                     value={formData.confirmarContrasena}
@@ -233,13 +233,13 @@ const CreateUserSystem = () => {
                 }}
                 disabled={loading}
               >
-                {loading ? "CREANDO..." : "CREAR"}
+                {loading ? "CREATING..." : "CREATE"}
               </button>
             {roleError && (
               <div className="alert alert-danger py-2 mb-3">{roleError}</div>
             )}
             {feedback && (
-              <div className={`alert ${feedback.includes('exitosamente') ? 'alert-success' : 'alert-danger'} py-2 mb-3`}>{feedback}</div>
+              <div className={`alert ${feedback.includes('successfully') ? 'alert-success' : 'alert-danger'} py-2 mb-3`}>{feedback}</div>
             )}
             </form>
           </div>
