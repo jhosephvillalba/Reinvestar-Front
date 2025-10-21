@@ -145,12 +145,12 @@ const DscrIntentionForm = ({
     console.log('DscrIntentionForm - initialData recibido:', initialData);
     
     if (Object.keys(initialData).length > 0) {
-      console.log('Actualizando formulario con datos iniciales');
+      console.log('Updating form with initial data');
       const newFormData = { 
         ...initialData,
-        // Asegurar que origination_fee_percentage se maneje correctamente
+        // Ensure origination_fee_percentage is handled correctly
         origination_fee_percentage: initialData.origination_fee_percentage ? String(initialData.origination_fee_percentage) : "2.0",
-        // Address Information - Asegurar que se carguen correctamente
+        // Address Information - Ensure they load correctly
         street_address: initialData.street_address || "",
         city: initialData.city || "",
         state: initialData.state || "",
@@ -163,10 +163,10 @@ const DscrIntentionForm = ({
       };
       setForm(prev => ({ ...prev, ...newFormData }));
       
-      // Establecer los datos originales inmediatamente después de cargar
+      // Set original data immediately after loading
       setOriginalFormData({ ...newFormData });
       setIsFormInitialized(true);
-      console.debug('[DscrIntentionForm] Datos originales establecidos desde initialData:', {
+      console.debug('[DscrIntentionForm] Original data set from initialData:', {
         originalFormDataKeys: Object.keys(newFormData).length,
         sampleFields: {
           borrower_name: newFormData.borrower_name,
@@ -178,21 +178,21 @@ const DscrIntentionForm = ({
       setShowCreateForm(false);
       setLoadingData(false);
     } else if (requestId) {
-      console.log('No hay datos iniciales, cargando desde API');
+      console.log('No initial data, loading from API');
       const loadData = async () => {
         setLoadingData(true);
         setError("");
         
         try {
           const dscrData = await getDscrById(requestId);
-          console.log('Datos DSCR obtenidos:', dscrData);
+          console.log('DSCR data obtained:', dscrData);
           
           if (dscrData) {
             const newFormData = {
               ...dscrData,
-              // Asegurar que origination_fee_percentage se maneje correctamente
+              // Ensure origination_fee_percentage is handled correctly
               origination_fee_percentage: dscrData.origination_fee_percentage ? String(dscrData.origination_fee_percentage) : "2.0",
-              // Address Information - Asegurar que se carguen correctamente
+              // Address Information - Ensure they load correctly
               street_address: dscrData.street_address || "",
               city: dscrData.city || "",
               state: dscrData.state || "",
@@ -205,10 +205,10 @@ const DscrIntentionForm = ({
             };
             setForm(prev => ({ ...prev, ...newFormData }));
             
-            // Establecer los datos originales inmediatamente después de cargar
+            // Set original data immediately after loading
             setOriginalFormData({ ...newFormData });
             setIsFormInitialized(true);
-            console.debug('[DscrIntentionForm] Datos originales establecidos desde API:', {
+            console.debug('[DscrIntentionForm] Original data set from API:', {
               originalFormDataKeys: Object.keys(newFormData).length,
               sampleFields: {
                 borrower_name: newFormData.borrower_name,
@@ -219,8 +219,8 @@ const DscrIntentionForm = ({
           }
           setShowCreateForm(true);
         } catch (error) {
-          console.error('Error al cargar datos DSCR:', error);
-          setError("Error al cargar los datos de la solicitud");
+          console.error('Error loading DSCR data:', error);
+          setError("Error loading request data");
         } finally {
           setLoadingData(false);
         }
@@ -236,12 +236,12 @@ const DscrIntentionForm = ({
     }
   }, [form, onFormChange]);
 
-  // Establecer originalFormData después de que el formulario se estabilice completamente
+  // Set originalFormData after form fully stabilizes
   useEffect(() => {
     if (form && Object.keys(form).length > 0 && !originalFormData && (initialData || requestId)) {
-      // Fallback: establecer datos originales si no se han establecido
+      // Fallback: set original data if not already set
       setOriginalFormData({ ...form });
-      console.debug('[DscrIntentionForm] Datos originales establecidos como fallback:', {
+      console.debug('[DscrIntentionForm] Original data set as fallback:', {
         originalFormDataKeys: Object.keys(form).length,
         sampleFields: {
           borrower_name: form.borrower_name,
@@ -258,11 +258,11 @@ const DscrIntentionForm = ({
     }
   }, [form, originalFormData, initialData, requestId]);
 
-  // Detectar cambios no guardados
+  // Detect unsaved changes
   useEffect(() => {
-    // Solo ejecutar si el formulario está inicializado y tenemos datos originales
+    // Only execute if form is initialized and we have original data
     if (isFormInitialized && originalFormData && Object.keys(originalFormData).length > 0 && form && Object.keys(form).length > 0) {
-      // Función para normalizar valores antes de comparar
+      // Function to normalize values before comparing
       const normalizeValue = (value) => {
         if (value === null || value === undefined) return '';
         if (typeof value === 'number') return value;
@@ -270,7 +270,7 @@ const DscrIntentionForm = ({
         return String(value).trim();
       };
 
-      // Campos que se calculan automáticamente y no deben considerarse como cambios del usuario
+      // Fields that are calculated automatically and should not be considered user changes
       const calculatedFields = [
         'origination_fee',
         'total_closing_cost',
@@ -346,19 +346,19 @@ const DscrIntentionForm = ({
     }
   }, [form, originalFormData, onUnsavedChangesChange, isFormInitialized]);
 
-  // Prevenir salida con cambios no guardados
+  // Prevent exit with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
         e.preventDefault();
-        e.returnValue = 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
         return e.returnValue;
       }
     };
 
     const handlePopState = (e) => {
       if (hasUnsavedChanges) {
-        const confirmLeave = window.confirm('Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?');
+        const confirmLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
         if (!confirmLeave) {
           e.preventDefault();
           window.history.pushState(null, '', window.location.href);
@@ -739,20 +739,20 @@ const DscrIntentionForm = ({
       const dataToSend = buildDataToSend();
       try {
         const response = await onSubmit(dataToSend);
-        console.debug('[DscrIntentionForm] Carta creada exitosamente:', response);
+        console.debug('[DscrIntentionForm] Letter created successfully:', response);
         
-        // Si la creación fue exitosa, establecer los datos originales
+        // If creation was successful, set original data
         const updatedFormData = { ...form };
         setOriginalFormData(updatedFormData);
         setHasUnsavedChanges(false);
         
-        console.debug('[DscrIntentionForm] Estado actualizado después de crear:', {
+        console.debug('[DscrIntentionForm] State updated after creating:', {
           hasUnsavedChanges: false,
           originalFormDataUpdated: true
         });
       } catch (error) {
-        console.error('Error al crear carta:', error);
-        // No resetear el estado si hubo error
+        console.error('Error creating letter:', error);
+        // Don't reset state if there was an error
       }
     }
   };
@@ -771,26 +771,26 @@ const DscrIntentionForm = ({
 
       try {
         const response = await onSubmit(dataToSend);
-        console.debug('[DscrIntentionForm] Guardado exitoso:', response);
+        console.debug('[DscrIntentionForm] Saved successfully:', response);
         
-        // Si el envío fue exitoso, actualizar los datos originales
+        // If submission was successful, update original data
         const updatedFormData = { ...form };
         setOriginalFormData(updatedFormData);
         setHasUnsavedChanges(false);
         
-        console.debug('[DscrIntentionForm] Estado actualizado después de guardar:', {
+        console.debug('[DscrIntentionForm] State updated after saving:', {
           hasUnsavedChanges: false,
           originalFormDataUpdated: true
         });
       } catch (error) {
-        console.error('Error al guardar:', error);
-        // No resetear el estado si hubo error
+        console.error('Error saving:', error);
+        // Don't reset state if there was an error
       }
     }
   };
 
   const handleDiscardChanges = () => {
-    if (window.confirm('¿Estás seguro de que quieres descartar todos los cambios?')) {
+    if (window.confirm('Are you sure you want to discard all changes?')) {
       setForm(prev => ({ ...prev, ...originalFormData }));
       setHasUnsavedChanges(false);
     }
@@ -798,12 +798,12 @@ const DscrIntentionForm = ({
 
   return (
     <div className="container-fluid">
-      {/* Indicador de cambios no guardados */}
+      {/* Unsaved changes indicator */}
       {hasUnsavedChanges && (
         <div className="alert alert-warning d-flex align-items-center justify-content-between mb-3" role="alert">
           <div className="d-flex align-items-center">
             <i className="fas fa-exclamation-triangle me-2"></i>
-            <span>Tienes cambios sin guardar</span>
+            <span>You have unsaved changes</span>
           </div>
           <button
             type="button"
@@ -811,7 +811,7 @@ const DscrIntentionForm = ({
             onClick={handleDiscardChanges}
           >
             <i className="fas fa-undo me-1"></i>
-            Descartar Cambios
+            Discard Changes
           </button>
         </div>
       )}
@@ -819,9 +819,9 @@ const DscrIntentionForm = ({
       {loadingData ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Cargando...</span>
+            <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="mt-2 text-muted">Cargando datos...</p>
+          <p className="mt-2 text-muted">Loading data...</p>
         </div>
       ) : error ? (
         <div className="alert alert-danger" role="alert">
@@ -830,7 +830,7 @@ const DscrIntentionForm = ({
         </div>
       ) : showCreateForm && !Object.keys(initialData).length ? (
         <div className="text-center py-5">
-          <h4 className="mb-4">No existe una carta de intención para esta solicitud</h4>
+          <h4 className="mb-4">There is no letter of intent for this request</h4>
           <button
             type="button"
             className="btn btn-primary btn-lg"
@@ -840,12 +840,12 @@ const DscrIntentionForm = ({
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                Creando carta de intención...
+                Creating letter of intent...
               </>
             ) : (
               <>
                 <i className="fas fa-file-alt me-2"></i>
-                Crear Carta de Intención
+                Create Letter of Intent
               </>
             )}
           </button>
@@ -1913,12 +1913,12 @@ const DscrIntentionForm = ({
                 {loading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Procesando...
+                    Processing...
                   </>
                 ) : (
                   <>
                     <i className={`fas ${hasUnsavedChanges ? 'fa-exclamation-triangle' : 'fa-save'} me-2`}></i>
-                    {hasUnsavedChanges ? 'Guardar Cambios' : (Object.keys(initialData).length ? 'Actualizar' : 'Crear')} Carta de Intención
+                    {hasUnsavedChanges ? 'Save Changes' : (Object.keys(initialData).length ? 'Update' : 'Create')} Letter of Intent
                   </>
                 )}
               </button>

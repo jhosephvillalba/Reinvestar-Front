@@ -146,11 +146,7 @@ const PipelineRequest = ({ requestId, requestType }) => {
                   <div className={styles.step_desc}>
                     {item.description}
                                 </div>
-                  {item.notes && (
-                    <div className="mt-1 text-muted small">
-                      <strong>Notes:</strong> {item.notes}
-                            </div>
-                  )}
+               
                   {item.completed && (
                     <div className="mt-1">
                       <small className="badge bg-success">Completed</small>

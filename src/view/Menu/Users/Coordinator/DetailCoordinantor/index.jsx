@@ -155,12 +155,12 @@ const DetailCoordinator = () => {
 
   return (
     <div className="internal_layout">
-      <div className="container-fluid mb-4">
-        <div className="d-flex align-items-start">
+      <div className="container-fluid mb-4 mt-5">
+        <div className="d-flex align-items-center">
           <button className="btn border-none" onClick={handleback}>
             <img src={Back} alt="back" width={35} />
           </button>
-          <h2 className={`${styles.title} fw-bolder my_title_color`}>
+          <h2 className={`${styles.title} fw-bolder my_title_color m-0`}>
             {id ? "Coordinator Details" : "Create Coordinator"}
           </h2>
         </div>
@@ -171,6 +171,7 @@ const DetailCoordinator = () => {
             <form onSubmit={handleSubmit} autoComplete="off">
               <div className="row mb-2">
                 <div className="col-md-6 mb-3">
+                  <label className="form-label text-muted small">Full Name</label>
                   <input
                     type="text"
                     placeholder="Full Name"
@@ -182,6 +183,7 @@ const DetailCoordinator = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-3">
+                  <label className="form-label text-muted small">Email</label>
                   <input
                     type="email"
                     placeholder="Email"
@@ -194,6 +196,7 @@ const DetailCoordinator = () => {
               </div>
               <div className="row mb-3">
                 <div className="col-md-6 mb-3">
+                  <label className="form-label text-muted small">Phone</label>
                   <input
                     type="tel"
                     placeholder="Phone"
@@ -205,6 +208,7 @@ const DetailCoordinator = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-2">
+                  <label className="form-label text-muted small">Identification</label>
                   <input
                     type="text"
                     placeholder="Identification"
@@ -218,6 +222,7 @@ const DetailCoordinator = () => {
               </div>
               <div className="row mb-4">
                 <div className="col-12 mb-2">
+                  <label className="form-label text-muted small">Address</label>
                   <input
                     type="text"
                     placeholder="Address"
@@ -231,6 +236,7 @@ const DetailCoordinator = () => {
               </div>
               <div className="row mb-4">
                 <div className="col-12 mb-2">
+                  <label className="form-label text-muted small">Company</label>
                   <select
                     className={`form-select ${styles.input} ${companyError ? 'is-invalid' : ''}`}
                     name="company_id"
@@ -276,6 +282,7 @@ const DetailCoordinator = () => {
               )}
               <div className="row mb-5">
                 <div className="col-md-6 mb-3">
+                  <label className="form-label text-muted small">Password</label>
                   <input
                     type="password"
                     placeholder="Password"
@@ -287,6 +294,7 @@ const DetailCoordinator = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-3">
+                  <label className="form-label text-muted small">Confirm Password</label>
                   <input
                     type="password"
                     placeholder="Confirm Password"

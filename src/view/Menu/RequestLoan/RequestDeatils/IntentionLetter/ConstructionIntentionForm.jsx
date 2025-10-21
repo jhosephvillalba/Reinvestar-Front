@@ -135,7 +135,7 @@ const ConstructionIntentionForm = ({
             requested_leverage: prev.requested_leverage || mapped.requested_leverage || 0,
             monthly_interest_payment: prev.monthly_interest_payment || mapped.monthly_interest_payment || 0,
 
-            // Address Information - Asegurar que se carguen correctamente
+            // Address Information - Ensure they load correctly
             street_address: mapped.street_address || "",
             city: mapped.city || "",
             state: mapped.state || "",
@@ -147,10 +147,10 @@ const ConstructionIntentionForm = ({
             previous_zip: mapped.previous_zip || "",
           };
 
-          // Establecer los datos originales después de cargar desde initialData
+          // Set original data after loading from initialData
           setTimeout(() => {
             setOriginalFormData({ ...newForm });
-            console.debug('[Construction] Datos originales establecidos desde initialData:', {
+            console.debug('[Construction] Original data set from initialData:', {
               originalFormDataKeys: Object.keys(newForm).length,
               sampleFields: {
                 borrower_name: newForm.borrower_name,
@@ -193,7 +193,7 @@ const ConstructionIntentionForm = ({
                 requested_leverage: prev.requested_leverage || mapped.requested_leverage || 0,
                 monthly_interest_payment: prev.monthly_interest_payment || mapped.monthly_interest_payment || 0,
 
-                // Address Information - Asegurar que se carguen correctamente
+                // Address Information - Ensure they load correctly
                 street_address: mapped.street_address || "",
                 city: mapped.city || "",
                 state: mapped.state || "",
@@ -205,10 +205,10 @@ const ConstructionIntentionForm = ({
                 previous_zip: mapped.previous_zip || "",
               };
 
-              // Establecer los datos originales después de cargar los datos de la API
+              // Set original data after loading data from API
               setTimeout(() => {
                 setOriginalFormData({ ...newForm });
-                console.debug('[Construction] Datos originales establecidos desde API:', {
+                console.debug('[Construction] Original data set from API:', {
                   originalFormDataKeys: Object.keys(newForm).length,
                   sampleFields: {
                     borrower_name: newForm.borrower_name,
@@ -220,13 +220,13 @@ const ConstructionIntentionForm = ({
 
               return newForm;
             });
-            setShowCreateForm(false); // Hay carta, no mostramos el botón de crear
+            setShowCreateForm(false); // Letter exists, don't show create button
           } else {
-            setShowCreateForm(true); // No hay carta, mostramos el botón de crear
+            setShowCreateForm(true); // No letter, show create button
           }
         } catch (err) {
-          setError("Error al cargar los datos de la carta de intención");
-          setShowCreateForm(true); // Permitir crear incluso si falla la carga
+          setError("Error loading letter of intent data");
+          setShowCreateForm(true); // Allow creation even if loading fails
         } finally {
           setLoadingData(false);
         }
@@ -241,13 +241,13 @@ const ConstructionIntentionForm = ({
     }
   }, [form, onFormChange]);
 
-  // Establecer datos originales cuando se cargan los datos iniciales
+  // Set original data when initial data is loaded
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && !originalFormData) {
-      // Usar un timeout para asegurar que el form esté completamente actualizado
+      // Use timeout to ensure form is fully updated
       const timer = setTimeout(() => {
         setOriginalFormData({ ...form });
-        console.debug('[Construction] Datos originales establecidos desde initialData (fallback):', {
+        console.debug('[Construction] Original data set from initialData (fallback):', {
           originalFormDataKeys: Object.keys(form).length,
           sampleFields: {
             borrower_name: form.borrower_name,
@@ -260,12 +260,12 @@ const ConstructionIntentionForm = ({
     }
   }, [initialData, originalFormData]);
 
-  // Establecer datos originales cuando el formulario esté completamente cargado
+  // Set original data when form is fully loaded
   useEffect(() => {
     if (form && Object.keys(form).length > 0 && !originalFormData && (initialData || requestId)) {
       const timer = setTimeout(() => {
         setOriginalFormData({ ...form });
-        console.debug('[Construction] Datos originales establecidos desde form (fallback final):', {
+        console.debug('[Construction] Original data set from form (final fallback):', {
           originalFormDataKeys: Object.keys(form).length,
           sampleFields: {
             borrower_name: form.borrower_name,
@@ -278,10 +278,10 @@ const ConstructionIntentionForm = ({
     }
   }, [form, originalFormData, initialData, requestId]);
 
-  // Detectar cambios no guardados
+  // Detect unsaved changes
   useEffect(() => {
     if (originalFormData && Object.keys(originalFormData).length > 0) {
-      // Función para normalizar valores antes de comparar
+      // Function to normalize values before comparing
       const normalizeValue = (value) => {
         if (value === null || value === undefined) return '';
         if (typeof value === 'number') return value;
@@ -340,7 +340,7 @@ const ConstructionIntentionForm = ({
     }
   }, [form, originalFormData, onUnsavedChangesChange]);
 
-  // Prevenir salida con cambios no guardados
+  // Prevent exit with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
@@ -351,7 +351,7 @@ const ConstructionIntentionForm = ({
 
     const handlePopState = (e) => {
       if (hasUnsavedChanges) {
-        const confirmLeave = window.confirm('Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?');
+        const confirmLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
         if (!confirmLeave) {
           window.history.pushState(null, '', window.location.href);
         }
@@ -476,7 +476,7 @@ const ConstructionIntentionForm = ({
   };
 
   const handleDiscardChanges = () => {
-    if (window.confirm('¿Estás seguro de que quieres descartar todos los cambios?')) {
+    if (window.confirm('Are you sure you want to discard all changes?')) {
       setForm(prev => ({ ...prev, ...originalFormData }));
       setHasUnsavedChanges(false);
     }
@@ -488,20 +488,20 @@ const ConstructionIntentionForm = ({
       const payload = buildDataToSend();
       try {
         const response = await onSubmit(payload);
-        console.debug('[Construction] Guardado exitoso:', response);
+        console.debug('[Construction] Saved successfully:', response);
 
-        // Si el envío fue exitoso, actualizar los datos originales
+        // If submission was successful, update original data
         const updatedFormData = { ...form };
         setOriginalFormData(updatedFormData);
         setHasUnsavedChanges(false);
 
-        console.debug('[Construction] Estado actualizado después de guardar:', {
+        console.debug('[Construction] State updated after saving:', {
           hasUnsavedChanges: false,
           originalFormDataUpdated: true
         });
       } catch (error) {
-        console.error('Error al guardar:', error);
-        // No resetear el estado si hubo error
+        console.error('Error saving:', error);
+        // Don't reset state if there was an error
       }
     }
   };
@@ -511,20 +511,20 @@ const ConstructionIntentionForm = ({
       const payload = buildDataToSend();
       try {
         const response = await onSubmit(payload);
-        console.debug('[Construction] Carta creada exitosamente:', response);
+        console.debug('[Construction] Letter created successfully:', response);
 
-        // Si la creación fue exitosa, establecer los datos originales
+        // If creation was successful, set original data
         const updatedFormData = { ...form };
         setOriginalFormData(updatedFormData);
         setHasUnsavedChanges(false);
 
-        console.debug('[Construction] Estado actualizado después de crear:', {
+        console.debug('[Construction] State updated after creating:', {
           hasUnsavedChanges: false,
           originalFormDataUpdated: true
         });
       } catch (error) {
-        console.error('Error al crear carta:', error);
-        // No resetear el estado si hubo error
+        console.error('Error creating letter:', error);
+        // Don't reset state if there was an error
       }
     }
   };
@@ -534,37 +534,37 @@ const ConstructionIntentionForm = ({
       {loadingData ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Cargando...</span>
+            <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="mt-2 text-muted">Cargando datos...</p>
+          <p className="mt-2 text-muted">Loading data...</p>
         </div>
       ) : error ? (
         <div className="alert alert-danger" role="alert">{error}</div>
       ) : showCreateForm && !Object.keys(initialData || {}).length ? (
         <div className="text-center py-5">
-          <h4 className="mb-4">No existe una carta de intención para esta solicitud</h4>
+          <h4 className="mb-4">There is no letter of intent for this request</h4>
           <button type="button" className="btn btn-primary btn-lg" onClick={handleCreateIntentLetter} disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                Creando carta de intención...
+                Creating letter of intent...
               </>
             ) : (
               <>
                 <i className="fas fa-file-alt me-2"></i>
-                Crear Carta de Intención
+                Create Letter of Intent
               </>
             )}
           </button>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          {/* Alerta de cambios no guardados */}
+          {/* Unsaved changes alert */}
           {hasUnsavedChanges && (
             <div className="alert alert-warning d-flex align-items-center justify-content-between mb-3" role="alert">
               <div className="d-flex align-items-center">
                 <i className="fas fa-exclamation-triangle me-2"></i>
-                <span>Tienes cambios sin guardar</span>
+                <span>You have unsaved changes</span>
               </div>
               <button
                 type="button"
@@ -572,7 +572,7 @@ const ConstructionIntentionForm = ({
                 onClick={handleDiscardChanges}
               >
                 <i className="fas fa-undo me-1"></i>
-                Descartar Cambios
+                Discard Changes
               </button>
             </div>
           )}
@@ -1158,14 +1158,14 @@ const ConstructionIntentionForm = ({
                 {loading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Procesando...
+                    Processing...
                   </>
                 ) : (
                   <>
                     <i className={`fas me-2 ${hasUnsavedChanges ? 'fa-exclamation-triangle' : 'fa-save'}`}></i>
                     {hasUnsavedChanges
-                      ? 'Guardar Cambios'
-                      : 'Guardar Carta de Intención de Construcción'
+                      ? 'Save Changes'
+                      : 'Save Construction Letter of Intent'
                     }
                   </>
                 )}

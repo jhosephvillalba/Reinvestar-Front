@@ -122,7 +122,7 @@ const FixflipConstructionForm = ({
 
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
-      // Debugging específico para land_acquisition_cost en initialData
+      // Specific debugging for land_acquisition_cost in initialData
       console.log('[FixflipConstruction] Loading initialData - land_acquisition_cost:', {
         fromInitialData: initialData.land_acquisition_cost,
         dataType: typeof initialData.land_acquisition_cost,
@@ -150,7 +150,7 @@ const FixflipConstructionForm = ({
       if (mapped.interest_rate != null && (mapped.annual_interest_rate == null || Number(mapped.annual_interest_rate) === 0)) {
         mapped.annual_interest_rate = mapped.interest_rate;
       }
-      // Debugging específico para campos de la sección 10 en initialData
+      // Specific debugging for section 10 fields in initialData
       console.log('[FixflipConstruction] Loading initialData - SECTION 10 FIELDS:', {
         min_credit_score: {
           inInitialData: 'min_credit_score' in initialData,
@@ -188,7 +188,7 @@ const FixflipConstructionForm = ({
         updatedForm.previous_state = mapped.previous_state || "";
         updatedForm.previous_zip = mapped.previous_zip || "";
         
-        // Debugging específico para verificar qué campos se están actualizando
+        // Specific debugging to verify which fields are being updated
         console.log('[FixflipConstruction] initialData - FIELDS BEING UPDATED:', {
           min_credit_score: {
             willUpdate: mapped.min_credit_score !== undefined && mapped.min_credit_score !== null,
@@ -204,10 +204,10 @@ const FixflipConstructionForm = ({
           }
         });
         
-        // Establecer los datos originales después de cargar desde initialData
+        // Set original data after loading from initialData
         setTimeout(() => {
           setOriginalFormData({ ...updatedForm });
-          console.debug('[FixflipConstruction] Datos originales establecidos desde initialData:', {
+          console.debug('[FixflipConstruction] Original data set from initialData:', {
             originalFormDataKeys: Object.keys(updatedForm).length,
             sampleFields: {
               borrower_name: updatedForm.borrower_name,
@@ -248,7 +248,7 @@ const FixflipConstructionForm = ({
               mapped.loan_to_as_is_value = mapped.ltv;
             }
             
-            // Debugging específico para land_acquisition_cost en la carga de datos
+            // Specific debugging for land_acquisition_cost during data loading
             console.log('[FixflipConstruction] Loading data - land_acquisition_cost:', {
               fromAPI: data.land_acquisition_cost,
               fromMapped: mapped.land_acquisition_cost,
@@ -266,7 +266,7 @@ const FixflipConstructionForm = ({
               }
             });
 
-            // Debugging específico para loan_to_as_is_value
+            // Specific debugging for loan_to_as_is_value
             console.log('[FixflipConstruction] Loading data - loan_to_as_is_value:', {
               fromAPI: data.loan_to_as_is_value,
               fromMapped: mapped.loan_to_as_is_value,
@@ -282,7 +282,7 @@ const FixflipConstructionForm = ({
               }
             });
 
-            // Debugging específico para min_credit_score y refundable_commitment_deposit
+            // Specific debugging for min_credit_score and refundable_commitment_deposit
             console.log('[FixflipConstruction] Loading data - CONDITIONS FIELDS:', {
               min_credit_score: {
                 fromAPI: data.min_credit_score,
@@ -298,7 +298,7 @@ const FixflipConstructionForm = ({
               }
             });
 
-            // Debugging específico para campos de liquidez
+            // Specific debugging for liquidity fields
             console.log('[FixflipConstruction] Loading data - LIQUIDITY FIELDS:', {
               estimated_closing_costs: {
                 fromAPI: data.estimated_closing_costs,
@@ -414,10 +414,10 @@ const FixflipConstructionForm = ({
               is_approved: mapped.is_approved ?? prev.is_approved
               };
               
-              // Establecer los datos originales después de cargar los datos de la API
+              // Set original data after loading data from API
               setTimeout(() => {
                 setOriginalFormData({ ...newForm });
-                console.debug('[FixflipConstruction] Datos originales establecidos desde API:', {
+                console.debug('[FixflipConstruction] Original data set from API:', {
                   originalFormDataKeys: Object.keys(newForm).length,
                   sampleFields: {
                     borrower_name: newForm.borrower_name,
@@ -432,7 +432,7 @@ const FixflipConstructionForm = ({
           }
           setShowCreateForm(true);
         } catch (err) {
-          setError("Error al cargar los datos de la solicitud");
+          setError("Error loading request data");
         } finally {
           setLoadingData(false);
         }
@@ -447,13 +447,13 @@ const FixflipConstructionForm = ({
     }
   }, [form, onFormChange]);
 
-  // Establecer datos originales cuando se cargan los datos iniciales
+  // Set original data when initial data is loaded
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && !originalFormData) {
-      // Usar un timeout para asegurar que el form esté completamente actualizado
+      // Use timeout to ensure form is fully updated
       const timer = setTimeout(() => {
         setOriginalFormData({ ...form });
-        console.debug('[FixflipConstruction] Datos originales establecidos desde initialData (fallback):', {
+        console.debug('[FixflipConstruction] Original data set from initialData (fallback):', {
           originalFormDataKeys: Object.keys(form).length,
           sampleFields: {
             borrower_name: form.borrower_name,
@@ -466,12 +466,12 @@ const FixflipConstructionForm = ({
     }
   }, [initialData, originalFormData]);
 
-  // Establecer datos originales cuando el formulario esté completamente cargado
+  // Set original data when form is fully loaded
   useEffect(() => {
     if (form && Object.keys(form).length > 0 && !originalFormData && (initialData || requestId)) {
       const timer = setTimeout(() => {
         setOriginalFormData({ ...form });
-        console.debug('[FixflipConstruction] Datos originales establecidos desde form (fallback final):', {
+        console.debug('[FixflipConstruction] Original data set from form (final fallback):', {
           originalFormDataKeys: Object.keys(form).length,
           sampleFields: {
             borrower_name: form.borrower_name,
@@ -484,10 +484,10 @@ const FixflipConstructionForm = ({
     }
   }, [form, originalFormData, initialData, requestId]);
 
-  // Detectar cambios no guardados
+  // Detect unsaved changes
   useEffect(() => {
     if (originalFormData && Object.keys(originalFormData).length > 0) {
-      // Función para normalizar valores antes de comparar
+      // Function to normalize values before comparing
       const normalizeValue = (value) => {
         if (value === null || value === undefined) return '';
         if (typeof value === 'number') return value;
@@ -546,7 +546,7 @@ const FixflipConstructionForm = ({
     }
   }, [form, originalFormData, onUnsavedChangesChange]);
 
-  // Prevenir salida con cambios no guardados
+  // Prevent exit with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
@@ -557,7 +557,7 @@ const FixflipConstructionForm = ({
 
     const handlePopState = (e) => {
       if (hasUnsavedChanges) {
-        const confirmLeave = window.confirm('Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?');
+        const confirmLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
         if (!confirmLeave) {
           window.history.pushState(null, '', window.location.href);
         }
@@ -577,7 +577,7 @@ const FixflipConstructionForm = ({
     const { name, value, type, checked } = e.target;
     console.log('[FixflipConstruction] handleChange:', { name, value, type, checked });
     
-    // Debugging específico para campos problemáticos
+    // Specific debugging for problematic fields
     if (name === 'loan_term' || name === 'budget_review_fee') {
       console.log(`[FixflipConstruction] ${name} changing from:`, form[name], 'to:', value);
       console.log(`[FixflipConstruction] ${name} - editable:`, editable, 'disabled:', !editable);
@@ -590,7 +590,7 @@ const FixflipConstructionForm = ({
                 name === 'prepayment_penalty' ? Number(value) : value
       };
       
-      // Debugging específico para loan_term después del cambio
+      // Specific debugging for loan_term after change
       if (name === 'loan_term') {
         console.log(`[FixflipConstruction] loan_term after setForm:`, newForm.loan_term);
         console.log(`[FixflipConstruction] loan_term change complete:`, {
@@ -615,7 +615,7 @@ const FixflipConstructionForm = ({
   };
 
   const buildDataToSend = () => {
-    // Debugging específico para loan_term
+    // Specific debugging for loan_term
     console.log('[FixflipConstruction] buildDataToSend - loan_term processing:', {
       originalValue: form.loan_term,
       type: typeof form.loan_term,
@@ -625,7 +625,7 @@ const FixflipConstructionForm = ({
       stringValue: String(form.loan_term)
     });
 
-    // Debugging específico para land_acquisition_cost
+    // Specific debugging for land_acquisition_cost
     console.log('[FixflipConstruction] buildDataToSend - land_acquisition_cost processing:', {
       originalValue: form.land_acquisition_cost,
       type: typeof form.land_acquisition_cost,
@@ -785,7 +785,7 @@ const FixflipConstructionForm = ({
     const day1 = (Number(form.initial_funding || 0) * Number(form.annual_interest_rate || 0)) / 100 / 12;
     const totalLiquidity = Number(form.estimated_closing_costs || 0) + Number(form.construction_budget_10_percent || 0) + Number(form.six_months_payment_reserves || 0) + Number(form.construction_budget_delta || 0) + Number(form.down_payment || 0);
     
-    // Debugging específico para campos de la sección 11
+    // Specific debugging for section 11 fields
     console.log('[FixflipConstruction] useEffect CALCULATIONS - SECTION 11 FIELDS:', {
       construction_budget_10_percent: {
         formValue: form.construction_budget_10_percent,
@@ -854,7 +854,7 @@ const FixflipConstructionForm = ({
   }, [form.loan_amount, form.annual_interest_rate, form.initial_funding, form.estimated_closing_costs, form.construction_budget_10_percent, form.six_months_payment_reserves, form.construction_budget_delta, form.down_payment]);
 
   const handleDiscardChanges = () => {
-    if (window.confirm('¿Estás seguro de que quieres descartar todos los cambios?')) {
+    if (window.confirm('Are you sure you want to discard all changes?')) {
       setForm(prev => ({ ...prev, ...originalFormData }));
       setHasUnsavedChanges(false);
     }
@@ -866,19 +866,19 @@ const FixflipConstructionForm = ({
       const payload = buildDataToSend();
       try {
         const response = await onSubmit(payload);
-        console.debug('[FixflipConstruction] Guardado exitoso:', response);
+        console.debug('[FixflipConstruction] Saved successfully:', response);
         
-        // Si el envío fue exitoso, actualizar los datos originales
+        // If submission was successful, update original data
         const updatedFormData = { ...form };
         setOriginalFormData(updatedFormData);
         setHasUnsavedChanges(false);
         
-        console.debug('[FixflipConstruction] Estado actualizado después de guardar:', {
+        console.debug('[FixflipConstruction] State updated after saving:', {
           hasUnsavedChanges: false,
           originalFormDataUpdated: true
         });
       } catch (error) {
-        console.error('Error al guardar:', error);
+        console.error('Error saving:', error);
         // No resetear el estado si hubo error
       }
     }
@@ -889,19 +889,19 @@ const FixflipConstructionForm = ({
       const payload = buildDataToSend();
       try {
         const response = await onSubmit(payload);
-        console.debug('[FixflipConstruction] Carta creada exitosamente:', response);
+        console.debug('[FixflipConstruction] Letter created successfully:', response);
         
-        // Si la creación fue exitosa, establecer los datos originales
+        // If creation was successful, set original data
         const updatedFormData = { ...form };
         setOriginalFormData(updatedFormData);
         setHasUnsavedChanges(false);
         
-        console.debug('[FixflipConstruction] Estado actualizado después de crear:', {
+        console.debug('[FixflipConstruction] State updated after creating:', {
           hasUnsavedChanges: false,
           originalFormDataUpdated: true
         });
       } catch (error) {
-        console.error('Error al crear carta:', error);
+        console.error('Error creating letter:', error);
         // No resetear el estado si hubo error
       }
     }
@@ -912,37 +912,37 @@ const FixflipConstructionForm = ({
       {loadingData ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Cargando...</span>
+            <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="mt-2 text-muted">Cargando datos...</p>
+          <p className="mt-2 text-muted">Loading data...</p>
         </div>
       ) : error ? (
         <div className="alert alert-danger" role="alert">{error}</div>
       ) : showCreateForm && !Object.keys(initialData || {}).length ? (
         <div className="text-center py-5">
-          <h4 className="mb-4">No existe una carta de intención para esta solicitud</h4>
+          <h4 className="mb-4">There is no letter of intent for this request</h4>
           <button type="button" className="btn btn-primary btn-lg" onClick={handleCreateIntentLetter} disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                Creando carta de intención...
+                Creating letter of intent...
               </>
             ) : (
               <>
                 <i className="fas fa-file-alt me-2"></i>
-                Crear Carta de Intención
+                Create Letter of Intent
               </>
             )}
           </button>
         </div>
       ) : (
       <form onSubmit={handleSubmit}>
-        {/* Alerta de cambios no guardados */}
+        {/* Unsaved changes alert */}
         {hasUnsavedChanges && (
           <div className="alert alert-warning d-flex align-items-center justify-content-between mb-3" role="alert">
             <div className="d-flex align-items-center">
               <i className="fas fa-exclamation-triangle me-2"></i>
-              <span>Tienes cambios sin guardar</span>
+              <span>You have unsaved changes</span>
             </div>
             <button
               type="button"
@@ -950,7 +950,7 @@ const FixflipConstructionForm = ({
               onClick={handleDiscardChanges}
             >
               <i className="fas fa-undo me-1"></i>
-              Descartar Cambios
+              Discard Changes
             </button>
           </div>
         )}
@@ -1712,14 +1712,14 @@ const FixflipConstructionForm = ({
               {loading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                  Procesando...
+                  Processing...
                 </>
               ) : (
                 <>
                   <i className={`fas me-2 ${hasUnsavedChanges ? 'fa-exclamation-triangle' : 'fa-save'}`}></i>
                   {hasUnsavedChanges 
-                    ? 'Guardar Cambios' 
-                    : `Guardar Carta de Intención ${type === 'construction' ? 'Construction' : 'Fixflip'}`
+                    ? 'Save Changes' 
+                    : `Save ${type === 'construction' ? 'Construction' : 'Fixflip'} Letter of Intent`
                   }
                 </>
               )}

@@ -103,13 +103,13 @@ const CreateProcesor = () => {
   };
 
   return (
-    <div className="internal_layout pt-4">
-       <div className="container-fluid mb-4">
-          <div className="d-flex align-items-start">
+    <div className="internal_layout">
+       <div className="container-fluid mb-4 mt-5">
+          <div className="d-flex align-items-center">
             <button className="btn border-none" onClick={handleback}>
               <img src={Back} alt="back" width={35} />
             </button>
-            <h2 className={`${styles.title} fw-bolder my_title_color`}>
+            <h2 className={`${styles.title} fw-bolder my_title_color m-0`}>
               Create Processor
             </h2>
           </div>
@@ -123,9 +123,10 @@ const CreateProcesor = () => {
             <form>
               <div className="row mb-2">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
+                  <label className="form-label text-muted small">Full Name</label>
                   <input
                     type="text"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="nombreCompleto"
                     value={formData.nombreCompleto}
@@ -134,9 +135,10 @@ const CreateProcesor = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Email</label>
+                  <label className="form-label text-muted small">Email</label>
                   <input
                     type="email"
+                    placeholder="Email"
                     className={`form-control  ${styles.input}`}
                     name="email"
                     value={formData.email}
@@ -148,9 +150,10 @@ const CreateProcesor = () => {
 
               <div className="row mb-3">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone</label>
+                  <label className="form-label text-muted small">Phone</label>
                   <input
                     type="tel"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="celular"
                     value={formData.celular}
@@ -159,9 +162,10 @@ const CreateProcesor = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identification</label>
+                  <label className="form-label text-muted small">Identification</label>
                   <input
                     type="text"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identificacion"
                     value={formData.identificacion}
@@ -173,9 +177,10 @@ const CreateProcesor = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
+                  <label className="form-label text-muted small">Address</label>
                   <input
                     type="text"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="direccion"
                     value={formData.direccion}
@@ -187,7 +192,7 @@ const CreateProcesor = () => {
 
               <div className="row mb-5">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Password *</label>
+                  <label className="form-label text-muted small">Password *</label>
                   <input
                     type="password"
                     placeholder="Minimum 8 characters"
@@ -205,7 +210,7 @@ const CreateProcesor = () => {
                   )}
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm Password *</label>
+                  <label className="form-label text-muted small">Confirm Password *</label>
                   <input
                     type="password"
                     placeholder="Confirm your password"

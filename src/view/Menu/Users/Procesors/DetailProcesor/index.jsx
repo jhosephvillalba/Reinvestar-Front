@@ -254,12 +254,12 @@ const DetailProcesor = () => {
 
   return (
     <div className="internal_layout">
-      <div className="container-fluid mb-4">
-        <div className="d-flex align-items-start">
+      <div className="container-fluid mb-4 mt-5">
+        <div className="d-flex align-items-center">
           <button className="btn border-none" onClick={handleback}>
             <img src={Back} alt="back" width={35} />
           </button>
-          <h2 className={`${styles.title} fw-bolder my_title_color`}>
+          <h2 className={`${styles.title} fw-bolder my_title_color m-0`}>
             {id ? "Processor Details" : "Create Processor"}
           </h2>
         </div>
@@ -273,9 +273,10 @@ const DetailProcesor = () => {
             <form onSubmit={handleSubmit} autoComplete="off">
               <div className="row mb-2">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
+                  <label className="form-label text-muted small">Full Name</label>
                   <input
                     type="text"
+                    placeholder="Full Name"
                     className={`form-control  ${styles.input}`}
                     name="full_name"
                     value={formData.full_name}
@@ -284,9 +285,10 @@ const DetailProcesor = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Email</label>
+                  <label className="form-label text-muted small">Email</label>
                   <input
                     type="email"
+                    placeholder="Email"
                     className={`form-control  ${styles.input}`}
                     name="email"
                     value={formData.email}
@@ -297,9 +299,10 @@ const DetailProcesor = () => {
 
               <div className="row mb-3">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Phone</label>
+                  <label className="form-label text-muted small">Phone</label>
                   <input
                     type="tel"
+                    placeholder="Phone"
                     className={`form-control  ${styles.input}`}
                     name="phone"
                     value={formData.phone}
@@ -308,9 +311,10 @@ const DetailProcesor = () => {
                   />
                 </div>
                 <div className="col-md-6 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Identification</label>
+                  <label className="form-label text-muted small">Identification</label>
                   <input
                     type="text"
+                    placeholder="Identification"
                     className={`form-control  ${styles.input}`}
                     name="identification"
                     value={formData.identification}
@@ -322,9 +326,10 @@ const DetailProcesor = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
+                  <label className="form-label text-muted small">Address</label>
                   <input
                     type="text"
+                    placeholder="Address"
                     className={`form-control  ${styles.input}`}
                     name="address"
                     value={formData.address}
@@ -336,7 +341,7 @@ const DetailProcesor = () => {
 
               <div className="row mb-4">
                 <div className="col-12 mb-2">
-                  <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Company</label>
+                  <label className="form-label text-muted small">Company</label>
                   <select
                     className={`form-select ${styles.input} ${companyError ? 'is-invalid' : ''}`}
                     name="company_id"
@@ -385,7 +390,7 @@ const DetailProcesor = () => {
               {editMode && (
                 <div className="row mb-5">
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Password</label>
+                    <label className="form-label text-muted small">Password</label>
                     <input
                       type="password"
                       placeholder="Minimum 8 characters"
@@ -402,7 +407,7 @@ const DetailProcesor = () => {
                     )}
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Confirm Password</label>
+                    <label className="form-label text-muted small">Confirm Password</label>
                     <input
                       type="password"
                       placeholder="Confirm your password"
