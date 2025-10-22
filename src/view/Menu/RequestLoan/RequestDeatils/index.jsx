@@ -279,7 +279,7 @@ const RequestDetails = () => {
                 <IntentionLetter 
                   requestId={id} 
                   requestType={type} 
-                  request={request} 
+                  solicitud={request} 
                 />
               </div>
             )}
