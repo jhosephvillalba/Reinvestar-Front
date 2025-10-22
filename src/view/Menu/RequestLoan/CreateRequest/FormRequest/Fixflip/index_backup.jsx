@@ -304,7 +304,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
               className="btn btn-outline-secondary btn-sm ms-2"
               onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
             >
-              {copied ? "¡Copiado!" : "Copiar"}
+              {copied ? "Copied!" : "Copy"}
             </button>
           </>
         )}

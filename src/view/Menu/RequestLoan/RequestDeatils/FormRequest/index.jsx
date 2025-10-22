@@ -7,19 +7,19 @@ import { getClients, createClient } from "../../../../../Api/client";
 import { getCompanies } from "../../../../../Api/admin";
 
 const initialClient = {
-  nombre: "",
-  correo: "",
-  telefono: "",
-  direccion: "",
-  empresa: "",
-  tipoProducto: "",
-  fechaRegistro: "",
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  company: "",
+  productType: "",
+  registrationDate: "",
 };
 
 const FormRequest = () => {
   const [form, setForm] = useState(initialClient);
   const [clientId, setClientId] = useState("");
-  const [clienteEncontrado, setClienteEncontrado] = useState(false);
+  const [clientFound, setClientFound] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState(null);
@@ -38,11 +38,11 @@ const FormRequest = () => {
     fetchCompanies();
   }, []);
 
-  // Buscar clientes por email (search) en vivo
-  const handleCorreoChange = async (e) => {
+  // Search clients by email (search) in real time
+  const handleEmailChange = async (e) => {
     const value = e.target.value;
-    setForm(prev => ({ ...prev, correo: value }));
-    setClienteEncontrado(false);
+    setForm(prev => ({ ...prev, email: value }));
+    setClientFound(false);
     setClientId("");
     setFeedback("");
     if (value.length < 3) {
@@ -65,45 +65,45 @@ const FormRequest = () => {
     }
   };
 
-  // Al seleccionar un cliente de la lista
-  const handleSuggestionClick = (cliente) => {
+  // When selecting a client from the list
+  const handleSuggestionClick = (client) => {
     setForm(prev => ({
       ...prev,
-      correo: cliente.email || cliente.correo || "",
-      nombre: cliente.full_name || cliente.nombre || "",
-      telefono: cliente.phone || cliente.telefono || "",
-      direccion: cliente.address || cliente.direccion || "",
-      empresa: cliente.company_id ? String(cliente.company_id) : "",
+      email: client.email || client.correo || "",
+      name: client.full_name || client.nombre || "",
+      phone: client.phone || client.telefono || "",
+      address: client.address || client.direccion || "",
+      company: client.company_id ? String(client.company_id) : "",
     }));
-    setClientId(cliente.id);
-    setClienteEncontrado(true);
+    setClientId(client.id);
+    setClientFound(true);
     setSuggestions([]);
     setShowSuggestions(false);
-    setFeedback("Cliente encontrado y cargado");
+    setFeedback("Client found and loaded");
   };
 
-  // Manejar cambios en el resto del formulario
+  // Handle changes in the rest of the form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // Registrar cliente si no existe
+  // Register client if it doesn't exist
   const handleCreateClient = async () => {
     setFeedback("");
     setLoading(true);
-    if (!form.nombre || !form.correo || !form.direccion) {
-      setFeedback("Nombre, correo y dirección son obligatorios");
+    if (!form.name || !form.email || !form.address) {
+      setFeedback("Name, email and address are required");
       setLoading(false);
       return;
     }
     try {
-      const nuevo = await createClient({
-        full_name: form.nombre,
-        email: form.correo,
-        phone: form.telefono,
-        address: form.direccion,
-        company_id: form.empresa ? Number(form.empresa) : undefined,
+      const newClient = await createClient({
+        full_name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        company_id: form.company ? Number(form.company) : undefined,
         purchase_or_refinancing: !!form.purchase_or_refinancing,
         has_a_mortgage: !!form.has_a_mortgage,
         has_delinquencies: !!form.has_delinquencies,
@@ -111,22 +111,22 @@ const FormRequest = () => {
         current_hoa: !!form.current_hoa,
         subject_under_llc: !!form.subject_under_llc,
       });
-      setClientId(nuevo.id);
-      setClienteEncontrado(true);
+      setClientId(newClient.id);
+      setClientFound(true);
       setForm(prev => ({
         ...prev,
-        nombre: nuevo.full_name,
-        correo: nuevo.email,
-        telefono: nuevo.phone,
-        direccion: nuevo.address,
-        empresa: nuevo.company_id ? String(nuevo.company_id) : "",
-        // Asegura que los booleanos también se reflejen
-        purchase_or_refinancing: !!nuevo.purchase_or_refinancing,
-        has_a_mortgage: !!nuevo.has_a_mortgage,
-        has_delinquencies: !!nuevo.has_delinquencies,
-        pays_taxes: !!nuevo.pays_taxes,
-        current_hoa: !!nuevo.current_hoa,
-        subject_under_llc: !!nuevo.subject_under_llc,
+        name: newClient.full_name,
+        email: newClient.email,
+        phone: newClient.phone,
+        address: newClient.address,
+        company: newClient.company_id ? String(newClient.company_id) : "",
+        // Ensure booleans are also reflected
+        purchase_or_refinancing: !!newClient.purchase_or_refinancing,
+        has_a_mortgage: !!newClient.has_a_mortgage,
+        has_delinquencies: !!newClient.has_delinquencies,
+        pays_taxes: !!newClient.pays_taxes,
+        current_hoa: !!newClient.current_hoa,
+        subject_under_llc: !!newClient.subject_under_llc,
       }));
       setFeedback("Client registered and selected successfully");
     } catch (err) {
@@ -135,31 +135,31 @@ const FormRequest = () => {
     setLoading(false);
   };
 
-  // Registrar cliente si no existe
+  // Register client if it doesn't exist
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFeedback("");
     setLoading(true);
-    if (!form.nombre || !form.correo || !form.direccion) {
-      setFeedback("Nombre, correo y dirección son obligatorios");
+    if (!form.name || !form.email || !form.address) {
+      setFeedback("Name, email and address are required");
       setLoading(false);
       return;
     }
-    if (clienteEncontrado) {
-      setFeedback("Cliente ya existe. Puedes continuar con la solicitud.");
+    if (clientFound) {
+      setFeedback("Client already exists. You can continue with the request.");
       setLoading(false);
       return;
     }
     try {
-      const nuevo = await createClient({
-        full_name: form.nombre,
-        email: form.correo,
-        phone: form.telefono,
-        address: form.direccion,
-        company_id: form.empresa ? Number(form.empresa) : undefined,
+      const newClient = await createClient({
+        full_name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        company_id: form.company ? Number(form.company) : undefined,
       });
-      setClientId(nuevo.id);
-      setClienteEncontrado(true);
+      setClientId(newClient.id);
+      setClientFound(true);
       setFeedback("Client registered successfully");
     } catch (err) {
       setFeedback("Error registering client");
@@ -173,19 +173,19 @@ const FormRequest = () => {
         <div className="row">
           <div className="col-4">
             <div className="w-100 d-flex flex-column position-relative">
-              <label htmlFor="correo">Email</label>
+              <label htmlFor="email">Email</label>
               <input
                 type="email"
-                placeholder="Correo electrónico"
+                placeholder="Email address"
                 className={styles.input}
-                name="correo"
-                id="correo"
-                value={form.correo}
-                onChange={handleCorreoChange}
+                name="email"
+                id="email"
+                value={form.email}
+                onChange={handleEmailChange}
                 required
                 autoComplete="off"
               />
-              {/* Sugerencias de email */}
+              {/* Email suggestions */}
               {showSuggestions && suggestions.length > 0 && (
                 <ul style={{
                   position: "absolute",
@@ -202,13 +202,13 @@ const FormRequest = () => {
                   padding: 0,
                   listStyle: "none"
                 }}>
-                  {suggestions.map(cliente => (
+                  {suggestions.map(client => (
                     <li
-                      key={cliente.id}
+                      key={client.id}
                       style={{ padding: 8, cursor: "pointer" }}
-                      onClick={() => handleSuggestionClick(cliente)}
+                      onClick={() => handleSuggestionClick(client)}
                     >
-                      { cliente.email }
+                      { client.email }
                     </li>
                   ))}
                 </ul>
@@ -217,33 +217,33 @@ const FormRequest = () => {
           </div>
           <div className="col-4">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="correo">Nombre del cliente</label>
+              <label htmlFor="name">Client Name</label>
               <input
                 type="text"
-                placeholder="Nombre del cliente"
+                placeholder="Client name"
                 className={styles.input}
-                name="nombre"
-                value={form.nombre}
+                name="name"
+                value={form.name}
                 onChange={handleChange}
                 required
-                disabled={clienteEncontrado}
+                disabled={clientFound}
               />
             </div>
           </div>
           {/* --------------EMPRESAS--------------- */}
           <div className="col-4">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="options_companies">Empresa</label>
+              <label htmlFor="options_companies">Company</label>
               <select
-                name="empresa"
+                name="company"
                 id="options_companies"
                 className={styles.input}
-                value={form.empresa}
+                value={form.company}
                 onChange={handleChange}
                 required
-                disabled={clienteEncontrado}
+                disabled={clientFound}
               >
-                <option value="">Seleccione una empresa</option>
+                <option value="">Select a company</option>
                 {companies && companies.map(({ id, name }) => (
                   <option value={id} key={id}>{name}</option>
                 ))}
@@ -254,37 +254,37 @@ const FormRequest = () => {
         <div className="row">
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="telefono">Número de teléfono</label>
+              <label htmlFor="phone">Phone Number</label>
               <input
                 type="tel"
-                placeholder="Número de teléfono"
+                placeholder="Phone number"
                 className={styles.input}
-                name="telefono"
-                value={form.telefono}
+                name="phone"
+                value={form.phone}
                 onChange={handleChange}
-                disabled={clienteEncontrado}
+                disabled={clientFound}
               />
             </div>
           </div>
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="direccion">Dirección de la propiedad</label>
+              <label htmlFor="address">Property Address</label>
               <input
                 type="text"
-                placeholder="Dirección de la propiedad"
+                placeholder="Property address"
                 className={styles.input}
-                name="direccion"
-                value={form.direccion}
+                name="address"
+                value={form.address}
                 onChange={handleChange}
                 required
-                disabled={clienteEncontrado}
+                disabled={clientFound}
               />
             </div>
           </div>
         </div>
 
-        {/* Botón para crear cliente si no existe */}
-        {!clienteEncontrado && !loading && form.correo && form.nombre && form.direccion && (
+        {/* Button to create client if it doesn't exist */}
+        {!clientFound && !loading && form.email && form.name && form.address && (
           <div className="row">
             <div className="col-12 d-flex justify-content-end">
               <button
@@ -293,7 +293,7 @@ const FormRequest = () => {
                 style={{ maxWidth: 250 }}
                 onClick={handleCreateClient}
               >
-                Crear cliente
+                Create Client
               </button>
             </div>
           </div>
@@ -317,36 +317,36 @@ const FormRequest = () => {
       <div className={`row`}>
         <div className="col-6">
           <div className="w-100 d-flex flex-column">
-            <label htmlFor="pruduct_type">Tipo de producto</label>
+            <label htmlFor="product_type">Product Type</label>
             <select
-              name="tipoProducto"
+              name="productType"
               id="product_type"
               className={styles.input}
-              value={form.tipoProducto}
+              value={form.productType}
               onChange={handleChange}
             >
-              <option value="">seleccione un producto</option>
+              <option value="">Select a product</option>
               <option value="fixflip">FixFlip</option>
               <option value="dscr">Dscr</option>
-              <option value="construction">Contruction</option>
+              <option value="construction">Construction</option>
             </select>
           </div>
         </div>
         <div className="col-6">
           <div className="w-100 d-flex flex-column">
-            <label htmlFor="fecha_registro">Fecha de registor</label>
-            <input type="date" id="fecha_registro" className={styles.input} />
+            <label htmlFor="registration_date">Registration Date</label>
+            <input type="date" id="registration_date" className={styles.input} />
           </div>
         </div>
       </div>
       <hr className="mt-2 mb-2"/>
       
-      {/* Formulario de producto solo si hay cliente y tipo de producto */}
-      {form.tipoProducto && (
+      {/* Product form only if there's a client and product type */}
+      {form.productType && (
         <div className={`jopo mt-4`}>
-          {form.tipoProducto === "fixflip" && <FixflipForm client_id={clientId} />}
-          {form.tipoProducto === "construction" && <ConstructionForm client_id={clientId} />}
-          {form.tipoProducto === "dscr" && <DscrForm client_id={clientId} />}
+          {form.productType === "fixflip" && <FixflipForm client_id={clientId} />}
+          {form.productType === "construction" && <ConstructionForm client_id={clientId} />}
+          {form.productType === "dscr" && <DscrForm client_id={clientId} />}
         </div>
       )}
     </div>

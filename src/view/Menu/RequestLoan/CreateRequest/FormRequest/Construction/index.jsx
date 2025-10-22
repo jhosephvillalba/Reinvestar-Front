@@ -656,7 +656,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
       <div className="row">
         <div className="col-12 mt-4">
           <button type="submit" className={`btn ${styles.button}`} style={{ minWidth: "200px" }} disabled={loading}>
-            {loading ? "CREATING..." : "Save"}
+            {loading ? "CREATING..." : "CREATE CONSTRUCTION"}
           </button>
         </div>
       </div>

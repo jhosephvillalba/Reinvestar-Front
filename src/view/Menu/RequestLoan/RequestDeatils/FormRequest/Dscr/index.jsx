@@ -101,7 +101,7 @@ const initialState = {
   rejection_reason: ""
 };
 
-const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = true }) => {
+const DscrForm = ({ client_id, goToDocumentsTab, request, client, editable = true }) => {
   const [form, setForm] = useState(initialState);
   const [ficoError, setFicoError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -112,11 +112,11 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
   const [generating, setGenerating] = useState(false);
   const [sending, setSending] = useState(false);
 
-  // Inicializar el formulario con los datos de la solicitud si existen
+  // Initialize the form with request data if it exists
   useEffect(() => {
-    if (solicitud) {
-      console.log("Datos de solicitud recibidos:", solicitud);
-      console.log("issued_date original:", solicitud.issued_date);
+    if (request) {
+      console.log("Request data received:", request);
+      console.log("issued_date original:", request.issued_date);
       
       // Función para formatear fecha si es necesario
       const formatDateForInput = (dateString) => {
@@ -138,101 +138,101 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
 
       setForm({
         // Borrower Information
-        borrower_name: solicitud.borrower_name || "",
-        legal_status: solicitud.legal_status || "",
-        issued_date: formatDateForInput(solicitud.issued_date),
-        property_address: solicitud.property_address || "",
-        fico: solicitud.fico || solicitud.estimated_fico_score || "",
-        subject_prop_under_llc: solicitud.subject_prop_under_llc || "",
+        borrower_name: request.borrower_name || "",
+        legal_status: request.legal_status || "",
+        issued_date: formatDateForInput(request.issued_date),
+        property_address: request.property_address || "",
+        fico: request.fico || request.estimated_fico_score || "",
+        subject_prop_under_llc: request.subject_prop_under_llc || "",
         
         // Address Information
-        street_address: solicitud.street_address || "",
-        city: solicitud.city || "",
-        state: solicitud.state || "",
-        zip: solicitud.zip || "",
-        lived_less_than_2_years: Boolean(solicitud.lived_less_than_2_years),
-        previous_street_address: solicitud.previous_street_address || "",
-        previous_city: solicitud.previous_city || "",
-        previous_state: solicitud.previous_state || "",
-        previous_zip: solicitud.previous_zip || "",
+        street_address: request.street_address || "",
+        city: request.city || "",
+        state: request.state || "",
+        zip: request.zip || "",
+        lived_less_than_2_years: Boolean(request.lived_less_than_2_years),
+        previous_street_address: request.previous_street_address || "",
+        previous_city: request.previous_city || "",
+        previous_state: request.previous_state || "",
+        previous_zip: request.previous_zip || "",
         
         // Loan Summary
-        appraisal_value: solicitud.appraisal_value || "",
-        annual_interest_rate: solicitud.annual_interest_rate || "",
-        rent_amount: solicitud.rent_amount || "",
-        property_taxes: solicitud.property_taxes || "",
-        property_insurance: solicitud.property_insurance || "",
-        hoa_fees: solicitud.hoa_fees || "",
-        flood_insurance: solicitud.flood_insurance || "",
-        pay_off_amount: solicitud.pay_off_amount || "",
+        appraisal_value: request.appraisal_value || "",
+        annual_interest_rate: request.annual_interest_rate || "",
+        rent_amount: request.rent_amount || "",
+        property_taxes: request.property_taxes || "",
+        property_insurance: request.property_insurance || "",
+        hoa_fees: request.hoa_fees || "",
+        flood_insurance: request.flood_insurance || "",
+        pay_off_amount: request.pay_off_amount || "",
         
         // Campos adicionales
-        loan_type: solicitud.loan_type || "",
-        property_type: solicitud.property_type || "",
-        closing_date: formatDateForInput(solicitud.closing_date),
-        interest_rate_structure: solicitud.interest_rate_structure || "",
-        loan_term: solicitud.loan_term || 0,
-        prepayment_penalty: solicitud.prepayment_penalty || 0,
-        prepayment_penalty_type: solicitud.prepayment_penalty_type || "",
-        max_ltv: solicitud.max_ltv || 0,
-        origination_fee: solicitud.origination_fee || 0,
-        discount_points: solicitud.discount_points || 0,
-        underwriting_fee: solicitud.underwriting_fee || 0,
-        credit_report_fee: solicitud.credit_report_fee || 0,
-        processing_fee: solicitud.processing_fee || 0,
-        recording_fee: solicitud.recording_fee || 0,
-        legal_fee: solicitud.legal_fee || 0,
-        service_fee: solicitud.service_fee || 0,
-        title_fees: solicitud.title_fees || 0,
-        government_fees: solicitud.government_fees || 0,
-        escrow_tax_insurance: solicitud.escrow_tax_insurance || 0,
-        total_closing_cost: solicitud.total_closing_cost || 0,
-        closing_cost_approx: solicitud.closing_cost_approx || 0,
-        down_payment_percent: solicitud.down_payment_percent || 0,
-        dscr_requirement: solicitud.dscr_requirement || 0,
-        loan_amount: solicitud.loan_amount || 0,
-        down_payment_liquidity: solicitud.down_payment_liquidity || 0,
-        cash_out: solicitud.cash_out || 0,
-        mortgage_payment_piti: solicitud.mortgage_payment_piti || 0,
-        principal_interest: solicitud.principal_interest || 0,
-        property_taxes_estimated: solicitud.property_taxes_estimated || 0,
-        property_insurance_estimated: solicitud.property_insurance_estimated || 0,
-        hoa_estimated: solicitud.hoa_estimated || 0,
-        flood_insurance_estimated: solicitud.flood_insurance_estimated || 0,
-        other_liquidity: solicitud.other_liquidity || 0,
-        total_liquidity: solicitud.total_liquidity || 0,
-        six_months_reserves: solicitud.six_months_reserves || 0,
-        property_city: solicitud.property_city || "",
-        property_state: solicitud.property_state || "",
-        property_zip: solicitud.property_zip || "",
-        residency_status: solicitud.residency_status || "",
-        origination_fee_percentage: solicitud.origination_fee_percentage || 0,
-        dscr_ratio: solicitud.dscr_ratio || 0,
-        closing_cost_liquidity: solicitud.closing_cost_liquidity || 0,
-        guarantor_name: solicitud.guarantor_name || "",
-        entity_name: solicitud.entity_name || "",
-        type_of_program: solicitud.type_of_program || "",
-        dscr_required: Boolean(solicitud.dscr_required),
-        dscr_flag: Boolean(solicitud.dscr_flag),
-        type_of_transaction: solicitud.type_of_transaction || "",
-        primary_own_or_rent: solicitud.primary_own_or_rent || "",
-        mortgage_late_payments: solicitud.mortgage_late_payments || "",
-        property_units: solicitud.property_units || 0,
-        borrower_signed: Boolean(solicitud.borrower_signed),
-        guarantor_signed: Boolean(solicitud.guarantor_signed),
-        radicado: solicitud.radicado || "",
-        status: solicitud.status || "PENDING",
-        client_submitted: Boolean(solicitud.client_submitted),
-        client_form_completed: Boolean(solicitud.client_form_completed),
-        client_submitted_at: solicitud.client_submitted_at || null,
-        comments: solicitud.comments || "",
-        rejection_reason: solicitud.rejection_reason || "",
+        loan_type: request.loan_type || "",
+        property_type: request.property_type || "",
+        closing_date: formatDateForInput(request.closing_date),
+        interest_rate_structure: request.interest_rate_structure || "",
+        loan_term: request.loan_term || 0,
+        prepayment_penalty: request.prepayment_penalty || 0,
+        prepayment_penalty_type: request.prepayment_penalty_type || "",
+        max_ltv: request.max_ltv || 0,
+        origination_fee: request.origination_fee || 0,
+        discount_points: request.discount_points || 0,
+        underwriting_fee: request.underwriting_fee || 0,
+        credit_report_fee: request.credit_report_fee || 0,
+        processing_fee: request.processing_fee || 0,
+        recording_fee: request.recording_fee || 0,
+        legal_fee: request.legal_fee || 0,
+        service_fee: request.service_fee || 0,
+        title_fees: request.title_fees || 0,
+        government_fees: request.government_fees || 0,
+        escrow_tax_insurance: request.escrow_tax_insurance || 0,
+        total_closing_cost: request.total_closing_cost || 0,
+        closing_cost_approx: request.closing_cost_approx || 0,
+        down_payment_percent: request.down_payment_percent || 0,
+        dscr_requirement: request.dscr_requirement || 0,
+        loan_amount: request.loan_amount || 0,
+        down_payment_liquidity: request.down_payment_liquidity || 0,
+        cash_out: request.cash_out || 0,
+        mortgage_payment_piti: request.mortgage_payment_piti || 0,
+        principal_interest: request.principal_interest || 0,
+        property_taxes_estimated: request.property_taxes_estimated || 0,
+        property_insurance_estimated: request.property_insurance_estimated || 0,
+        hoa_estimated: request.hoa_estimated || 0,
+        flood_insurance_estimated: request.flood_insurance_estimated || 0,
+        other_liquidity: request.other_liquidity || 0,
+        total_liquidity: request.total_liquidity || 0,
+        six_months_reserves: request.six_months_reserves || 0,
+        property_city: request.property_city || "",
+        property_state: request.property_state || "",
+        property_zip: request.property_zip || "",
+        residency_status: request.residency_status || "",
+        origination_fee_percentage: request.origination_fee_percentage || 0,
+        dscr_ratio: request.dscr_ratio || 0,
+        closing_cost_liquidity: request.closing_cost_liquidity || 0,
+        guarantor_name: request.guarantor_name || "",
+        entity_name: request.entity_name || "",
+        type_of_program: request.type_of_program || "",
+        dscr_required: Boolean(request.dscr_required),
+        dscr_flag: Boolean(request.dscr_flag),
+        type_of_transaction: request.type_of_transaction || "",
+        primary_own_or_rent: request.primary_own_or_rent || "",
+        mortgage_late_payments: request.mortgage_late_payments || "",
+        property_units: request.property_units || 0,
+        borrower_signed: Boolean(request.borrower_signed),
+        guarantor_signed: Boolean(request.guarantor_signed),
+        radicado: request.radicado || "",
+        status: request.status || "PENDING",
+        client_submitted: Boolean(request.client_submitted),
+        client_form_completed: Boolean(request.client_form_completed),
+        client_submitted_at: request.client_submitted_at || null,
+        comments: request.comments || "",
+        rejection_reason: request.rejection_reason || "",
       });
       
-      console.log("Formulario establecido con issued_date:", formatDateForInput(solicitud.issued_date));
+      console.log("Form set with issued_date:", formatDateForInput(request.issued_date));
       setIsEditMode(false);
     }
-  }, [solicitud]);
+  }, [request]);
 
   // Debug: Monitorear cambios en el formulario
   useEffect(() => {
@@ -240,10 +240,10 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
   }, [form.issued_date]);
 
   useEffect(() => {
-    if (solicitud && solicitud.id) {
+    if (request && request.id) {
       let isMounted = true;
       
-      getRequestLinks({ dscr_request_id: solicitud.id })
+      getRequestLinks({ dscr_request_id: request.id })
         .then(links => {
           if (isMounted) {
             const link = Array.isArray(links) ? links.find(l => l.link_token) : null;
@@ -265,7 +265,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
         isMounted = false;
       };
     }
-  }, [solicitud?.id]);
+  }, [request?.id]);
 
   // Maneja cambios generales
   const handleChange = (e) => {
@@ -331,7 +331,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
       delete dataToSend.estimated_fico_score;
 
       console.log("Data to send (update):", dataToSend);
-      await updateDscr(solicitud.id, dataToSend);
+      await updateDscr(request.id, dataToSend);
       setFeedback("Request updated successfully!");
       setIsEditMode(false);
     } catch (error) {
@@ -341,7 +341,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
     setLoading(false);
   };
 
-  // Guardar nuevo (create, solo si no hay solicitud)
+  // Guardar nuevo (create, solo si no hay request)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.fico && (Number(form.fico) < 300 || Number(form.fico) > 850)) {
@@ -376,7 +376,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
       };
       delete dataToSend.estimated_fico_score;
 
-      console.log("Datos a enviar (create):", dataToSend);
+      console.log("Data to send (create):", dataToSend);
       const response = await createDscr(dataToSend);
       setIsEditMode(false);
       setFeedback("DSCR created successfully!");
@@ -391,12 +391,12 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
   };
 
   const handleGenerateLink = async () => {
-    if (!solicitud || !solicitud.id) return;
+    if (!request || !request.id) return;
     setGenerating(true);
     try {
       const link = await createRequestLink({
         valid_days: 30,
-        dscr_request_id: solicitud.id,
+        dscr_request_id: request.id,
         construction_request_id: 0,
         fixflip_request_id: 0
       });
@@ -411,21 +411,21 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
 
   // Función para enviar email usando template
   const handleSendLink = async () => {
-    if (!externalLink || !cliente?.email) return;
+    if (!externalLink || !client?.email) return;
     setSending(true);
     try {
       // Enviar email usando template
       await sendTemplateEmail({
-        template_id: 0, // ID del template de solicitud
+        template_id: 0, // ID del template de request
         template_type: "request_link",
-        to_email: cliente.email,
+        to_email: client.email,
         from_email: "noreply@reinvestar.com", // Email del sistema
         content_type: "text/html", // Asegurar que se envíe como HTML
         variables: {
-          client_name: cliente.full_name,
+          client_name: client.full_name,
           request_link: externalLink,
           request_type: "DSCR",
-          request_id: solicitud.id
+          request_id: request.id
         }
       });
       setFeedback("Email sent successfully!");
@@ -438,33 +438,32 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
   };
 
   return (
-    <form className="container-fluid" onSubmit={solicitud ? handleUpdate : handleSubmit}>
-        {/* Datos del cliente */}
-        {cliente && (
+    <form className="container-fluid" onSubmit={request ? handleUpdate : handleSubmit}>
+        {/* Client data */}
+        {client && (
         <>
         <div className="mb-4">
           <div className="row gy-2 align-items-end">
             <div className="col-md-3">
-              <label className="form-label my_title_color">Nombre</label>
-              <input className="form-control" value={cliente.full_name || ""} disabled />
+              <label className="form-label my_title_color">Name</label>
+              <input className="form-control" value={client.full_name || ""} disabled />
             </div>
             <div className="col-md-3">
               <label className="form-label my_title_color">Email</label>
-              <input className="form-control" value={cliente.email || ""} disabled />
+              <input className="form-control" value={client.email || ""} disabled />
             </div>
             <div className="col-md-3">
-              <label className="form-label my_title_color">Teléfono</label>
-              <input className="form-control" value={cliente.phone || ""} disabled />
+              <label className="form-label my_title_color">Phone</label>
+              <input className="form-control" value={client.phone || ""} disabled />
             </div>
           </div>
         </div>
-        <hr/>
         </>
         )}
 
-      {cliente && (
+      {client && (
       <div className="d-flex align-items-center mb-4 gap-3">
-        <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Detalle de Solicitud DSCR</h4>
+        <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>DSCR Request Details</h4>
         {externalLink ? (
           <>
             <span className="small text-muted" style={{ wordBreak: 'break-all' }}>{externalLink}</span>
@@ -473,14 +472,14 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
               className="btn btn-outline-secondary btn-sm ms-2"
               onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
             >
-              {copied ? "¡Copiado!" : "Copiar"}
+              {copied ? "Copied!" : "Copy"}
             </button>
             <button
               type="button"
               className="btn btn-outline-success btn-sm ms-2"
               onClick={handleSendLink}
-              disabled={sending || !cliente?.email}
-              title={!cliente?.email ? "No hay email del cliente" : "Enviar enlace al cliente"}
+              disabled={sending || !client?.email}
+              title={!client?.email ? "No hay email del client" : "Enviar enlace al client"}
             >
               {sending ? "Sending..." : "Send"}
             </button>
@@ -492,7 +491,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
             onClick={handleGenerateLink}
             disabled={generating}
           >
-            {generating ? "Generando..." : "Generar enlace"}
+            {generating ? "Generating..." : "Generate link"}
           </button>
         )}
       </div>
@@ -993,7 +992,7 @@ const DscrForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = 
 
         <div className="row">
         <div className="col-12 mt-4">
-            {solicitud ? (
+            {request ? (
             isEditMode ? (
                 <button
                   type="submit"

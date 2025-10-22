@@ -74,7 +74,7 @@ const initialState = {
   total_liquidity: 0
 };
 
-const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable = true, hideExternalLink = false, hideClientInfo = false }) => {
+const FixflipForm = ({ client_id, goToDocumentsTab, request, client, editable = true, hideExternalLink = false, hideClientInfo = false }) => {
   const [form, setForm] = useState({ ...initialState });
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -85,84 +85,84 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    console.log('FixflipForm useEffect - solicitud:', solicitud);
-    if (solicitud) {
-      console.log('Setting form with solicitud data:', solicitud);
+    console.log('FixflipForm useEffect - request:', request);
+    if (request) {
+      console.log('Setting form with request data:', request);
       setForm({
-        borrower_name: solicitud.borrower_name || "",
-        legal_status: solicitud.legal_status || "",
-        property_address: solicitud.property_address || "",
-        fico_score: solicitud.fico_score ?? solicitud.estimated_fico_score ?? "",
-        property_type: solicitud.property_type || "",
+        borrower_name: request.borrower_name || "",
+        legal_status: request.legal_status || "",
+        property_address: request.property_address || "",
+        fico_score: request.fico_score ?? request.estimated_fico_score ?? "",
+        property_type: request.property_type || "",
         
         // Address Information
-        street_address: solicitud.street_address || "",
-        city: solicitud.city || "",
-        state: solicitud.state || "",
-        zip: solicitud.zip || "",
-        lived_less_than_2_years: Boolean(solicitud.lived_less_than_2_years),
-        previous_street_address: solicitud.previous_street_address || "",
-        previous_city: solicitud.previous_city || "",
-        previous_state: solicitud.previous_state || "",
-        previous_zip: solicitud.previous_zip || "",
+        street_address: request.street_address || "",
+        city: request.city || "",
+        state: request.state || "",
+        zip: request.zip || "",
+        lived_less_than_2_years: Boolean(request.lived_less_than_2_years),
+        previous_street_address: request.previous_street_address || "",
+        previous_city: request.previous_city || "",
+        previous_state: request.previous_state || "",
+        previous_zip: request.previous_zip || "",
         
-        land_acquisition_cost: solicitud.land_acquisition_cost ?? "",
-        construction_rehab_budget: solicitud.construction_rehab_budget ?? "",
-        total_cost: solicitud.total_cost ?? "",
-        estimated_after_completion_value: solicitud.estimated_after_completion_value ?? "",
+        land_acquisition_cost: request.land_acquisition_cost ?? "",
+        construction_rehab_budget: request.construction_rehab_budget ?? "",
+        total_cost: request.total_cost ?? "",
+        estimated_after_completion_value: request.estimated_after_completion_value ?? "",
         
         // Campos adicionales
-        date: solicitud.date || "",
-        loan_type: solicitud.loan_type || "",
-        closing_date: solicitud.closing_date || "",
-				interest_rate_structure: solicitud.interest_rate_structure || "",
-				loan_term: solicitud.loan_term || "",
-        prepayment_penalty: solicitud.prepayment_penalty ?? 0,
-        max_ltv: solicitud.max_ltv ?? 0,
-        max_ltc: solicitud.max_ltc ?? 0,
-        as_is_value: solicitud.as_is_value ?? 0,
-        original_acquisition_price: solicitud.original_acquisition_price ?? 0,
-        origination_fee: solicitud.origination_fee ?? 0,
-        underwriting_fee: solicitud.underwriting_fee ?? 0,
-        processing_fee: solicitud.processing_fee ?? 0,
-        servicing_fee: solicitud.servicing_fee ?? 0,
-        legal_fee: solicitud.legal_fee ?? 0,
-        appraisal_fee: solicitud.appraisal_fee ?? 0,
-        budget_review_fee: solicitud.budget_review_fee ?? 0,
-        broker_fee: solicitud.broker_fee ?? 0,
-        transaction_management_fee: solicitud.transaction_management_fee ?? 0,
-        total_loan_amount: solicitud.total_loan_amount ?? 0,
-        annual_interest_rate: solicitud.annual_interest_rate ?? 0,
-        requested_leverage: solicitud.requested_leverage ?? 0,
-        monthly_interest_payment: solicitud.monthly_interest_payment ?? 0,
-        construction_holdback: solicitud.construction_holdback ?? 0,
-        initial_funding: solicitud.initial_funding ?? 0,
-        day1_monthly_interest_payment: solicitud.day1_monthly_interest_payment ?? 0,
-        interest_reserves: solicitud.interest_reserves ?? 0,
-        loan_to_as_is_value: solicitud.loan_to_as_is_value ?? 0,
-        loan_to_as_is_value_ltv: solicitud.loan_to_as_is_value_ltv ?? 0,
-        loan_to_cost_ltc: solicitud.loan_to_cost_ltc ?? 0,
-        loan_to_arv: solicitud.loan_to_arv ?? 0,
-				rehab_category: solicitud.rehab_category || "",
-        min_credit_score: solicitud.min_credit_score ?? 0,
-        refundable_commitment_deposit: solicitud.refundable_commitment_deposit ?? 0,
-        estimated_closing_costs: solicitud.estimated_closing_costs ?? 0,
-        construction_budget_10_percent: solicitud.construction_budget_10_percent ?? 0,
-        six_months_payment_reserves: solicitud.six_months_payment_reserves ?? 0,
-        construction_budget_delta: solicitud.construction_budget_delta ?? 0,
-        down_payment: solicitud.down_payment ?? 0,
-        total_liquidity: solicitud.total_liquidity ?? 0
+        date: request.date || "",
+        loan_type: request.loan_type || "",
+        closing_date: request.closing_date || "",
+				interest_rate_structure: request.interest_rate_structure || "",
+				loan_term: request.loan_term || "",
+        prepayment_penalty: request.prepayment_penalty ?? 0,
+        max_ltv: request.max_ltv ?? 0,
+        max_ltc: request.max_ltc ?? 0,
+        as_is_value: request.as_is_value ?? 0,
+        original_acquisition_price: request.original_acquisition_price ?? 0,
+        origination_fee: request.origination_fee ?? 0,
+        underwriting_fee: request.underwriting_fee ?? 0,
+        processing_fee: request.processing_fee ?? 0,
+        servicing_fee: request.servicing_fee ?? 0,
+        legal_fee: request.legal_fee ?? 0,
+        appraisal_fee: request.appraisal_fee ?? 0,
+        budget_review_fee: request.budget_review_fee ?? 0,
+        broker_fee: request.broker_fee ?? 0,
+        transaction_management_fee: request.transaction_management_fee ?? 0,
+        total_loan_amount: request.total_loan_amount ?? 0,
+        annual_interest_rate: request.annual_interest_rate ?? 0,
+        requested_leverage: request.requested_leverage ?? 0,
+        monthly_interest_payment: request.monthly_interest_payment ?? 0,
+        construction_holdback: request.construction_holdback ?? 0,
+        initial_funding: request.initial_funding ?? 0,
+        day1_monthly_interest_payment: request.day1_monthly_interest_payment ?? 0,
+        interest_reserves: request.interest_reserves ?? 0,
+        loan_to_as_is_value: request.loan_to_as_is_value ?? 0,
+        loan_to_as_is_value_ltv: request.loan_to_as_is_value_ltv ?? 0,
+        loan_to_cost_ltc: request.loan_to_cost_ltc ?? 0,
+        loan_to_arv: request.loan_to_arv ?? 0,
+				rehab_category: request.rehab_category || "",
+        min_credit_score: request.min_credit_score ?? 0,
+        refundable_commitment_deposit: request.refundable_commitment_deposit ?? 0,
+        estimated_closing_costs: request.estimated_closing_costs ?? 0,
+        construction_budget_10_percent: request.construction_budget_10_percent ?? 0,
+        six_months_payment_reserves: request.six_months_payment_reserves ?? 0,
+        construction_budget_delta: request.construction_budget_delta ?? 0,
+        down_payment: request.down_payment ?? 0,
+        total_liquidity: request.total_liquidity ?? 0
       });
       console.log('Form set successfully');
       setIsEditMode(false);
     } else {
-      console.log('No solicitud data provided');
+      console.log('No request data provided');
     }
 		if (hideExternalLink) return;
-    if (solicitud && solicitud.id) {
+    if (request && request.id) {
       let isMounted = true;
       
-      getRequestLinks({ fixflip_request_id: solicitud.id })
+      getRequestLinks({ fixflip_request_id: request.id })
         .then(links => {
           if (isMounted) {
             const link = Array.isArray(links) ? links.find(l => l.link_token) : null;
@@ -184,7 +184,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
         isMounted = false;
       };
     }
-  }, [solicitud]);
+  }, [request]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -285,7 +285,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
         total_liquidity: form.total_liquidity ? Number(form.total_liquidity) : 0,
         status: "PENDING"
       };
-      await updateFixflip(solicitud.id, dataToSend);
+      await updateFixflip(request.id, dataToSend);
       setFeedback("Request updated successfully!");
       setIsEditMode(false);
     } catch (error) {
@@ -375,14 +375,14 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
   };
 
   const handleGenerateLink = async () => {
-    if (!solicitud || !solicitud.id) return;
+    if (!request || !request.id) return;
     setGenerating(true);
     try {
       const link = await createRequestLink({
         valid_days: 30,
         dscr_request_id: 0,
         construction_request_id: 0,
-        fixflip_request_id: solicitud.id
+        fixflip_request_id: request.id
       });
       if (link && link.link_token) {
         setExternalLink(`${URL_EXTERNAL_FORM}/fixflip/${link.link_token}`);
@@ -395,21 +395,21 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
 
   // Función para enviar email usando template
   const handleSendLink = async () => {
-    if (!externalLink || !cliente?.email) return;
+    if (!externalLink || !client?.email) return;
     setSending(true);
     try {
       // Enviar email usando template
       await sendTemplateEmail({
-        template_id: 0, // ID del template de solicitud
+        template_id: 0, // ID del template de request
         template_type: "request_link",
-        to_email: cliente.email,
+        to_email: client.email,
         from_email: "noreply@reinvestar.com", // Email del sistema
         content_type: "text/html", // Asegurar que se envíe como HTML
         variables: {
-          client_name: cliente.full_name,
+          client_name: client.full_name,
           request_link: externalLink,
           request_type: "Fixflip",
-          request_id: solicitud.id
+          request_id: request.id
         }
       });
       setFeedback("Email sent successfully!");
@@ -422,22 +422,22 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
   };
 
   return (
-    <form className="container-fluid" onSubmit={solicitud ? handleUpdate : handleSubmit}>
-      {/* Datos del cliente */}
-			{cliente && !hideClientInfo && (
+    <form className="container-fluid" onSubmit={request ? handleUpdate : handleSubmit}>
+      {/* Client data */}
+			{client && !hideClientInfo && (
         <div className="mb-4">
           <div className="row gy-2 align-items-end">
             <div className="col-md-3">
-              <label className="form-label my_title_color">Nombre</label>
-              <input className={`form-control ${styles.input}`} value={cliente.full_name || ""} disabled />
+              <label className="form-label my_title_color">Name</label>
+              <input className={`form-control ${styles.input}`} value={client.full_name || ""} disabled />
             </div>
             <div className="col-md-3">
               <label className="form-label my_title_color">Email</label>
-              <input className={`form-control ${styles.input}`} value={cliente.email || ""} disabled />
+              <input className={`form-control ${styles.input}`} value={client.email || ""} disabled />
             </div>
             <div className="col-md-3">
-              <label className="form-label my_title_color">Teléfono</label>
-              <input className={`form-control ${styles.input}`} value={cliente.phone || ""} disabled />
+              <label className="form-label my_title_color">Phone</label>
+              <input className={`form-control ${styles.input}`} value={client.phone || ""} disabled />
             </div>
           </div>
         </div>
@@ -455,7 +455,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
               className="btn btn-outline-secondary btn-sm ms-2"
               onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
             >
-              {copied ? "¡Copiado!" : "Copiar"}
+              {copied ? "Copied!" : "Copy"}
             </button>
             <button
               type="button"
@@ -473,7 +473,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
             onClick={handleGenerateLink}
             disabled={generating}
           >
-            {generating ? "Generando..." : "Generar enlace"}
+            {generating ? "Generating..." : "Generate link"}
           </button>
 					)
         )}
@@ -869,7 +869,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, solicitud, cliente, editable
 
       <div className="row">
         <div className="col-12 mt-4">
-          {solicitud ? (
+          {request ? (
             isEditMode ? (
               <button
                 type="submit"

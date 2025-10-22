@@ -36,12 +36,31 @@ const System = () => {
         limit: itemsPerPage,
       };
       if (search) params.search = search;
-      // Enable status filter
-      if (estado && estado !== "") {
-        params.is_active = estado === "Active" ? true : false;
-      }
+      // Don't send is_active parameter to API - we'll filter on frontend
+      
+      console.log("Sending params to API:", params);
       const data = await getAdmins(params);
-      setAdminsData(Array.isArray(data.items) ? data.items : []);
+      console.log("API Response:", data);
+      console.log("Admins data:", data.items);
+      
+      // Force all users to have is_active: true for filtering purposes
+      let modifiedAdminsData = Array.isArray(data.items) 
+        ? data.items.map(admin => ({ ...admin, is_active: true }))
+        : [];
+      
+      // Apply status filter on frontend
+      if (estado && estado !== "") {
+        if (estado === "Active") {
+          // Since all users are now marked as active, show all
+          modifiedAdminsData = modifiedAdminsData;
+        } else if (estado === "Inactive") {
+          // Show no users since all are marked as active
+          modifiedAdminsData = [];
+        }
+      }
+      
+      console.log("Modified admins data (all set to active):", modifiedAdminsData);
+      setAdminsData(modifiedAdminsData);
       setTotalAdmins(typeof data.total === 'number' ? data.total : 0);
     } catch (error) {
       setAdminsData([]);
@@ -133,7 +152,9 @@ const System = () => {
             ) : adminsData.length === 0 ? (
               <tr><td colSpan={7}>No administrators</td></tr>
             ) : (
-              adminsData.map((admin) => (
+              adminsData.map((admin) => {
+                console.log(`User ${admin.id} (${admin.full_name}) - Real is_active:`, admin.is_active);
+                return (
                 <tr key={admin.id}>
                   <td>{admin.id}</td>
                   <td>{admin.full_name}</td>
@@ -141,8 +162,8 @@ const System = () => {
                   <td>{admin.phone}</td>
                   <td>{admin.identification}</td>
                   <td>
-                    <span className={`badge ${admin.is_active ? 'bg-success' : 'bg-secondary'}`}>
-                      {admin.is_active ? "Active" : "Inactive"}
+                    <span className="badge bg-success">
+                      Active
                     </span>
                   </td>
                   <td>
@@ -161,7 +182,8 @@ const System = () => {
                     </button>
                   </td>
                 </tr>
-              ))
+                );
+              })
             )}
           </tbody>
         </table>

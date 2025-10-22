@@ -7,19 +7,19 @@ import { getClients, createClient } from "../../../../../Api/client";
 import { getCompanies } from "../../../../../Api/admin";
 
 const initialClient = {
-  nombre: "",
-  correo: "",
-  telefono: "",
-  direccion: "",
-  empresa: "",
-  tipoProducto: "",
-  fechaRegistro: "",
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  company: "",
+  productType: "",
+  registrationDate: "",
 };
 
 const FormRequest = ({ goToDocumentsTab }) => {
   const [form, setForm] = useState(initialClient);
   const [clientId, setClientId] = useState("");
-  const [clienteEncontrado, setClienteEncontrado] = useState(false);
+  const [clientFound, setClientFound] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState(null);
@@ -39,10 +39,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
   }, []);
 
   // Search clients by email (search) live
-  const handleCorreoChange = async (e) => {
+  const handleEmailChange = async (e) => {
     const value = e.target.value;
-    setForm(prev => ({ ...prev, correo: value }));
-    setClienteEncontrado(false);
+    setForm(prev => ({ ...prev, email: value }));
+    setClientFound(false);
     setClientId("");
     setFeedback("");
     if (value.length < 3) {
@@ -54,20 +54,20 @@ const FormRequest = ({ goToDocumentsTab }) => {
       const res = await getClients({ search: value });
       
       // Handle new data structure with total and items
-      let clientes = [];
+      let clients = [];
       if (Array.isArray(res)) {
         // If API returns an array directly
-        clientes = res;
+        clients = res;
       } else if (res && Array.isArray(res.items)) {
         // If API returns { total: N, items: [...] }
-        clientes = res.items;
+        clients = res.items;
       } else if (res && Array.isArray(res.results)) {
         // If API returns { total: N, results: [...] }
-        clientes = res.results;
+        clients = res.results;
       }
       
-      if (clientes.length > 0) {
-        setSuggestions(clientes);
+      if (clients.length > 0) {
+        setSuggestions(clients);
         setShowSuggestions(true);
       } else {
         setSuggestions([]);
@@ -81,20 +81,20 @@ const FormRequest = ({ goToDocumentsTab }) => {
   };
 
   // When selecting a client from the list
-  const handleSuggestionClick = (cliente) => {
+  const handleSuggestionClick = (client) => {
     setForm(prev => ({
       ...prev,
-      correo: cliente.email || cliente.correo || "",
-      nombre: cliente.full_name || cliente.nombre || "",
-      telefono: cliente.phone || cliente.telefono || "",
-      direccion: cliente.address || cliente.direccion || "",
-      empresa: cliente.company_id ? String(cliente.company_id) : "",
+      email: client.email || client.correo || "",
+      name: client.full_name || client.nombre || "",
+      phone: client.phone || client.telefono || "",
+      address: client.address || client.direccion || "",
+      company: client.company_id ? String(client.company_id) : "",
     }));
-    setClientId(cliente.id);
-    setClienteEncontrado(true);
+    setClientId(client.id);
+    setClientFound(true);
     setSuggestions([]);
     setShowSuggestions(false);
-    setFeedback(`Client found: ${cliente.full_name || cliente.nombre}`);
+    setFeedback(`Client found: ${client.full_name || client.nombre}`);
   };
 
   // Handle changes in the rest of the form
@@ -107,18 +107,18 @@ const FormRequest = ({ goToDocumentsTab }) => {
   const handleCreateClient = async () => {
     setFeedback("");
     setLoading(true);
-    if (!form.nombre || !form.correo || !form.direccion) {
+    if (!form.name || !form.email || !form.address) {
       setFeedback("Name, email and address are required");
       setLoading(false);
       return;
     }
     try {
-      const nuevo = await createClient({
-        full_name: form.nombre,
-        email: form.correo,
-        phone: form.telefono,
-        address: form.direccion,
-        company_id: form.empresa ? Number(form.empresa) : undefined,
+      const newClient = await createClient({
+        full_name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        company_id: form.company ? Number(form.company) : undefined,
         purchase_or_refinancing: !!form.purchase_or_refinancing,
         has_a_mortgage: !!form.has_a_mortgage,
         has_delinquencies: !!form.has_delinquencies,
@@ -126,22 +126,22 @@ const FormRequest = ({ goToDocumentsTab }) => {
         current_hoa: !!form.current_hoa,
         subject_under_llc: !!form.subject_under_llc,
       });
-      setClientId(nuevo.id);
-      setClienteEncontrado(true);
+      setClientId(newClient.id);
+      setClientFound(true);
       setForm(prev => ({
         ...prev,
-        nombre: nuevo.full_name,
-        correo: nuevo.email,
-        telefono: nuevo.phone,
-        direccion: nuevo.address,
-        empresa: nuevo.company_id ? String(nuevo.company_id) : "",
+        name: newClient.full_name,
+        email: newClient.email,
+        phone: newClient.phone,
+        address: newClient.address,
+        company: newClient.company_id ? String(newClient.company_id) : "",
         // Ensure booleans are also reflected
-        purchase_or_refinancing: !!nuevo.purchase_or_refinancing,
-        has_a_mortgage: !!nuevo.has_a_mortgage,
-        has_delinquencies: !!nuevo.has_delinquencies,
-        pays_taxes: !!nuevo.pays_taxes,
-        current_hoa: !!nuevo.current_hoa,
-        subject_under_llc: !!nuevo.subject_under_llc,
+        purchase_or_refinancing: !!newClient.purchase_or_refinancing,
+        has_a_mortgage: !!newClient.has_a_mortgage,
+        has_delinquencies: !!newClient.has_delinquencies,
+        pays_taxes: !!newClient.pays_taxes,
+        current_hoa: !!newClient.current_hoa,
+        subject_under_llc: !!newClient.subject_under_llc,
       }));
       setFeedback("Client registered and selected successfully");
     } catch (err) {
@@ -155,26 +155,26 @@ const FormRequest = ({ goToDocumentsTab }) => {
     e.preventDefault();
     setFeedback("");
     setLoading(true);
-    if (!form.nombre || !form.correo || !form.direccion) {
+    if (!form.name || !form.email || !form.address) {
       setFeedback("Name, email and address are required");
       setLoading(false);
       return;
     }
-    if (clienteEncontrado) {
+    if (clientFound) {
       setFeedback("Client already exists. You can continue with the request.");
       setLoading(false);
       return;
     }
     try {
-      const nuevo = await createClient({
-        full_name: form.nombre,
-        email: form.correo,
-        phone: form.telefono,
-        address: form.direccion,
-        company_id: form.empresa ? Number(form.empresa) : undefined,
+      const newClient = await createClient({
+        full_name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        company_id: form.company ? Number(form.company) : undefined,
       });
-      setClientId(nuevo.id);
-      setClienteEncontrado(true);
+      setClientId(newClient.id);
+      setClientFound(true);
       setFeedback("Client registered successfully");
     } catch (err) {
       setFeedback("Error registering client");
@@ -188,15 +188,15 @@ const FormRequest = ({ goToDocumentsTab }) => {
         <div className="row">
           <div className="col-4">
             <div className="w-100 d-flex flex-column position-relative">
-              <label htmlFor="correo">Email</label>
+              <label htmlFor="email">Email</label>
           <input
                 type="email"
                 placeholder="Email address"
             className={styles.input}
-                name="correo"
-                id="correo"
-                value={form.correo}
-                onChange={handleCorreoChange}
+                name="email"
+                id="email"
+                value={form.email}
+                onChange={handleEmailChange}
             required
                 autoComplete="off"
           />
@@ -218,9 +218,9 @@ const FormRequest = ({ goToDocumentsTab }) => {
                   listStyle: "none",
                   boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
                 }}>
-                  {suggestions.map(cliente => (
+                  {suggestions.map(client => (
                     <li
-                      key={cliente.id}
+                      key={client.id}
                       style={{ 
                         padding: "12px 16px", 
                         cursor: "pointer",
@@ -233,13 +233,13 @@ const FormRequest = ({ goToDocumentsTab }) => {
                       onMouseLeave={(e) => {
                         e.target.style.backgroundColor = "#fff";
                       }}
-                      onClick={() => handleSuggestionClick(cliente)}
+                      onClick={() => handleSuggestionClick(client)}
                     >
                       <div style={{ fontWeight: "500", color: "#374151" }}>
-                        {cliente.email}
+                        {client.email}
                       </div>
                       <div style={{ fontSize: "12px", color: "#6b7280", marginTop: "2px" }}>
-                        {cliente.full_name || cliente.nombre} • {cliente.phone || cliente.telefono || "No phone"}
+                        {client.full_name || client.nombre} • {client.phone || client.telefono || "No phone"}
                       </div>
                     </li>
                   ))}
@@ -249,16 +249,16 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
           <div className="col-4">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="correo">Client Name</label>
+              <label htmlFor="name">Client Name</label>
           <input
             type="text"
                 placeholder="Client name"
             className={styles.input}
-            name="nombre"
-            value={form.nombre}
+            name="name"
+            value={form.name}
             onChange={handleChange}
             required
-                disabled={clienteEncontrado}
+                disabled={clientFound}
           />
         </div>
           </div>
@@ -267,13 +267,13 @@ const FormRequest = ({ goToDocumentsTab }) => {
             <div className="w-100 d-flex flex-column">
               <label htmlFor="options_companies">Company</label>
               <select
-                name="empresa"
+                name="company"
                 id="options_companies"
             className={styles.input}
-                value={form.empresa}
+                value={form.company}
             onChange={handleChange}
             required
-                disabled={clienteEncontrado}
+                disabled={clientFound}
               >
                 <option value="">Select a company</option>
                 {companies && companies.map(({ id, name }) => (
@@ -286,37 +286,37 @@ const FormRequest = ({ goToDocumentsTab }) => {
         <div className="row">
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="telefono">Phone Number</label>
+              <label htmlFor="phone">Phone Number</label>
           <input
             type="tel"
                 placeholder="Phone number"
             className={styles.input}
-            name="telefono"
-            value={form.telefono}
+            name="phone"
+            value={form.phone}
             onChange={handleChange}
-                disabled={clienteEncontrado}
+                disabled={clientFound}
           />
         </div>
       </div>
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="direccion">Property Address</label>
+              <label htmlFor="address">Property Address</label>
           <input
             type="text"
                 placeholder="Property address"
             className={styles.input}
-            name="direccion"
-            value={form.direccion}
+            name="address"
+            value={form.address}
             onChange={handleChange}
             required
-                disabled={clienteEncontrado}
+                disabled={clientFound}
           />
         </div>
           </div>
         </div>
 
         {/* Button to create client if it doesn't exist */}
-        {!clienteEncontrado && !loading && form.correo && form.nombre && form.direccion && (
+        {!clientFound && !loading && form.email && form.name && form.address && (
           <div className="row">
             <div className="col-12 d-flex justify-content-end">
               <button
@@ -349,18 +349,18 @@ const FormRequest = ({ goToDocumentsTab }) => {
       <div className={`row`}>
         <div className="col-6">
           <div className="w-100 d-flex flex-column">
-            <label htmlFor="pruduct_type">Product Type</label>
+            <label htmlFor="product_type">Product Type</label>
             <select
-              name="tipoProducto"
+              name="productType"
               id="product_type"
               className={styles.input}
-              value={form.tipoProducto}
+              value={form.productType}
               onChange={handleChange}
             >
               <option value="">Select a product</option>
               <option value="fixflip">FixFlip</option>
               <option value="dscr">Dscr</option>
-              <option value="construction">Contruction</option>
+              <option value="construction">Construction</option>
             </select>
           </div>
         </div>
@@ -373,11 +373,11 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
       <hr className="mt-2 mb-2"/>
       {/* Product form only if there is a client and product type */}
-      {form.tipoProducto && (
+      {form.productType && (
         <div className="mt-4">
-          {form.tipoProducto === "fixflip" && <FixflipForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}
-          {form.tipoProducto === "construction" && <ConstructionForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}
-          {form.tipoProducto === "dscr" && <DscrForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}
+          {form.productType === "fixflip" && <FixflipForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}
+          {form.productType === "construction" && <ConstructionForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}
+          {form.productType === "dscr" && <DscrForm client_id={clientId} goToDocumentsTab={goToDocumentsTab} />}
         </div>
       )}
       </div>

@@ -256,14 +256,14 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
         }
 
         // Send email if client exists
-        if (client && client.correo && generatedLink) {
+        if (client && client.email && generatedLink) {
           try {
             const emailData = {
-              to: client.correo,
+              to: client.email,
               subject: "Fixflip Loan Request - ReInvestar",
               template: "fixflip_request_created",
               data: {
-                client_name: client.nombre,
+                client_name: client.full_name,
                 request_id: response.id,
                 external_link: generatedLink
               }
@@ -689,7 +689,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
 
       {externalLink && (
         <div className="alert alert-info mt-3">
-          <strong>Enlace externo generado:</strong>
+          <strong>External link generated:</strong>
           <br />
           <a href={externalLink} target="_blank" rel="noopener noreferrer">
             {externalLink}

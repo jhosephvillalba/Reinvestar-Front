@@ -839,7 +839,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       <div className="row">
         <div className="col-12 mt-4">
           <button type="submit" className="btn btn-primary px-4 py-2" style={{ minWidth: "200px" }} disabled={loading}>
-            {loading ? "CREATING..." : "Save"}
+            {loading ? "CREATING..." : "CREATE DSCR"}
           </button>
         </div>
       </div>

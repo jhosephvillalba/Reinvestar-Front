@@ -15,11 +15,11 @@ import ConstructionForm from "./FormRequest/Construction";
 import { getFixflipById } from "../../../../Api/fixflip";
 import { getConstructionById } from "../../../../Api/construction";
 
-const DetalleSolicitud = () => {
-  const navegate = useNavigate();
+const RequestDetails = () => {
+  const navigate = useNavigate();
   const { id, type } = useParams();
   const [activeTab, setActiveTab] = useState("home");
-  const [solicitud, setSolicitud] = useState(null);
+  const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -34,10 +34,10 @@ const DetalleSolicitud = () => {
       } else if (type === "construction") {
         data = await getConstructionById(id);
       }
-      setSolicitud(data);
+      setRequest(data);
     } catch (e) {
       console.error('Error fetching data:', e);
-      setSolicitud(null);
+      setRequest(null);
     }
     setLoading(false);
   };
@@ -56,18 +56,18 @@ const DetalleSolicitud = () => {
     }
   }, []);
 
-  const handleback = () => {
-    navegate("/requests");
+  const handleBack = () => {
+    navigate("/requests");
   };
 
   // Function to verify if user can see processor tab
   const canViewProcessorTab = () => {
-    return currentUser && currentUser.roles?.[0] !== "Procesador";
+    return currentUser && currentUser.roles?.[0] !== "Processor";
   };
 
   // Function to verify if user can see status tab
   const canViewStatusTab = () => {
-    return currentUser && currentUser.roles?.[0] !== "Vendedor";
+    return currentUser && currentUser.roles?.[0] !== "Seller";
   };
 
   // Redirect to home tab if user is processor and is on processor tab
@@ -75,8 +75,8 @@ const DetalleSolicitud = () => {
   useEffect(() => {
     if (currentUser) {
       const userRole = currentUser.roles?.[0];
-      if ((userRole === "Procesador" && activeTab === "processor") ||
-          (userRole === "Vendedor" && activeTab === "status")) {
+      if ((userRole === "Processor" && activeTab === "processor") ||
+          (userRole === "Seller" && activeTab === "status")) {
         setActiveTab("home");
       }
     }
@@ -87,7 +87,7 @@ const DetalleSolicitud = () => {
       <div className={`${styles.scroll_section} internal_layout`}>
         <div className={`d-flex align-items-center justify-content-between px-4 py-3 ${styles.header}`}>
           <div className="d-flex align-items-center gap-3">
-            <button className="btn border-none p-0" onClick={handleback}>
+            <button className="btn border-none p-0" onClick={handleBack}>
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color mb-0`}>
@@ -95,21 +95,21 @@ const DetalleSolicitud = () => {
             </h2>
           </div>
           
-          {solicitud && (
+          {request && (
             <div className={styles.requestInfo}>
-              <span>ID: <strong>{solicitud.id}</strong></span>
-              {solicitud.radicado && (
+              <span>ID: <strong>{request.id}</strong></span>
+              {request.filing_number && (
                 <>
                   <span className={styles.separator}>|</span>
-                  <span>Filed: <strong>{solicitud.radicado}</strong></span>
+                  <span>Filed: <strong>{request.filing_number}</strong></span>
                 </>
               )}
               <span className={styles.separator}>|</span>
               <span>Type: <strong>{type?.toUpperCase()}</strong></span>
-              {solicitud.status && (
+              {request.status && (
                 <>
                   <span className={styles.separator}>|</span>
-                  <span>Status: <strong>{solicitud.status}</strong></span>
+                  <span>Status: <strong>{request.status}</strong></span>
                 </>
               )}
             </div>
@@ -180,7 +180,7 @@ const DetalleSolicitud = () => {
                 Activity
               </button>
             </li>
-            {solicitud?.status && ["PRICING", "ACCEPTED", "REJECTED", "CANCELLED", "CLOSED"].includes(solicitud.status.toUpperCase()) && (
+            {request?.status && ["PRICING", "ACCEPTED", "REJECTED", "CANCELLED", "CLOSED"].includes(request.status.toUpperCase()) && (
               <li className="nav-item" role="presentation">
                 <button
                   className={`nav-link${activeTab === "intention" ? " active" : ""}`}
@@ -227,12 +227,12 @@ const DetalleSolicitud = () => {
               <div className={`d-flex justify-content-center aling-items-center ${styles.container_section_request} mt-5`}>
                 {loading ? (
                   <div>Loading...</div>
-                ) : solicitud && type === "dscr" ? (
-                  <DscrForm solicitud={solicitud} cliente={solicitud.client} editable={true} />
-                ) : solicitud && type === "fixflip" ? (
-                  <FixflipForm solicitud={solicitud} cliente={solicitud.client} editable={true} />
-                ) : solicitud && type === "construction" ? (
-                  <ConstructionForm solicitud={solicitud} cliente={solicitud.client} editable={true} />
+                ) : request && type === "dscr" ? (
+                  <DscrForm request={request} client={request.client} editable={true} />
+                ) : request && type === "fixflip" ? (
+                  <FixflipForm request={request} client={request.client} editable={true} />
+                ) : request && type === "construction" ? (
+                  <ConstructionForm request={request} client={request.client} editable={true} />
                 ) : (
                   <div>Request not found</div>
                 )}
@@ -269,7 +269,7 @@ const DetalleSolicitud = () => {
             >
               <PipelineRequest requestId={id} requestType={type} />
             </div>
-            {solicitud?.status && ["PRICING", "ACCEPTED", "REJECTED", "CANCELLED", "CLOSED"].includes(solicitud.status.toUpperCase()) && (
+            {request?.status && ["PRICING", "ACCEPTED", "REJECTED", "CANCELLED", "CLOSED"].includes(request.status.toUpperCase()) && (
               <div
                 className={`tab-pane fade${activeTab === "intention" ? " show active" : ""}`}
                 id="intention"
@@ -279,7 +279,7 @@ const DetalleSolicitud = () => {
                 <IntentionLetter 
                   requestId={id} 
                   requestType={type} 
-                  solicitud={solicitud} 
+                  request={request} 
                 />
               </div>
             )}
@@ -293,7 +293,7 @@ const DetalleSolicitud = () => {
                 <StatusManagement 
                   requestId={id} 
                   requestType={type} 
-                  currentStatus={solicitud?.status || "PENDING"}
+                  currentStatus={request?.status || "PENDING"}
                   onDataNeedsRefresh={fetchData}
                 />
               </div>
@@ -305,4 +305,4 @@ const DetalleSolicitud = () => {
   );
 };
 
-export default DetalleSolicitud;
+export default RequestDetails;

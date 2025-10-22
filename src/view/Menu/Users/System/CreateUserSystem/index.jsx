@@ -55,7 +55,8 @@ const CreateUserSystem = () => {
       identification: formData.identificacion,
       address: formData.direccion,
       password: formData.contrasena,
-      role: "Admin"
+      role: "Admin",
+      is_active: true
     };
     if (!payload.role) {
       setRoleError("Role field is required");
