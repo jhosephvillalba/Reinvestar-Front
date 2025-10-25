@@ -7,6 +7,8 @@ import { getClientById } from "../../../../../../Api/client";
 import { sendTemplateEmail } from "../../../../../../Api/emailTemplate";
 import { getUserIdFromToken } from "../../../../../../utils/auth";
 
+const URL_EXTERNAL_FORM = import.meta.env.VITE_URL_EXTERMAL_FORM;
+
 const initialState = {
   // Basic form fields
   borrower_name: "",
@@ -79,6 +81,8 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
   const [feedback, setFeedback] = useState("");
   const [client, setClient] = useState(null);
   const [externalLink, setExternalLink] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
 
   // Load client data
   useEffect(() => {
@@ -94,6 +98,37 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
     };
     loadClient();
   }, [client_id]);
+
+  // Function to send email using template
+  const handleSendEmail = async (link) => {
+    if (!link || !client_id) return;
+    
+    setSending(true);
+    try {
+      // Get client data
+      const clientData = await getClientById(client_id);
+      
+      if (clientData && clientData.email) {
+        const emailData = {
+          to: clientData.email,
+          subject: "Fix&flip Loan Request - ReInvestar",
+          template: "fixflip_request_created",
+          data: {
+            client_name: clientData.full_name,
+            request_id: null, // No tenemos el ID aún en CreateRequest
+            external_link: link
+          }
+        };
+        
+        await sendTemplateEmail(emailData);
+        console.log("Email sent successfully");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+    } finally {
+      setSending(false);
+    }
+  };
 
   // Update total_cost when land_acquisition_cost or construction_rehab_budget changes
   useEffect(() => {
@@ -234,52 +269,27 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       if (response && response.id) {
         setFeedback("Request created successfully");
 
-        // Create external link
-        let generatedLink = "";
-        try {
-          const linkData = {
-            valid_days: 30,
-            dscr_request_id: 0,
-            construction_request_id: 0,
-            fixflip_request_id: response.id
-          };
+        // Create link automatically
+        const linkData = {
+          valid_days: 30,
+          dscr_request_id: 0,
+          construction_request_id: 0,
+          fixflip_request_id: response.id
+        };
 
-          const linkResponse = await createRequestLink(linkData);
-          console.log("Link created:", linkResponse);
-          
-          if (linkResponse && linkResponse.external_link) {
-            generatedLink = linkResponse.external_link;
-            setExternalLink(generatedLink);
-          }
-        } catch (linkError) {
-          console.error("Error creating link:", linkError);
+        const linkResponse = await createRequestLink(linkData);
+        console.log('createRequestLink response:', linkResponse);
+
+        if (linkResponse?.link_token) {
+          const fullLink = `${URL_EXTERNAL_FORM}/fixflip/${linkResponse.link_token}`;
+          setExternalLink(fullLink);
+          // Send email automatically
+          await handleSendEmail(fullLink);
         }
 
-        // Send email if client exists
-        if (client && client.email && generatedLink) {
-          try {
-            const emailData = {
-              to: client.email,
-              subject: "Fixflip Loan Request - ReInvestar",
-              template: "fixflip_request_created",
-              data: {
-                client_name: client.full_name,
-                request_id: response.id,
-                external_link: generatedLink
-              }
-            };
-            
-            await sendTemplateEmail(emailData);
-            console.log("Email sent successfully");
-          } catch (emailError) {
-            console.error("Error sending email:", emailError);
-          }
-        }
 
-        // Go to documents tab
-        if (goToDocumentsTab) {
-          goToDocumentsTab(response.id, 'fixflip');
-        }
+        // Don't automatically navigate to documents tab
+        // User can manually navigate if needed
       } else {
         setFeedback("Error creating request");
       }
@@ -295,6 +305,18 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
     <form onSubmit={handleSubmit} className="container-fluid" noValidate>
       <div className="d-flex align-items-center mb-4 gap-3">
         <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Fix & Flip - Basic Information</h4>
+        {externalLink && (
+          <>
+            <span className="small text-muted" style={{ wordBreak: 'break-all' }}>{externalLink}</span>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm ms-2"
+              onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </>
+        )}
       </div>
 
       {/* Simplified form with only specified fields */}
@@ -675,27 +697,13 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       )}
 
       <div className="row">
-        <div className="col-12 mt-4">
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ minWidth: "200px" }}
-            disabled={loading}
-          >
-            {loading ? "CREATING..." : "CREATE FIXFLIP"}
+        <div className="col-12 mt-4 mb-4">
+          <button type="submit" className="btn btn-primary px-4 py-2" style={{ minWidth: "200px" }} disabled={loading}>
+            {loading ? "CREATING..." : "CREATE FIX&FLIP"}
           </button>
         </div>
-        </div>
+      </div>
 
-      {externalLink && (
-        <div className="alert alert-info mt-3">
-          <strong>External link generated:</strong>
-          <br />
-          <a href={externalLink} target="_blank" rel="noopener noreferrer">
-            {externalLink}
-          </a>
-        </div>
-      )}
     </form>
   );
 };

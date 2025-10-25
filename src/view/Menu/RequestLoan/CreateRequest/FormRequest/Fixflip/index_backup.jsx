@@ -144,7 +144,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
         variables: {
           client_name: clientData.full_name,
           request_link: link,
-          request_type: "Fixflip",
+          request_type: "Fix&flip",
           request_id: null // No tenemos el ID aún en CreateRequest
         }
       });
@@ -266,7 +266,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       }
 
       // Actualizar UI y limpiar formulario
-      setFeedback("¡Fixflip creado exitosamente!");
+      setFeedback("¡Fix&flip creado exitosamente!");
       setForm({ ...initialState });
 
       // Navegar a documentos si es necesario

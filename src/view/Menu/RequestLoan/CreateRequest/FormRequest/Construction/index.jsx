@@ -250,9 +250,8 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
       }
 
       setFeedback("Construction created successfully!");
-      if (typeof goToDocumentsTab === 'function') {
-        goToDocumentsTab(constructionResponse.id, 'construction');
-      }
+      // Don't automatically navigate to documents tab
+      // User can manually navigate if needed
       setForm({ ...initialState });
     } catch (error) {
       console.error('Error:', error);
@@ -654,8 +653,8 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
       )}
 
       <div className="row">
-        <div className="col-12 mt-4">
-          <button type="submit" className={`btn ${styles.button}`} style={{ minWidth: "200px" }} disabled={loading}>
+        <div className="col-12 mt-4 mb-4">
+          <button type="submit" className="btn btn-primary px-4 py-2" style={{ minWidth: "200px" }} disabled={loading}>
             {loading ? "CREATING..." : "CREATE CONSTRUCTION"}
           </button>
         </div>

@@ -326,7 +326,7 @@ const FormRequest = () => {
               onChange={handleChange}
             >
               <option value="">Select a product</option>
-              <option value="fixflip">FixFlip</option>
+              <option value="fixflip">Fix&Flip</option>
               <option value="dscr">Dscr</option>
               <option value="construction">Construction</option>
             </select>

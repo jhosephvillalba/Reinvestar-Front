@@ -97,7 +97,7 @@ const Dashboard = () => {
     const { summary } = dashboardData;
     return [
       { name: 'DSCR', value: summary.dscr_requests, color: '#FFC862' },
-      { name: 'Fixflip', value: summary.fixflip_requests, color: '#1B2559' },
+      { name: 'Fix&flip', value: summary.fixflip_requests, color: '#1B2559' },
       { name: 'Construction', value: summary.construction_requests, color: '#2c3e50' }
     ].filter(item => item.value > 0);
   };
@@ -263,7 +263,7 @@ const Dashboard = () => {
                 <i className="fas fa-chart-line me-2" style={{color: '#FFC862'}}></i>
                 Request Trends by Type
               </h5>
-              <p className={styles.chartSubtitle}>Comparative view of DSCR, Fixflip and Construction requests</p>
+              <p className={styles.chartSubtitle}>Comparative view of DSCR, Fix&flip and Construction requests</p>
             </div>
             <div className={styles.combinedLineChart}>
               {requestTrendData.length > 0 ? (
@@ -385,7 +385,7 @@ const Dashboard = () => {
                       );
                     })}
 
-                    {/* Fixflip Line and Area */}
+                    {/* Fix&flip Line and Area */}
                     <path
                       d={requestTrendData.map((point, index) => {
                         const x = 50 + (index * (720 / Math.max(requestTrendData.length - 1, 1)));
@@ -411,7 +411,7 @@ const Dashboard = () => {
                       const y = 250 - ((point.fixflip || 0) / maxValue) * 200;
                       return (
                         <circle
-                          key={`fixflip-${index}`}
+                          key={`fix&flip-${index}`}
                           cx={x}
                           cy={y}
                           r="5"
@@ -468,7 +468,7 @@ const Dashboard = () => {
                     </div>
                     <div className={styles.legendItem}>
                       <span className={styles.legendColor} style={{backgroundColor: '#1B2559'}}></span>
-                      <span>Fixflip: {summary.fixflip_requests}</span>
+                      <span>Fix&flip: {summary.fixflip_requests}</span>
                     </div>
                     <div className={styles.legendItem}>
                       <span className={styles.legendColor} style={{backgroundColor: '#2c3e50'}}></span>
@@ -762,13 +762,13 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Fixflip Pipeline */}
+                {/* Fix&flip Pipeline */}
                 <div className="col-lg-4 mb-4">
                   <div className={styles.pipelineCard}>
                     <div className={styles.pipelineHeader}>
                       <h6 className="mb-0 fw-bold my_title_color">
                         <i className="fas fa-chart-line me-2" style={{color: '#1B2559'}}></i>
-                        Fixflip
+                        Fix&flip
                         <span className="badge bg-success ms-2">
                           {getPipelineTotal(vendor_pipeline.fixflip)}
                         </span>
@@ -788,7 +788,7 @@ const Dashboard = () => {
                       ) : (
                         <div className="text-center text-muted py-3">
                           <i className="fas fa-chart-line fs-3 mb-2 d-block"></i>
-                          No Fixflip pipeline data
+                          No Fix&flip pipeline data
                         </div>
                       )}
                     </div>

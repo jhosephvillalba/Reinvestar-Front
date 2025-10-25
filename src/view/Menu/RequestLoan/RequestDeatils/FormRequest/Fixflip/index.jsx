@@ -364,12 +364,12 @@ const FixflipForm = ({ client_id, goToDocumentsTab, request, client, editable = 
         total_liquidity: form.total_liquidity ? Number(form.total_liquidity) : 0
       };
       const response = await createFixflip(dataToSend);
-      setFeedback("Fixflip created successfully!");
+      setFeedback("Fix&flip created successfully!");
       if (typeof goToDocumentsTab === 'function') {
         goToDocumentsTab(response.id, 'fixflip');
       }
     } catch (error) {
-      setFeedback("Error creating Fixflip. Please try again.");
+      setFeedback("Error creating Fix&flip. Please try again.");
     }
     setLoading(false);
   };
@@ -408,7 +408,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, request, client, editable = 
         variables: {
           client_name: client.full_name,
           request_link: externalLink,
-          request_type: "Fixflip",
+          request_type: "Fix&flip",
           request_id: request.id
         }
       });
@@ -896,7 +896,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab, request, client, editable = 
               style={{ minWidth: "200px" }}
               disabled={loading}
             >
-              {loading ? "CREATING..." : "CREATE FIXFLIP"}
+              {loading ? "CREATING..." : "CREATE FIX&FLIP"}
             </button>
           )}
         </div>

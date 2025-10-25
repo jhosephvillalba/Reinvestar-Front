@@ -335,10 +335,8 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       setFeedback("DSCR created successfully!");
       setForm({ ...initialState });
 
-      // Navigate to documents if needed
-      if (typeof goToDocumentsTab === 'function') {
-        goToDocumentsTab(response.id, 'dscr');
-      }
+      // Don't automatically navigate to documents tab
+      // User can manually navigate if needed
 
     } catch (error) {
       console.error('Complete error:', error);
@@ -837,7 +835,7 @@ const DscrForm = ({ client_id, goToDocumentsTab }) => {
       )}
 
       <div className="row">
-        <div className="col-12 mt-4">
+        <div className="col-12 mt-4 mb-4">
           <button type="submit" className="btn btn-primary px-4 py-2" style={{ minWidth: "200px" }} disabled={loading}>
             {loading ? "CREATING..." : "CREATE DSCR"}
           </button>
