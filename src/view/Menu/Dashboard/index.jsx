@@ -16,6 +16,7 @@ const Dashboard = () => {
       in_process: 0,
       approved: 0,
       rejected: 0,
+      closed: 0,
       document_progress: 0
     },
     recent_activity: [],
@@ -53,6 +54,7 @@ const Dashboard = () => {
           in_process: 0,
           approved: 0,
           rejected: 0,
+          closed: 0,
           document_progress: 0
         },
         recent_activity: Array.isArray(dashboardData?.recent_activity) ? dashboardData.recent_activity : [],
@@ -109,7 +111,8 @@ const Dashboard = () => {
       { name: 'Pending', value: summary.pending_approval, color: '#FFC862' },
       { name: 'In Process', value: summary.in_process, color: '#1B2559' },
       { name: 'Approved', value: summary.approved, color: '#10b981' },
-      { name: 'Rejected', value: summary.rejected, color: '#ef4444' }
+      { name: 'Rejected', value: summary.rejected, color: '#ef4444' },
+      { name: 'Closed', value: summary.closed || 0, color: '#6b7280' }
     ].filter(item => item.value > 0);
   };
 
@@ -198,7 +201,7 @@ const Dashboard = () => {
       {/* First row - Main metrics */}
       <div className="row mb-4">
         {/* Total Requests - Main metric */}
-        <div className="col-lg-3 mb-4">
+        <div className="col mb-4">
           <div className={styles.mainMetricCard}>
             <div className={styles.metricIcon}>
               <i className="fas fa-chart-line"></i>
@@ -212,7 +215,7 @@ const Dashboard = () => {
         </div>
 
         {/* Requests In Process */}
-        <div className="col-lg-3 mb-4">
+        <div className="col mb-4">
           <div className={styles.metricCard}>
             <div className={styles.metricIcon} style={{backgroundColor: '#FFC862'}}>
               <i className="fas fa-clock text-white"></i>
@@ -226,7 +229,7 @@ const Dashboard = () => {
               </div>
 
         {/* Approved Requests */}
-        <div className="col-lg-3 mb-4">
+        <div className="col mb-4">
           <div className={styles.metricCard}>
             <div className={styles.metricIcon} style={{backgroundColor: '#10b981'}}>
               <i className="fas fa-check text-white"></i>
@@ -240,7 +243,7 @@ const Dashboard = () => {
         </div>
 
         {/* Pending Requests */}
-        <div className="col-lg-3 mb-4">
+        <div className="col mb-4">
           <div className={styles.metricCard}>
             <div className={styles.metricIcon} style={{backgroundColor: '#f59e0b'}}>
               <i className="fas fa-hourglass-half text-white"></i>
@@ -249,6 +252,20 @@ const Dashboard = () => {
               <h4 className={styles.metricValue}>{summary.pending_approval.toLocaleString()}</h4>
               <p className={styles.metricTitle}>Pending</p>
               <small className={styles.metricSubtitle}>Awaiting approval</small>
+            </div>
+          </div>
+        </div>
+
+        {/* Closed Requests */}
+        <div className="col mb-4">
+          <div className={styles.metricCard}>
+            <div className={styles.metricIcon} style={{backgroundColor: '#6b7280'}}>
+              <i className="fas fa-archive text-white"></i>
+            </div>
+            <div className={styles.metricContent}>
+              <h4 className={styles.metricValue}>{(summary.closed || 0).toLocaleString()}</h4>
+              <p className={styles.metricTitle}>Closed</p>
+              <small className={styles.metricSubtitle}>Closed requests</small>
             </div>
           </div>
         </div>

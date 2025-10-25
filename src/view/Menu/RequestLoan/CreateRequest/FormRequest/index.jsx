@@ -300,10 +300,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="address">Property Address</label>
+              <label htmlFor="address">Property Address (Primary)</label>
           <input
             type="text"
-                placeholder="Property address"
+                placeholder="Property address (primary)"
             className={styles.input}
             name="address"
             value={form.address}

@@ -61,15 +61,15 @@ export const StatusEnum = {
   CLOSED: "CLOSED"
 };
 
-// Mapeo de estados a etiquetas en español
+// Mapeo de estados a etiquetas en inglés
 export const StatusLabels = {
-  [StatusEnum.PENDING]: "Pendiente",
-  [StatusEnum.IN_REVIEW]: "En Revisión",
-  [StatusEnum.PRICING]: "En Pricing",
-  [StatusEnum.ACCEPTED]: "Aprobada",
-  [StatusEnum.REJECTED]: "Rechazada",
-  [StatusEnum.CANCELLED]: "Cancelada",
-  [StatusEnum.CLOSED]: "Cerrada"
+  [StatusEnum.PENDING]: "Pending",
+  [StatusEnum.IN_REVIEW]: "Under Review",
+  [StatusEnum.PRICING]: "Pricing",
+  [StatusEnum.ACCEPTED]: "Approved",
+  [StatusEnum.REJECTED]: "Rejected",
+  [StatusEnum.CANCELLED]: "Cancelled",
+  [StatusEnum.CLOSED]: "Closed"
 };
 
 // Mapeo de estados a colores de badge

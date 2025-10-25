@@ -10,6 +10,7 @@ import IntentionLetter from "./IntentionLetter";
 import { getDscrById } from "../../../../Api/dscr";
 import { getClientById } from "../../../../Api/client";
 import DscrForm from "./FormRequest/Dscr";
+import FixflipForm from "./FormRequest/Fixflip";
 import Form from "./FormRequest/";
 import ConstructionForm from "./FormRequest/Construction";
 import { getFixflipById } from "../../../../Api/fixflip";
@@ -229,10 +230,12 @@ const RequestDetails = () => {
                   <div>Loading...</div>
                 ) : request && type === "dscr" ? (
                   <DscrForm request={request} client={request.client} editable={true} />
-                ) : request && type === "" ? (
-                  <Form request={request} client={request.client} editable={true} />
+                ) : request && type === "fixflip" ? (
+                  <FixflipForm request={request} client={request.client} editable={true} />
                 ) : request && type === "construction" ? (
                   <ConstructionForm request={request} client={request.client} editable={true} />
+                ) : request && type === "" ? (
+                  <Form request={request} client={request.client} editable={true} />
                 ) : (
                   <div>Request not found</div>
                 )}
