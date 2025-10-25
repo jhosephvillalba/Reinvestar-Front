@@ -4,6 +4,7 @@ import Layout from './view/Layout'
 import DetalleSolicitud from './view/Menu/RequestLoan/RequestDeatils'
 import RecoverPassword from './view/RecoverPassword'
 import RecoverConfirmation from './view/RecoverConfirmation'
+import ResetPassword from './view/ResetPassword'
 import Clients from './view/Menu/Clients'
 import CreateClient from './view/Menu/Clients/CreateClient'
 import RequestLoan from './view/Menu/RequestLoan'
@@ -36,6 +37,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/recover-password" element={<RecoverPassword/>} />
           <Route path="/recover-confirmation" element={<RecoverConfirmation/>} />
+          <Route path="/reset-password" element={<ResetPassword/>} />
         </Route>
         {/* Rutas privadas */}
         <Route element={<PrivateRoute />}> 

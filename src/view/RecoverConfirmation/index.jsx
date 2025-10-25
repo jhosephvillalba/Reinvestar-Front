@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import LogoLogin from '../../assets/LogoLogin.svg';
 import backgroundImage from '../../assets/background/loginback.jpg';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RecoverConfirmation = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate a delay to mimic an API call or some processing
+    // Redirect to login after 3 seconds
     const timer = setTimeout(() => {
-      // Redirect to the home page after 2 seconds
       navigate('/login');
-    }, 2000);
+    }, 3000);
 
     // Cleanup the timer on component unmount
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate]);
   
   return (
     <div 
@@ -46,7 +44,7 @@ const RecoverConfirmation = () => {
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
         style={{
-          maxWidth: '450px',
+          width: '280px',
           zIndex: 2,
           position: 'relative'
         }}

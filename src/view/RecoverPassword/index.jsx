@@ -70,41 +70,11 @@ const RecoverPassword = () => {
         }}
       ></div>
       
-      {/* Error message - outside the card */}
-      {error && (
-        <div 
-          className="alert alert-danger py-2 mb-3 rounded-pill"
-          style={{
-            maxWidth: '450px',
-            zIndex: 2,
-            position: 'relative',
-            margin: '0 auto 20px auto'
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {/* Success message - outside the card */}
-      {success && (
-        <div 
-          className="alert alert-success py-2 mb-3 rounded-pill"
-          style={{
-            maxWidth: '450px',
-            zIndex: 2,
-            position: 'relative',
-            margin: '0 auto 20px auto'
-          }}
-        >
-          Recovery email sent successfully! Redirecting...
-        </div>
-      )}
-
       {/* Centered recovery form */}
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
         style={{
-          maxWidth: '450px',
+          width: '280px',
           zIndex: 2,
           position: 'relative'
         }}
@@ -172,6 +142,38 @@ const RecoverPassword = () => {
           >    
             {loading ? 'Sending...' : 'Send link'}
           </button>
+
+          {/* Error message */}
+          {error && (
+            <div 
+              className="alert alert-danger py-2 mb-3 rounded-pill"
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal'
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* Success message */}
+          {success && (
+            <div 
+              className="alert alert-success py-2 mb-3 rounded-pill"
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal'
+              }}
+            >
+              Recovery email sent successfully! Redirecting...
+            </div>
+          )}
 
           {/* Link to return to login */}
           <div className="text-center">
