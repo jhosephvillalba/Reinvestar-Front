@@ -162,9 +162,9 @@ const Sellers = () => {
                   <td>{seller.id}</td>
                   <td>{seller.full_name}</td>
                   <td>{seller.email}</td>
-                  <td>{seller.identification}</td>
-                  {/* <td>{seller.address}</td> */}
                   <td>{seller.phone}</td>
+                  {/* <td>{seller.address}</td> */}
+                  <td>{seller.identification}</td>
                   <td>{companyMap[seller.company_id] || '-'}</td>
                   {/* <td>{Array.isArray(seller.roles) && seller.roles.length > 0 ? seller.roles[0] : '-'}</td> */}
                   <td>

@@ -2,23 +2,47 @@ import React, { useState } from 'react';
 import LogoLogin from '../../assets/LogoLogin.svg';
 import backgroundImage from '../../assets/background/loginback.jpg';
 import { useNavigate } from 'react-router-dom';
+import { forgotPassword } from '../../Api/auth';
 
 const RecoverPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState({ email: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
    
     const handleChange = (e) => {
         setEmail({ [e.target.name]: e.target.value });
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault(); 
-        // Here you could add the logic to send the recovery email
-        console.log('Email sent to:', email.email);
+        setLoading(true);
+        setError('');
+        setSuccess(false);
         
-        setTimeout(() => {
-            navigate('/recover-confirmation');
-        }, 2000);
+        try {
+            await forgotPassword({ email: email.email });
+            setSuccess(true);
+            setTimeout(() => {
+                navigate('/recover-confirmation');
+            }, 2000);
+        } catch (err) {
+            console.error('Forgot password error:', err);
+            
+            // Extract specific error message from backend
+            if (err.response?.data?.detail) {
+                setError(err.response.data.detail);
+            } else if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else if (err.message) {
+                setError(err.message);
+            } else {
+                setError('Error sending recovery email. Please try again.');
+            }
+        } finally {
+            setLoading(false);
+        }
     }
 
 
@@ -46,6 +70,36 @@ const RecoverPassword = () => {
         }}
       ></div>
       
+      {/* Error message - outside the card */}
+      {error && (
+        <div 
+          className="alert alert-danger py-2 mb-3 rounded-pill"
+          style={{
+            maxWidth: '450px',
+            zIndex: 2,
+            position: 'relative',
+            margin: '0 auto 20px auto'
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {/* Success message - outside the card */}
+      {success && (
+        <div 
+          className="alert alert-success py-2 mb-3 rounded-pill"
+          style={{
+            maxWidth: '450px',
+            zIndex: 2,
+            position: 'relative',
+            margin: '0 auto 20px auto'
+          }}
+        >
+          Recovery email sent successfully! Redirecting...
+        </div>
+      )}
+
       {/* Centered recovery form */}
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
@@ -107,6 +161,7 @@ const RecoverPassword = () => {
           <button 
             type="submit" 
             className="btn w-100 rounded-pill fw-bold text-white mb-3"
+            disabled={loading}
             style={{
               backgroundColor: '#FFC862',
               border: 'none',
@@ -115,7 +170,7 @@ const RecoverPassword = () => {
               minHeight: '48px'
             }}
           >    
-            Send link
+            {loading ? 'Sending...' : 'Send link'}
           </button>
 
           {/* Link to return to login */}

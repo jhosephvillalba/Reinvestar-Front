@@ -34,7 +34,18 @@ const Login = () => {
         setError("Invalid credentials");
       }
     } catch (err) {
-      setError("Invalid credentials or network error");
+      console.error('Login error:', err);
+      
+      // Extract specific error message from backend
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError("Invalid credentials or network error");
+      }
     }
     setLoading(false);
   };
@@ -67,8 +78,7 @@ const Login = () => {
       <div 
         className="bg-white rounded-4 p-4 shadow-lg"
         style={{
-          // width: '100%',
-          maxWidth: '450px',
+          width: '280px',
           zIndex: 2,
           position: 'relative'
         }}
@@ -148,17 +158,10 @@ const Login = () => {
             </NavLink>
           </div>
 
-          {/* Error message */}
-          {error && (
-            <div className="alert alert-danger py-2 mb-3 rounded-pill">
-              {error}
-            </div>
-          )}
-
           {/* Sign in button */}
           <button 
             type="submit" 
-            className="btn w-100 rounded-pill fw-bold text-white"
+            className="btn w-100 rounded-pill fw-bold text-white mb-3"
             disabled={loading}
             style={{
               backgroundColor: '#FFC862',
@@ -170,6 +173,22 @@ const Login = () => {
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+          {/* Error message */}
+          {error && (
+            <div 
+              className="alert alert-danger py-2 mb-3 rounded-pill"
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal'
+              }}
+            >
+              {error}
+            </div>
+          )}
+
         </form>
       </div>
     </div>
