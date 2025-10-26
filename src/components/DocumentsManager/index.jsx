@@ -29,7 +29,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [observations, setObservations] = useState([]);
   const [newObservation, setNewObservation] = useState("");
-  const [selectedObservationType, setSelectedObservationType] = useState("Pendiente de revisión");
+  const [selectedObservationType, setSelectedObservationType] = useState("REVIEW");
   const [loadingObservations, setLoadingObservations] = useState(false);
   const [savingObservation, setSavingObservation] = useState(false);
 
@@ -44,14 +44,9 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
 
   // Observation type options
   const observationTypes = [
-    "Pending review",
-    "Under review",
-    "Approved",
-    "Approved with observations",
-    "Rejected",
-    "Expired",
-    "Replaced",
-    "Required"
+    "APPROVED",
+    "REVIEW",
+    "REJECTED"
   ];
 
   // Load document types
@@ -72,11 +67,18 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
 
   // Load uploaded documents
   useEffect(() => {
-    if (!requestId || !requestType || !isEnabled) {
+    if (!isEnabled) {
       setDocuments([]);
       return;
     }
-    loadDocuments();
+    
+    // If we have requestId and requestType, load from API
+    if (requestId && requestType) {
+      loadDocuments();
+    } else {
+      // If no requestId yet, start with empty documents array
+      setDocuments([]);
+    }
   }, [requestId, requestType, isEnabled]);
 
   const loadDocuments = async () => {
@@ -158,6 +160,13 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
   const loadObservations = async (documentId) => {
     setLoadingObservations(true);
     try {
+      // Check if document is temporary (local only)
+      const document = documents.find(doc => doc.id === documentId);
+      if (document && document.is_temp) {
+        setObservations([]);
+        return;
+      }
+      
       const obs = await getDocumentObservationsByDocument(documentId);
       setObservations(Array.isArray(obs) ? obs : []);
     } catch (error) {
@@ -184,6 +193,12 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
   // Add new observation
   const handleAddObservation = async () => {
     if (!selectedDocument || !newObservation.trim()) return;
+    
+    // Check if document is temporary (local only)
+    if (selectedDocument.is_temp) {
+      setFeedback("Cannot add observations to local documents. Save the request first to upload documents to the server.");
+      return;
+    }
     
     setSavingObservation(true);
     try {
@@ -231,8 +246,21 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       return;
     }
 
+    // If no requestId yet, add to local documents array
     if (!requestId || !requestType) {
-      setFeedback("Error: Request ID or type not specified");
+      const newDocument = {
+        id: `temp_${Date.now()}`, // Temporary ID
+        name: selectedFile.name,
+        type_document: { name: selectedDocumentType },
+        file_size: selectedFile.size,
+        file_type: selectedFile.type,
+        created_at: new Date().toISOString(),
+        is_temp: true // Flag to identify temporary documents
+      };
+      
+      setDocuments(prev => [...prev, newDocument]);
+      setFeedback("Document added locally. It will be uploaded when the request is saved.");
+      closeModal();
       return;
     }
 
@@ -309,24 +337,20 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
     setShowObservationsModal(false);
     setSelectedDocument(null);
     setObservations([]);
-    setSelectedObservationType("Pending review");
+    setSelectedObservationType("REVIEW");
   };
   
-  if (!isEnabled) {
-    return (
-      <div className="container-fluid py-4">
-        <div className="alert alert-warning text-center">
-          <i className="fas fa-exclamation-triangle me-2"></i>
-          Please save the request information in the "Form" tab to upload documents.
-        </div>
-      </div>
-    );
-  }
+  // Show warning message at the top if not enabled, but still show the interface
+  const warningMessage = !isEnabled ? (
+    <div className="alert alert-warning text-center mb-4">
+      <i className="fas fa-exclamation-triangle me-2"></i>
+      Please save the request information in the "Form" tab to upload documents.
+    </div>
+  ) : null;
 
   return (
       <div className="container-fluid py-4">
-        {/* ... El resto del JSX del componente ... */}
-        {/* (Este JSX es idéntico al que estaba en los archivos originales) */}
+        {warningMessage}
         <div className="row">
           {/* Left column - Documents list */}
           <div className="col-7">
@@ -337,7 +361,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                 type="button"
                 className="btn btn-primary px-4 py-2"
                 onClick={() => setShowModal(true)}
-                disabled={loading}
+                disabled={loading || !isEnabled}
                 style={{ borderRadius: '25px' }}
               >
                 <i className="fas fa-upload me-2"></i>

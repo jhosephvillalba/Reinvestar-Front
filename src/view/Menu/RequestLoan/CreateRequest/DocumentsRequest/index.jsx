@@ -6,7 +6,7 @@ const DocumentsRequest = ({ requestId, requestType }) => {
     <DocumentsManager 
       requestId={requestId} 
       requestType={requestType} 
-      isEnabled={!!requestId} 
+      isEnabled={true} 
     />
   );
 };

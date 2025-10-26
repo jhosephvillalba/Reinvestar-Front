@@ -52,7 +52,7 @@ const CreateRequest = () => {
               </li>
               <li className="nav-item" role="presentation">
                 <button
-                  className={`nav-link${activeTab === "profile" ? " active" : ""}${!createdRequestId ? " disabled" : ""}`}
+                  className={`nav-link${activeTab === "profile" ? " active" : ""}`}
                   id="profile-tab"
                   data-bs-toggle="tab"
                   data-bs-target="#profile"
@@ -60,11 +60,9 @@ const CreateRequest = () => {
                   role="tab"
                   aria-controls="profile"
                   aria-selected={activeTab === "profile"}
-                  onClick={() => createdRequestId && setActiveTab("profile")}
-                  disabled={!createdRequestId}
-                  title={!createdRequestId ? "Save the request first to upload documents" : ""}
+                  onClick={() => setActiveTab("profile")}
                 >
-                  Documents {!createdRequestId && <i className="fas fa-lock ms-1"></i>}
+                  Documents
                 </button>
               </li>
               {/* <li className="nav-item" role="presentation">
