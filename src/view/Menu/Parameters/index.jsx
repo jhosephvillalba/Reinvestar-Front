@@ -164,12 +164,67 @@ const Parameters = () => {
 
   const loadTemplateTypes = async () => {
     try {
-      const types = await emailTemplateApi.getAvailableTemplateTypes();
-      // Ensure types is always an array
-      setTemplateTypes(Array.isArray(types) ? types : []);
+      console.log('Loading template types...');
+      const response = await emailTemplateApi.getAvailableTemplateTypes();
+      console.log('Template types received:', response);
+      
+      // Handle the specific format: { types: [...] }
+      let processedTypes = [];
+      
+      if (response && response.types && Array.isArray(response.types)) {
+        console.log('Processing types array with', response.types.length, 'items');
+        processedTypes = response.types.map(type => ({
+          value: type.type,
+          label: type.name,
+          description: type.description,
+          available_variables: type.available_variables || []
+        }));
+      } else if (Array.isArray(response)) {
+        console.log('Processing as direct array');
+        processedTypes = response.map(type => ({
+          value: type.type || type.value || type,
+          label: type.name || type.label || type,
+          description: type.description || '',
+          available_variables: type.available_variables || []
+        }));
+      } else {
+        console.log('Unknown format, using fallback types');
+        // Fallback types if API doesn't return expected format
+        processedTypes = [
+          { value: 'welcome', label: 'Bienvenida', description: 'Correo de bienvenida para nuevos usuarios', available_variables: [] },
+          { value: 'reminder', label: 'Recordatorio', description: 'Correo de recordatorio', available_variables: [] },
+          { value: 'notification', label: 'Notificación', description: 'Correo de notificación', available_variables: [] }
+        ];
+      }
+      
+      console.log('Processed types:', processedTypes);
+      setTemplateTypes(processedTypes);
     } catch (error) {
       console.error('Error loading template types:', error);
-      setTemplateTypes([]); // Set empty array in case of error
+      console.error('Error details:', error.response?.data || error.message);
+      
+      // Use fallback types even on error
+      const fallbackTypes = [
+        { value: 'welcome', label: 'Bienvenida', description: 'Correo de bienvenida para nuevos usuarios', available_variables: [] },
+        { value: 'login_notification', label: 'Notificación de Login', description: 'Notificación cuando un usuario inicia sesión', available_variables: [] },
+        { value: 'password_reset', label: 'Recuperación de Contraseña', description: 'Correo para restablecer contraseña', available_variables: [] },
+        { value: 'request_link', label: 'Enlace de Solicitud', description: 'Enlace para completar una solicitud', available_variables: [] },
+        { value: 'request_submitted', label: 'Solicitud Enviada', description: 'Confirmación de solicitud enviada', available_variables: [] },
+        { value: 'request_approved', label: 'Solicitud Aprobada', description: 'Notificación de solicitud aprobada', available_variables: [] },
+        { value: 'request_rejected', label: 'Solicitud Rechazada', description: 'Notificación de solicitud rechazada', available_variables: [] },
+        { value: 'document_required', label: 'Documentos Requeridos', description: 'Solicitud de documentos faltantes', available_variables: [] },
+        { value: 'assignment_notification', label: 'Notificación de Asignación', description: 'Notificación de asignación a procesador', available_variables: [] },
+        { value: 'custom', label: 'Personalizada', description: 'Plantilla personalizada', available_variables: [] }
+      ];
+      
+      setTemplateTypes(fallbackTypes);
+      
+      // Show error notification
+      setNotification({
+        show: true,
+        message: 'Error loading template types from API, using fallback types: ' + (error.response?.data?.detail || error.message),
+        type: 'warning'
+      });
     }
   };
 
@@ -857,9 +912,16 @@ const Parameters = () => {
                 >
                   <option value="">Select a type</option>
                   {Array.isArray(templateTypes) && templateTypes.map((type, index) => (
-                    <option key={index} value={type.value}>{type.label}</option>
+                    <option key={index} value={type.value} title={type.description}>
+                      {type.label}
+                    </option>
                   ))}
                 </select>
+                {templateForm.template_type && templateTypes.find(t => t.value === templateForm.template_type)?.description && (
+                  <small className="text-muted mt-1 d-block">
+                    {templateTypes.find(t => t.value === templateForm.template_type).description}
+                  </small>
+                )}
               </div>
               <div className={styles.formGroup}>
                 <label>Subject:</label>
