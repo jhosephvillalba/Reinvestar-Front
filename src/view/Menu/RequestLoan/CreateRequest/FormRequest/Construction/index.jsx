@@ -84,6 +84,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
   const [externalLink, setExternalLink] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
+  const [requestId, setRequestId] = useState(null);
 
   useEffect(() => {
     setForm({ ...initialState });
@@ -112,34 +113,24 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
     }
   };
 
-  // Función para enviar email usando template
-  const handleSendEmail = async (link) => {
-    if (!link || !client_id) return;
-    
+  // Function to send email manually
+  const handleSendLink = async () => {
+    if (!externalLink || !client?.email) return;
     setSending(true);
     try {
-      // Get client data
-      const clientData = await getClientById(client_id);
-      if (!clientData?.email) {
-        setFeedback("Client email not found.");
-        return;
-      }
-
-      // Send email using template
       await sendTemplateEmail({
-        template_id: 0, // Request template ID
+        template_id: 0,
         template_type: "request_link",
-        to_email: clientData.email,
-        from_email: "noreply@reinvestar.com", // System email
-        content_type: "text/html", // Ensure it's sent as HTML
+        to_email: client.email,
+        from_email: "noreply@reinvestar.com",
+        content_type: "text/html",
         variables: {
-          client_name: clientData.full_name,
-          request_link: link,
+          client_name: client.full_name,
+          request_link: externalLink,
           request_type: "Construction",
-          request_id: null // We don't have the ID yet in CreateRequest
+          request_id: requestId
         }
       });
-      
       setFeedback("Email sent successfully!");
     } catch (error) {
       console.error('Error sending email:', error);
@@ -234,6 +225,10 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
       // 1. Create request using Construction service
       const constructionResponse = await createConstruction(dataToSend);
       
+      if (constructionResponse && constructionResponse.id) {
+        setRequestId(constructionResponse.id);
+      }
+      
       // 2. Create link automatically
       const linkResponse = await createRequestLink({
         valid_days: 30,
@@ -242,11 +237,18 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
         fixflip_request_id: 0
       });
 
-      // 3. Save generated link and send email
+      // 3. Save generated link
       if (linkResponse && linkResponse.link_token) {
         const fullLink = `${URL_EXTERNAL_FORM}/construction/${linkResponse.link_token}`;
         setExternalLink(fullLink);
-        await handleSendEmail(fullLink);
+        
+        // Scroll to link section after a short delay
+        setTimeout(() => {
+          const linkElement = document.getElementById('external-link-section-construction');
+          if (linkElement) {
+            linkElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
       }
 
       setFeedback("Construction created successfully!");
@@ -270,7 +272,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
 
   return (
     <form className={`container-fluid pb-5 mb-5 ${styles.form}`} onSubmit={handleSubmit}>
-      <div className="d-flex align-items-center mb-4 gap-3">
+      <div id="external-link-section-construction" className="d-flex align-items-center mb-4 gap-3">
         <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Construction - Basic Information</h4>
         {externalLink && (
           <>
@@ -281,6 +283,15 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
               onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
             >
               {copied ? "Copied!" : "Copy"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-success btn-sm ms-2"
+              onClick={handleSendLink}
+              disabled={sending || !client?.email}
+              title={!client?.email ? "No client email available" : "Send link to client"}
+            >
+              {sending ? "Sending..." : "Send"}
             </button>
           </>
         )}

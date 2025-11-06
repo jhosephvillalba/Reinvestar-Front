@@ -148,7 +148,7 @@ const DetailClient = () => {
                   <form onSubmit={handleSumit} autoComplete="off">
                                          <div className="row g-3">
                         <div className="col-12 col-md-6">
-                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Client Name</label>
+                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
                           <input
                             type="text"
                             className={`form-control ${styles.input}`}
@@ -197,7 +197,7 @@ const DetailClient = () => {
                           </select>
                         </div>
                         <div className="col-12">
-                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Address</label>
+                          <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Primary Property Address</label>
                           <input
                             type="text"
                             className={`form-control ${styles.input}`}
@@ -218,7 +218,7 @@ const DetailClient = () => {
                        <button
                          type="submit"
                          disabled={loading}
-                         className="btn text-white fw-semibold px-3 py-2 rounded-pill"
+                         className="btn text-white fw-semibold px-3 py-2 rounded-pill mt-4"
                          style={{
                            backgroundColor: "#2c3e50",
                            border: "none",

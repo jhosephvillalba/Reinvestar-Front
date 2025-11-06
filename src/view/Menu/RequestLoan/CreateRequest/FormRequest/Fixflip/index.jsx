@@ -83,6 +83,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
   const [externalLink, setExternalLink] = useState("");
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
+  const [requestId, setRequestId] = useState(null);
 
   // Load client data
   useEffect(() => {
@@ -109,22 +110,26 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       const clientData = await getClientById(client_id);
       
       if (clientData && clientData.email) {
-        const emailData = {
-          to: clientData.email,
-          subject: "Fix&flip Loan Request - ReInvestar",
-          template: "fixflip_request_created",
-          data: {
+        await sendTemplateEmail({
+          template_id: 0,
+          template_type: "request_link",
+          to_email: clientData.email,
+          from_email: "noreply@reinvestar.com",
+          content_type: "text/html",
+          variables: {
             client_name: clientData.full_name,
-            request_id: null, // No tenemos el ID aún en CreateRequest
-            external_link: link
+            request_link: link,
+            request_type: "Fix & Flip",
+            request_id: requestId
           }
-        };
-        
-        await sendTemplateEmail(emailData);
-        console.log("Email sent successfully");
+        });
+        setFeedback("Email sent successfully!");
+      } else {
+        setFeedback("Client email not found.");
       }
     } catch (error) {
       console.error("Error sending email:", error);
+      setFeedback("Error sending email. Please try again.");
     } finally {
       setSending(false);
     }
@@ -267,6 +272,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
       console.log("Server response:", response);
 
       if (response && response.id) {
+        setRequestId(response.id);
         setFeedback("Request created successfully");
 
         // Create link automatically
@@ -283,8 +289,14 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
         if (linkResponse?.link_token) {
           const fullLink = `${URL_EXTERNAL_FORM}/fixflip/${linkResponse.link_token}`;
           setExternalLink(fullLink);
-          // Send email automatically
-          await handleSendEmail(fullLink);
+          
+          // Scroll to link section after a short delay
+          setTimeout(() => {
+            const linkElement = document.getElementById('external-link-section-fixflip');
+            if (linkElement) {
+              linkElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 100);
         }
 
 
@@ -303,7 +315,7 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
 
   return (
     <form onSubmit={handleSubmit} className="container-fluid" noValidate>
-      <div className="d-flex align-items-center mb-4 gap-3">
+      <div id="external-link-section-fixflip" className="d-flex align-items-center mb-4 gap-3">
         <h4 className="my_title_color fw-bold mb-0" style={{ letterSpacing: 0.5 }}>Fix & Flip - Basic Information</h4>
         {externalLink && (
           <>
@@ -314,6 +326,15 @@ const FixflipForm = ({ client_id, goToDocumentsTab }) => {
               onClick={() => {navigator.clipboard.writeText(externalLink); setCopied(true); setTimeout(()=>setCopied(false), 1500);}}
             >
               {copied ? "Copied!" : "Copy"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-success btn-sm ms-2"
+              onClick={() => handleSendEmail(externalLink)}
+              disabled={sending || !client?.email}
+              title={!client?.email ? "No client email available" : "Send link to client"}
+            >
+              {sending ? "Sending..." : "Send"}
             </button>
           </>
         )}

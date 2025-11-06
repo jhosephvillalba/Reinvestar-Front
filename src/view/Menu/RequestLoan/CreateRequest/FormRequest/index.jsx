@@ -41,7 +41,7 @@ const FormRequest = ({ goToDocumentsTab }) => {
   // Search clients by email (search) live
   const handleEmailChange = async (e) => {
     const value = e.target.value;
-    setForm(prev => ({ ...prev, email: value }));
+    setForm(prev => ({ ...prev, email: value, productType: "" }));
     setClientFound(false);
     setClientId("");
     setFeedback("");
@@ -96,6 +96,13 @@ const FormRequest = ({ goToDocumentsTab }) => {
     setShowSuggestions(false);
     setFeedback(`Client found: ${client.full_name || client.nombre}`);
   };
+
+  // Reset product type when client is deselected
+  useEffect(() => {
+    if (!clientFound || !clientId) {
+      setForm(prev => ({ ...prev, productType: "" }));
+    }
+  }, [clientFound, clientId]);
 
   // Handle changes in the rest of the form
   const handleChange = (e) => {
@@ -249,10 +256,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
           <div className="col-4">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="name">Client Name</label>
+              <label htmlFor="name">Full Name</label>
           <input
             type="text"
-                placeholder="Client name"
+                placeholder="Full name"
             className={styles.input}
             name="name"
             value={form.name}
@@ -286,10 +293,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
         <div className="row">
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="phone">Phone Number</label>
+              <label htmlFor="phone">Phone</label>
           <input
             type="tel"
-                placeholder="Phone number"
+                placeholder="Phone"
             className={styles.input}
             name="phone"
             value={form.phone}
@@ -300,10 +307,10 @@ const FormRequest = ({ goToDocumentsTab }) => {
       </div>
           <div className="col-6">
             <div className="w-100 d-flex flex-column">
-              <label htmlFor="address">Property Address (Primary)</label>
+              <label htmlFor="address">Primary Property Address</label>
           <input
             type="text"
-                placeholder="Property address (primary)"
+                placeholder="Primary property address"
             className={styles.input}
             name="address"
             value={form.address}
@@ -356,12 +363,20 @@ const FormRequest = ({ goToDocumentsTab }) => {
               className={styles.input}
               value={form.productType}
               onChange={handleChange}
+              disabled={!clientFound || !clientId}
             >
-              <option value="">Select a product</option>
+              <option value="">
+                {!clientFound || !clientId ? "Please create or select a client first" : "Select a product"}
+              </option>
               <option value="fixflip">Fix&Flip</option>
               <option value="dscr">Dscr</option>
               <option value="construction">Construction</option>
             </select>
+            {(!clientFound || !clientId) && (
+              <small className="text-muted mt-1">
+                You must create or select a client before choosing a product type
+              </small>
+            )}
           </div>
         </div>
         {/* <div className="col-6">

@@ -17,7 +17,7 @@ const RequestLoan = () => {
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
-  const [requestType, setRequestType] = useState("dscr");
+  const [requestType, setRequestType] = useState("all");
   const [requestsData, setRequestsData] = useState(null);
   const navegate = useNavigate();
   const [showAssignPopup, setShowAssignPopup] = useState(false);
@@ -56,7 +56,7 @@ const RequestLoan = () => {
 
   // Load requests when filters change
   useEffect(() => {
-    if (!requestType) return;
+    if (!requestType || requestType === "") return;
     
     const timeoutId = setTimeout(() => {
       handleRequests(requestType);
@@ -160,6 +160,32 @@ const RequestLoan = () => {
       };
 
       let data;
+      if (requestType === "all") {
+        // Load all request types and combine them
+        const [fixflipData, dscrData, constructionData] = await Promise.all([
+          apiFixflip.getFixflips(params).catch(() => ({ items: [], total: 0 })),
+          apiDscr.getDscrs(params).catch(() => ({ items: [], total: 0 })),
+          apiConstruction.getConstructions(params).catch(() => ({ items: [], total: 0 }))
+        ]);
+        
+        // Combine all items
+        const allItems = [
+          ...(Array.isArray(fixflipData) ? fixflipData : (fixflipData.items || [])).map(item => ({ ...item, _type: 'fixflip' })),
+          ...(Array.isArray(dscrData) ? dscrData : (dscrData.items || [])).map(item => ({ ...item, _type: 'dscr' })),
+          ...(Array.isArray(constructionData) ? constructionData : (constructionData.items || [])).map(item => ({ ...item, _type: 'construction' }))
+        ];
+        
+        // Calculate total
+        const totalFixflip = Array.isArray(fixflipData) ? fixflipData.length : (fixflipData.total || 0);
+        const totalDscr = Array.isArray(dscrData) ? dscrData.length : (dscrData.total || 0);
+        const totalConstruction = Array.isArray(constructionData) ? constructionData.length : (constructionData.total || 0);
+        const total = totalFixflip + totalDscr + totalConstruction;
+        
+        data = {
+          items: allItems,
+          total: total
+        };
+      } else {
       switch (requestType) {
         case "fixflip":
           data = await apiFixflip.getFixflips(params);
@@ -172,6 +198,7 @@ const RequestLoan = () => {
           break;
         default:
           data = [];
+        }
       }
       
       setRequestsData(data);
@@ -351,14 +378,67 @@ const RequestLoan = () => {
 
   // Renders table according to request type
   const renderTable = () => {
-    // Use DSCR data for all tables temporarily
-    const data = requestsData;
-    if (requestType === "fixflip") {
+    // Get data items
+    const dataItems = requestsData && (Array.isArray(requestsData) ? requestsData : requestsData.items) || [];
+    
+    if (requestType === "all") {
+      // Unified table for all request types
       return (
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>ID</th>
+              <th style={{ color: "#000" }}>Type</th>
+              {/*<th style={{ color: "#000" }}>ID</th>*/}
+              <th style={{ color: "#000" }}>Filed</th>
+              <th style={{ color: "#000" }}>Full Name</th>
+              <th style={{ color: "#000" }}>Email</th>
+              <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Status</th>
+              <th style={{ color: "#000" }}>Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dataItems.length > 0 ? (
+              dataItems.map((request) => {
+                const reqType = request._type || 'dscr';
+                return (
+                  <tr key={`${reqType}-${request.id}`}>
+                    <td>
+                      <span className="badge bg-black">
+                        {reqType === 'fixflip' ? 'Fix & Flip' : reqType === 'construction' ? 'Construction' : 'DSCR'}
+                      </span>
+                    </td>
+                    {/*<td><strong>{request.id}</strong></td>*/}
+                    <td>{request.radicado}</td>
+                    <td>{request?.client?.full_name || request?.client?.full_name}</td>
+                    <td>{request?.client?.email || request?.client?.email}</td>
+                    <td>{request?.client?.phone || request?.client?.phone}</td>
+                    <td>{formatStatus(request.status)}</td>
+                    <td>
+                      <button className="btn btn-sm me-1" style={{ backgroundColor: "#000" }} onClick={() => openAssignPopup(request.id, reqType)}>
+                        <img src={BookCheck} alt="check-data" width={10} />
+                      </button>
+                      <button className="btn btn-sm" style={{ backgroundColor: "#000" }} onClick={() => navegate(`/requests/${reqType}/${request.id}/details`)}>
+                        <img src={Eye} alt="detail-client" width={10} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={8}>No requests found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      );
+    } else if (requestType === "fixflip") {
+      return (
+        <table className="table table-bordered table-hover">
+          <thead className="sticky-top">
+            <tr>
+              {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
@@ -371,10 +451,10 @@ const RequestLoan = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length > 0 ? (
-              data.map((request) => (
+            {dataItems.length > 0 ? (
+              dataItems.map((request) => (
                 <tr key={request.id}>
-                  <td><strong>{request.id}</strong></td>
+                  {/*<td><strong>{request.id}</strong></td>*/}
                   <td>{request.radicado}</td>
                   <td>{request?.client?.full_name}</td>
                   <td>{request?.client?.email}</td>
@@ -406,7 +486,7 @@ const RequestLoan = () => {
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>ID</th>
+              {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
@@ -419,10 +499,10 @@ const RequestLoan = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length > 0 ? (
-              data.map((request) => (
+            {dataItems.length > 0 ? (
+              dataItems.map((request) => (
                 <tr key={request.id}>
-                  <td><strong>{request.id}</strong></td>
+                  {/*<td><strong>{request.id}</strong></td>*/}
                   <td>{request.radicado}</td>
                   <td>{request?.client?.full_name}</td>
                   <td>{request?.client?.email}</td>
@@ -455,7 +535,7 @@ const RequestLoan = () => {
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>ID</th>
+              {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
@@ -468,10 +548,10 @@ const RequestLoan = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.length > 0 ? (
-              data.map((request) => (
+            {dataItems.length > 0 ? (
+              dataItems.map((request) => (
                 <tr key={request.id}>
-                  <td><strong>{request.id}</strong></td>
+                  {/*<td><strong>{request.id}</strong></td>*/}
                   <td>{request.radicado}</td>
                   <td>{request?.client.full_name}</td>
                   <td>{request?.client.email}</td>
@@ -537,6 +617,7 @@ const RequestLoan = () => {
             onChange={handleRequestTypeChange} 
             value={requestType}
           >
+            <option value="all">All Request</option>
             <option value="dscr">DSCR</option>
             <option value="fixflip">Fix & Flip</option>
             <option value="construction">Construction</option>

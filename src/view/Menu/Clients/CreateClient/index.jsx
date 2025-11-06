@@ -185,7 +185,7 @@ const CreateOrEditClient = () => {
                <form className={styles.form} onSubmit={handleSubmit}>
                  <div className="row g-3">
                    <div className="col-12 col-md-6">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Client Name</label>
+                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Full Name</label>
                      <input
                        type="text"
                        className={`form-control ${styles.input}`}
@@ -232,17 +232,17 @@ const CreateOrEditClient = () => {
                        onChange={handleChange}
                      />
                    </div>
-                   <div className="col-12">
-                     <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Property Address</label>
-                     <input
-                       type="text"
-                       className={`form-control ${styles.input}`}
-                       name="direccion"
-                       value={form.direccion}
-                       onChange={handleChange}
-                       required
-                     />
-                   </div>
+                  <div className="col-12">
+                    <label className="form-label fw-semibold mb-2" style={{color: "#000"}}>Primary Property Address</label>
+                    <input
+                      type="text"
+                      className={`form-control ${styles.input}`}
+                      name="direccion"
+                      value={form.direccion}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                  </div>
                  
                  {/* <label className={styles.checkboxContainer}>
