@@ -405,7 +405,7 @@ const RequestLoan = () => {
                   <tr key={`${reqType}-${request.id}`}>
                     <td>
                       <span className="badge bg-black">
-                        {reqType === 'fixflip' ? 'Fix & Flip' : reqType === 'construction' ? 'Construction' : 'DSCR'}
+                        {reqType === 'fixflip' ? 'FIX & FLIP' : reqType === 'construction' ? 'CONSTRUCTION' : 'DSCR'}
                       </span>
                     </td>
                     {/*<td><strong>{request.id}</strong></td>*/}
@@ -619,8 +619,8 @@ const RequestLoan = () => {
           >
             <option value="all">All Request</option>
             <option value="dscr">DSCR</option>
-            <option value="fixflip">Fix & Flip</option>
-            <option value="construction">Construction</option>
+            <option value="fixflip">FIX & FLIP</option>
+            <option value="construction">CONSTRUCTION</option>
           </select>
           {canViewSellerFilter() && (
             <select 

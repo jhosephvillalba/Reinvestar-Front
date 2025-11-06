@@ -13,6 +13,9 @@ import {
   downloadDocument,
 } from "../../Api/documents";
 import { getTypesDocument } from "../../Api/typesDocument";
+import { getDscrById } from "../../Api/dscr";
+import { getFixflipById } from "../../Api/fixflip";
+import { getConstructionById } from "../../Api/construction";
 
 const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
   const [typeDocuments, setTypeDocuments] = useState([]);
@@ -41,6 +44,12 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
   
   // Estado para descarga
   const [downloading, setDownloading] = useState(false);
+  
+  // Estado para el estado de la solicitud y modal de confirmación
+  const [requestStatus, setRequestStatus] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCannotDeleteModal, setShowCannotDeleteModal] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState(null);
 
   // Observation type options
   const observationTypes = [
@@ -65,6 +74,32 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
       .catch(() => setTypeDocuments([]));
   }, [isEnabled]);
 
+  // Load request status
+  const loadRequestStatus = async () => {
+    if (!requestId || !requestType) {
+      setRequestStatus(null);
+      return;
+    }
+    
+    try {
+      let requestData = null;
+      if (requestType === "dscr") {
+        requestData = await getDscrById(requestId);
+      } else if (requestType === "fixflip") {
+        requestData = await getFixflipById(requestId);
+      } else if (requestType === "construction") {
+        requestData = await getConstructionById(requestId);
+      }
+      
+      if (requestData && requestData.status) {
+        setRequestStatus(requestData.status);
+      }
+    } catch (error) {
+      console.error('Error loading request status:', error);
+      setRequestStatus(null);
+    }
+  };
+
   // Load uploaded documents
   useEffect(() => {
     if (!isEnabled) {
@@ -75,9 +110,11 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
     // If we have requestId and requestType, load from API
     if (requestId && requestType) {
       loadDocuments();
+      loadRequestStatus();
     } else {
       // If no requestId yet, start with empty documents array
       setDocuments([]);
+      setRequestStatus(null);
     }
   }, [requestId, requestType, isEnabled]);
 
@@ -306,6 +343,29 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
     }
   };
 
+  // Check if status allows deletion
+  const canDelete = () => {
+    if (!requestStatus) return true; // If status is not loaded, allow deletion (fallback)
+    const allowedStatuses = ["PENDING", "IN_REVIEW", "PRICING"];
+    return allowedStatuses.includes(requestStatus);
+  };
+
+  // Handle delete button click - show modal if needed
+  const handleDeleteClick = (docId) => {
+    const doc = documents.find(d => d.id === docId);
+    if (!doc) return;
+    
+    if (canDelete()) {
+      // Show confirmation modal if status allows deletion
+      setDocumentToDelete(doc);
+      setShowDeleteModal(true);
+    } else {
+      // Show modal indicating deletion is not allowed
+      setDocumentToDelete(doc);
+      setShowCannotDeleteModal(true);
+    }
+  };
+
   // Delete document
   const handleDelete = async (docId) => {
     setLoading(true);
@@ -319,6 +379,11 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
         setSelectedDocument(null);
         setObservations([]);
       }
+      
+      // Close modals if open
+      setShowDeleteModal(false);
+      setShowCannotDeleteModal(false);
+      setDocumentToDelete(null);
     } catch {
       setFeedback("Error deleting document");
     }
@@ -432,7 +497,7 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                           className="btn btn-outline-danger btn-sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(doc.id);
+                            handleDeleteClick(doc.id);
                           }}
                           disabled={loading}
                           style={{ borderRadius: '15px' }}
@@ -769,6 +834,121 @@ const DocumentsManager = ({ requestId, requestType, isEnabled = true }) => {
                     {downloading ? "Downloading..." : "Download"}
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show" style={{ zIndex: 1049 }}></div>
+        </div>
+      )}
+
+      {/* Modal de confirmación para eliminar documento */}
+      {showDeleteModal && documentToDelete && (
+        <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered" style={{ zIndex: 1051 }}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="fas fa-exclamation-triangle text-warning me-2"></i>
+                  Confirm Delete Document
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDocumentToDelete(null);
+                  }}
+                  disabled={loading}
+                />
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete the document <strong>"{documentToDelete.name}"</strong>?</p>
+                <p className="text-muted small mb-0">
+                  This action cannot be undone. The document will be permanently deleted.
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDocumentToDelete(null);
+                  }}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => handleDelete(documentToDelete.id)}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-trash me-2"></i>
+                      Delete Document
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show" style={{ zIndex: 1049 }}></div>
+        </div>
+      )}
+
+      {/* Modal indicando que no se puede eliminar */}
+      {showCannotDeleteModal && documentToDelete && (
+        <div className="modal fade show" style={{ display: 'block', zIndex: 1050 }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered" style={{ zIndex: 1051 }}>
+            <div className="modal-content">
+              <div className="modal-header bg-warning">
+                <h5 className="modal-title">
+                  <i className="fas fa-exclamation-triangle text-white me-2"></i>
+                  Cannot Delete Document
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => {
+                    setShowCannotDeleteModal(false);
+                    setDocumentToDelete(null);
+                  }}
+                />
+              </div>
+              <div className="modal-body">
+                <p className="mb-3">
+                  The document <strong>"{documentToDelete.name}"</strong> cannot be deleted.
+                </p>
+                <p className="text-muted small mb-0">
+                  Documents can only be deleted when the request status is <strong>Pending</strong>, <strong>Under Review</strong>, or <strong>Pricing</strong>.
+                </p>
+                {requestStatus && (
+                  <div className="alert alert-info mt-3 mb-0">
+                    <small>
+                      <strong>Current request status:</strong> {requestStatus}
+                    </small>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowCannotDeleteModal(false);
+                    setDocumentToDelete(null);
+                  }}
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>

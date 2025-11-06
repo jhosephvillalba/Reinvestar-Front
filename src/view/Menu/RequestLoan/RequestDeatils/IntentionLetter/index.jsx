@@ -807,29 +807,29 @@ const IntentionLetter = ({ requestId, requestType, solicitud }) => {
           <div className="d-flex gap-2">
             {intentLetter ? (
               <>
+                {/* Download button - Always visible for all roles when letter exists */}
                 <button
                   className="btn btn-secondary"
                   onClick={handleDownloadLetter}
                   disabled={downloading || loading}
                 >
-                      <i className={`fas ${downloading ? 'fa-spinner fa-spin' : 'fa-download'} me-2`}></i>
-                      {downloading ? 'Downloading...' : 'Download Letter'}
+                  <i className={`fas ${downloading ? 'fa-spinner fa-spin' : 'fa-download'} me-2`}></i>
+                  {downloading ? 'Downloading...' : 'Download Letter'}
                 </button>
-                
               </>
             ) : (
-                  <button
+              <button
                 className="btn btn-primary"
                 onClick={handleGenerateLetter}
                 disabled={loading || downloading}
               >
                 <i className={`fas ${loading ? 'fa-spinner fa-spin' : 'fa-file-alt'} me-2`}></i>
                 {loading ? 'Creating...' : 'Create Letter of Intent'}
-                  </button>
-                )}
+              </button>
+            )}
           </div>
         </div>
-              </div>
+      </div>
 
       {/* Informational message about status */}
       <div className="row mb-3">
