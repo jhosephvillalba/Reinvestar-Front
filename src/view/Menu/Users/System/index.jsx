@@ -130,7 +130,7 @@ const System = () => {
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>ID</th>
+              {/*<th style={{ color: "#000" }}>ID</th> */}
               <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
@@ -148,7 +148,7 @@ const System = () => {
               adminsData.map((admin) => {
                 return (
                 <tr key={admin.id}>
-                  <td>{admin.id}</td>
+                  {/*<td>{admin.id}</td>*/}
                   <td>{admin.full_name}</td>
                   <td>{admin.email}</td>
                   <td>{admin.phone}</td>

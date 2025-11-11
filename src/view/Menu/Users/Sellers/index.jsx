@@ -139,7 +139,7 @@ const Sellers = () => {
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>ID</th>
+              {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
@@ -159,7 +159,7 @@ const Sellers = () => {
             ) : (
               sellersData.map((seller) => (
                 <tr key={seller.id}>
-                  <td>{seller.id}</td>
+                  {/*<td>{seller.id}</td>*/}
                   <td>{seller.full_name}</td>
                   <td>{seller.email}</td>
                   <td>{seller.phone}</td>

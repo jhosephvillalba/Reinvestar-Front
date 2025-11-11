@@ -207,7 +207,7 @@ const Procesors = () => {
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>ID</th>
+              {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Full Name</th>
               <th style={{ color: "#000" }}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
@@ -221,7 +221,7 @@ const Procesors = () => {
               {processors.length > 0 ? (
                 processors.map((processor) => (
                   <tr key={processor.id}>
-                    <td>{processor.id}</td>
+                   {/*<td>{processor.id}</td>*/}
                     <td>{processor.full_name}</td>
                     <td>{processor.email}</td>
                     <td>{processor.phone || '-'}</td>
