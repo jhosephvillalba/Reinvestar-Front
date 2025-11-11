@@ -376,10 +376,52 @@ const RequestLoan = () => {
     return <span className={color}>{label}</span>;
   };
 
+  const renderVendorName = (item) => {
+    return item?.vendor?.full_name || "No vendor";
+  };
+
+  const renderPropertyAddress = (item) => {
+    return item?.subject_property_address || item?.property_address || item?.street_address || "No address";
+  };
+
+  const normalizeValue = (value) => {
+    if (value === undefined || value === null) return "";
+    return String(value).toLowerCase();
+  };
+
+  const matchesSearch = (item, term) => {
+    if (!term) return true;
+    const fields = [
+      item?.radicado,
+      item?.status,
+      item?._type,
+      item?.request_type,
+      item?.borrower_name,
+      item?.legal_status,
+      item?.subject_property_address,
+      item?.property_address,
+      item?.street_address,
+      renderVendorName(item),
+      renderPropertyAddress(item),
+      item?.client?.full_name,
+      item?.client?.email,
+      item?.client?.phone,
+      item?.id
+    ];
+    return fields.some((field) => normalizeValue(field).includes(term));
+  };
+
+  const filterDataItems = (items) => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return items;
+    return items.filter((item) => matchesSearch(item, term));
+  };
+
   // Renders table according to request type
   const renderTable = () => {
     // Get data items
     const dataItems = requestsData && (Array.isArray(requestsData) ? requestsData : requestsData.items) || [];
+    const filteredItems = filterDataItems(dataItems);
     
     if (requestType === "all") {
       // Unified table for all request types
@@ -387,32 +429,45 @@ const RequestLoan = () => {
         <table className="table table-bordered table-hover">
           <thead className="sticky-top">
             <tr>
-              <th style={{ color: "#000" }}>Type</th>
+              <th style={{ color: "#000" }} className={styles.typeColumn}>Type</th>
               {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
-              <th style={{ color: "#000" }}>Email</th>
+              <th style={{ color: "#000" }} className={styles.emailColumn}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Seller</th>
+              <th style={{ color: "#000" }} className={styles.propertyAddressColumn}>Property Address</th>
               <th style={{ color: "#000" }}>Status</th>
               <th style={{ color: "#000" }}>Options</th>
             </tr>
           </thead>
           <tbody>
-            {dataItems.length > 0 ? (
-              dataItems.map((request) => {
+            {filteredItems.length > 0 ? (
+              filteredItems.map((request) => {
                 const reqType = request._type || 'dscr';
+                const vendorName = renderVendorName(request);
+                const propertyAddress = renderPropertyAddress(request);
                 return (
                   <tr key={`${reqType}-${request.id}`}>
-                    <td>
-                      <span className="badge bg-black">
+                    <td className={styles.typeColumn}>
+                      <span className={`badge bg-black ${styles.typeBadge}`}>
                         {reqType === 'fixflip' ? 'FIX & FLIP' : reqType === 'construction' ? 'CONSTRUCTION' : 'DSCR'}
                       </span>
                     </td>
                     {/*<td><strong>{request.id}</strong></td>*/}
                     <td>{request.radicado}</td>
                     <td>{request?.client?.full_name || request?.client?.full_name}</td>
-                    <td>{request?.client?.email || request?.client?.email}</td>
+                    <td className={styles.emailColumn} title={request?.client?.email || 'No email'}>
+                      {request?.client?.email || request?.client?.email}
+                    </td>
                     <td>{request?.client?.phone || request?.client?.phone}</td>
+                    <td>{vendorName}</td>
+                    <td
+                      className={styles.propertyAddressColumn}
+                      title={propertyAddress}
+                    >
+                      {propertyAddress}
+                    </td>
                     <td>{formatStatus(request.status)}</td>
                     <td>
                       <button className="btn btn-sm me-1" style={{ backgroundColor: "#000" }} onClick={() => openAssignPopup(request.id, reqType)}>
@@ -427,7 +482,7 @@ const RequestLoan = () => {
               })
             ) : (
               <tr>
-                <td colSpan={8}>No requests found</td>
+                <td colSpan={9}>No requests found</td>
               </tr>
             )}
           </tbody>
@@ -441,8 +496,10 @@ const RequestLoan = () => {
               {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
-              <th style={{ color: "#000" }}>Email</th>
+              <th style={{ color: "#000" }} className={styles.emailColumn}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Seller</th>
+              <th style={{ color: "#000" }} className={styles.propertyAddressColumn}>Property Address</th>
               <th style={{ color: "#000" }}>Loan Amount</th>
               <th style={{ color: "#000" }}>Purchase Price</th>
               <th style={{ color: "#000" }}>ARV</th>
@@ -451,14 +508,25 @@ const RequestLoan = () => {
             </tr>
           </thead>
           <tbody>
-            {dataItems.length > 0 ? (
-              dataItems.map((request) => (
-                <tr key={request.id}>
+            {filteredItems.length > 0 ? (
+              filteredItems.map((request) => {
+                const propertyAddress = renderPropertyAddress(request);
+                return (
+                  <tr key={request.id}>
                   {/*<td><strong>{request.id}</strong></td>*/}
                   <td>{request.radicado}</td>
                   <td>{request?.client?.full_name}</td>
-                  <td>{request?.client?.email}</td>
+                  <td className={styles.emailColumn} title={request?.client?.email || 'No email'}>
+                    {request?.client?.email}
+                  </td>
                   <td>{request?.client?.phone}</td>
+                  <td>{renderVendorName(request)}</td>
+                  <td
+                    className={styles.propertyAddressColumn}
+                    title={propertyAddress}
+                  >
+                    {propertyAddress}
+                  </td>
                   <td>{formatMonetaryValue(request.loan_amount)}</td>
                   <td>{formatMonetaryValue(request.purchase_price)}</td>
                   <td>{formatMonetaryValue(request.arv)}</td>
@@ -471,11 +539,12 @@ const RequestLoan = () => {
                       <img src={Eye} alt="detail-client" width={10} />
                     </button>
                   </td>
-                </tr>
-              ))
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={10}>No fixflip requests</td>
+                <td colSpan={11}>No fixflip requests</td>
               </tr>
             )}
           </tbody>
@@ -489,8 +558,10 @@ const RequestLoan = () => {
               {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
-              <th style={{ color: "#000" }}>Email</th>
+              <th style={{ color: "#000" }} className={styles.emailColumn}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Seller</th>
+              <th style={{ color: "#000" }} className={styles.propertyAddressColumn}>Property Address</th>
               <th style={{ color: "#000" }}>Loan Amount</th>
               <th style={{ color: "#000" }}>Property Value</th>
               <th style={{ color: "#000" }}>Construction Cost</th>
@@ -499,14 +570,25 @@ const RequestLoan = () => {
             </tr>
           </thead>
           <tbody>
-            {dataItems.length > 0 ? (
-              dataItems.map((request) => (
-                <tr key={request.id}>
+            {filteredItems.length > 0 ? (
+              filteredItems.map((request) => {
+                const propertyAddress = renderPropertyAddress(request);
+                return (
+                  <tr key={request.id}>
                   {/*<td><strong>{request.id}</strong></td>*/}
                   <td>{request.radicado}</td>
                   <td>{request?.client?.full_name}</td>
-                  <td>{request?.client?.email}</td>
+                  <td className={styles.emailColumn} title={request?.client?.email || 'No email'}>
+                    {request?.client?.email}
+                  </td>
                   <td>{request?.client?.phone}</td>
+                  <td>{renderVendorName(request)}</td>
+                  <td
+                    className={styles.propertyAddressColumn}
+                    title={propertyAddress}
+                  >
+                    {propertyAddress}
+                  </td>
                   <td>{formatMonetaryValue(request.loan_amount)}</td>
                   <td>{formatMonetaryValue(request.property_value)}</td>
                   <td>{formatMonetaryValue(request.construction_cost)}</td>
@@ -519,11 +601,12 @@ const RequestLoan = () => {
                       <img src={Eye} alt="detail-client" width={10} />
                     </button>
                   </td>
-                </tr>
-              ))
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={10}>No construction requests</td>
+                <td colSpan={11}>No construction requests</td>
               </tr>
             )}
           </tbody>
@@ -538,8 +621,10 @@ const RequestLoan = () => {
               {/*<th style={{ color: "#000" }}>ID</th>*/}
               <th style={{ color: "#000" }}>Filed</th>
               <th style={{ color: "#000" }}>Full Name</th>
-              <th style={{ color: "#000" }}>Email</th>
+              <th style={{ color: "#000" }} className={styles.emailColumn}>Email</th>
               <th style={{ color: "#000" }}>Phone</th>
+              <th style={{ color: "#000" }}>Seller</th>
+              <th style={{ color: "#000" }} className={styles.propertyAddressColumn}>Property Address</th>
               <th style={{ color: "#000" }}>Rent Amount</th>
               <th style={{ color: "#000" }}>Appraisal Value</th>
               <th style={{ color: "#000" }}>Requested LTV</th>
@@ -548,14 +633,25 @@ const RequestLoan = () => {
             </tr>
           </thead>
           <tbody>
-            {dataItems.length > 0 ? (
-              dataItems.map((request) => (
-                <tr key={request.id}>
+            {filteredItems.length > 0 ? (
+              filteredItems.map((request) => {
+                const propertyAddress = renderPropertyAddress(request);
+                return (
+                  <tr key={request.id}>
                   {/*<td><strong>{request.id}</strong></td>*/}
                   <td>{request.radicado}</td>
                   <td>{request?.client.full_name}</td>
-                  <td>{request?.client.email}</td>
+                  <td className={styles.emailColumn} title={request?.client.email || 'No email'}>
+                    {request?.client.email}
+                  </td>
                   <td>{request?.client.phone}</td>
+                  <td>{renderVendorName(request)}</td>
+                  <td
+                    className={styles.propertyAddressColumn}
+                    title={propertyAddress}
+                  >
+                    {propertyAddress}
+                  </td>
                   <td>{formatMonetaryValue(request.rent_amount)}</td>
                   <td>{formatMonetaryValue(request.appraisal_value)}</td>
                   <td>{formatPercent(request.ltv_request)}</td>
@@ -568,11 +664,12 @@ const RequestLoan = () => {
                       <img src={Eye} alt="detail-client" width={10} />
                     </button>
                   </td>
-                </tr>
-              ))
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={10}>No dscr requests</td>
+                <td colSpan={11}>No dscr requests</td>
               </tr>
             )}
           </tbody>

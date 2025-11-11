@@ -451,6 +451,12 @@ const PipelineRequest = ({ requestId, requestType }) => {
                   <div className={styles.step_desc}>
                     <strong>{item.description}</strong>
                   </div>
+                  {item.created_by_name && (
+                    <div className="text-muted small">
+                      <i className="fas fa-user me-1"></i>
+                      Action by {item.created_by_name}
+                    </div>
+                  )}
                   
                   {item.completed && (
                     <div className="mt-2 mb-2">

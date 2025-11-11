@@ -10,3 +10,30 @@
 	width: 100%;
 }
 
+.propertyAddressColumn {
+	max-width: 120px;
+	width: 120px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.typeColumn {
+	min-width: 110px;
+	width: auto;
+	white-space: nowrap;
+}
+
+.typeBadge {
+	font-size: 0.75rem;
+	padding: 0.25rem 0.6rem;
+}
+
+.emailColumn {
+	max-width: 160px;
+	width: 160px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
