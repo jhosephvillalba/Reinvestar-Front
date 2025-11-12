@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./style.module.css";
 import FixflipForm from "./Fixflip";
 import ConstructionForm from "./Construction";
 import DscrForm from "./Dscr";
 import { getClients, createClient } from "../../../../../Api/client";
-import { getCompanies } from "../../../../../Api/admin";
 
 const initialClient = {
   name: "",
   email: "",
   phone: "",
   address: "",
-  company: "",
   productType: "",
   registrationDate: "",
 };
@@ -22,21 +20,8 @@ const FormRequest = () => {
   const [clientFound, setClientFound] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
-  const [companies, setCompanies] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const data = await getCompanies({ skip: 0, limit: 100 });
-        setCompanies(data);
-      } catch (e) {
-        setCompanies([]);
-      }
-    };
-    fetchCompanies();
-  }, []);
 
   // Search clients by email (search) in real time
   const handleEmailChange = async (e) => {
@@ -73,7 +58,6 @@ const FormRequest = () => {
       name: client.full_name || client.nombre || "",
       phone: client.phone || client.telefono || "",
       address: client.address || client.direccion || "",
-      company: client.company_id ? String(client.company_id) : "",
     }));
     setClientId(client.id);
     setClientFound(true);
@@ -103,7 +87,6 @@ const FormRequest = () => {
         email: form.email,
         phone: form.phone,
         address: form.address,
-        company_id: form.company ? Number(form.company) : undefined,
         purchase_or_refinancing: !!form.purchase_or_refinancing,
         has_a_mortgage: !!form.has_a_mortgage,
         has_delinquencies: !!form.has_delinquencies,
@@ -119,7 +102,6 @@ const FormRequest = () => {
         email: newClient.email,
         phone: newClient.phone,
         address: newClient.address,
-        company: newClient.company_id ? String(newClient.company_id) : "",
         // Ensure booleans are also reflected
         purchase_or_refinancing: !!newClient.purchase_or_refinancing,
         has_a_mortgage: !!newClient.has_a_mortgage,
@@ -156,7 +138,6 @@ const FormRequest = () => {
         email: form.email,
         phone: form.phone,
         address: form.address,
-        company_id: form.company ? Number(form.company) : undefined,
       });
       setClientId(newClient.id);
       setClientFound(true);
@@ -171,7 +152,7 @@ const FormRequest = () => {
     <div className="container-fluid ">
       <form className={`${styles.form} mb-2 mt-2`} onSubmit={handleSubmit} autoComplete="off">
         <div className="row">
-          <div className="col-4">
+          <div className="col-6">
             <div className="w-100 d-flex flex-column position-relative">
               <label htmlFor="email">Email</label>
               <input
@@ -215,7 +196,7 @@ const FormRequest = () => {
               )}
             </div>
           </div>
-          <div className="col-4">
+          <div className="col-6">
             <div className="w-100 d-flex flex-column">
               <label htmlFor="name">Client Name</label>
               <input
@@ -228,26 +209,6 @@ const FormRequest = () => {
                 required
                 disabled={clientFound}
               />
-            </div>
-          </div>
-          {/* --------------EMPRESAS--------------- */}
-          <div className="col-4">
-            <div className="w-100 d-flex flex-column">
-              <label htmlFor="options_companies">Company</label>
-              <select
-                name="company"
-                id="options_companies"
-                className={styles.input}
-                value={form.company}
-                onChange={handleChange}
-                required
-                disabled={clientFound}
-              >
-                <option value="">Select a company</option>
-                {companies && companies.map(({ id, name }) => (
-                  <option value={id} key={id}>{name}</option>
-                ))}
-              </select>
             </div>
           </div>
         </div>
