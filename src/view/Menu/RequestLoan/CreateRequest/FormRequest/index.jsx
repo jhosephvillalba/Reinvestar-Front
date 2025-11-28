@@ -329,9 +329,9 @@ const FormRequest = ({ goToDocumentsTab }) => {
               <option value="">
                 {!clientFound || !clientId ? "Please create or select a client first" : "Select a product"}
               </option>
-              <option value="fixflip">Fix&Flip</option>
-              <option value="dscr">Dscr</option>
-              <option value="construction">Construction</option>
+              <option value="fixflip">FIX&FLIP</option>
+              <option value="dscr">DSCR</option>
+              <option value="construction">CONSTRUCTION</option>
             </select>
             {(!clientFound || !clientId) && (
               <small className="text-muted mt-1">

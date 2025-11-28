@@ -701,7 +701,10 @@ const RequestLoan = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Create Request
+              {requestType === "fixflip" ? "CREATE FIX&FLIP LOAN" : 
+               requestType === "construction" ? "CREATE CONSTRUCTION LOAN" : 
+               requestType === "dscr" ? "CREATE DSCR LOAN" : 
+               "CREATE REQUEST"}
             </span>
           </button>
         </div>

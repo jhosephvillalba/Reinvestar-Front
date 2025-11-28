@@ -52,7 +52,7 @@ const userRoutes = [
   {
     id: 6,
     link: "/sellers",
-    name: "Sellers",
+    name: "Business Advisor",
     icon: VendedoresIcon,
   },
   {

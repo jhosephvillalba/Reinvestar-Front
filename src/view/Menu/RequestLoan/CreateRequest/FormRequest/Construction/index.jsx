@@ -94,8 +94,24 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
   }, [client_id]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    
+    // If unchecking the checkbox, clear previous address fields
+    if (name === "lived_less_than_2_years" && !checked) {
+      setForm((prev) => ({
+        ...prev,
+        [name]: false,
+        previous_street_address: "",
+        previous_city: "",
+        previous_state: "",
+        previous_zip: ""
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
   };
 
   const handleNumberFormat = (name, value) => {
@@ -489,6 +505,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
               name="previous_street_address" 
               value={form.previous_street_address} 
               onChange={handleChange}
+              required={form.lived_less_than_2_years}
             />
           </div>
         </div>
@@ -503,6 +520,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
               name="previous_city" 
               value={form.previous_city} 
               onChange={handleChange}
+              required={form.lived_less_than_2_years}
             />
           </div>
           <div className="col-md-4">
@@ -512,6 +530,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
               name="previous_state" 
               value={form.previous_state} 
               onChange={handleChange}
+              required={form.lived_less_than_2_years}
             >
               <option value="">Select...</option>
               <option value="AL">Alabama</option>
@@ -573,6 +592,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
               name="previous_zip" 
               value={form.previous_zip} 
               onChange={handleChange}
+              required={form.lived_less_than_2_years}
             />
           </div>
         </div>
@@ -666,7 +686,7 @@ const ConstructionForm = ({ client_id, goToDocumentsTab }) => {
       <div className="row">
         <div className="col-12 mt-4 mb-4">
           <button type="submit" className="btn btn-primary px-4 py-2" style={{ minWidth: "200px" }} disabled={loading}>
-            {loading ? "CREATING..." : "CREATE CONSTRUCTION"}
+            {loading ? "CREATING..." : "CREATE CONSTRUCTION LOAN"}
           </button>
         </div>
       </div>
