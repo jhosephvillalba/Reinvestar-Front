@@ -101,7 +101,7 @@ const System = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Create Admin
+              CREATE ADMIN
             </span>
           </button>
         </div>

@@ -326,7 +326,7 @@ const CreateOrEditClient = () => {
                      minWidth: "180px",
                    }}
                  >
-                   {loading ? "Saving..." : (editMode ? "UPDATE" : "CREATE")}
+                   {loading ? "SAVING..." : (editMode ? "UPDATE" : "CREATE")}
                  </button>
                </form>
              </div>

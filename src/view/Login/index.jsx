@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { login } from '../../Api/auth';
-import { getMe } from '../../Api/user';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
+import { performLogin } from '../../services/authService';
 import backgroundImage from '../../assets/background/loginback.jpg';
 import LogoLogin from '../../assets/LogoLogin.svg';
 
@@ -11,28 +10,37 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Mostrar mensaje si viene de expiración de sesión
+  useEffect(() => {
+    const reason = searchParams.get('reason');
+    if (reason === 'session_expired') {
+      setError('Your session has expired. Please log in again.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    
     try {
-      const data = await login({ email, password });
-      if (data && data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        // Get user and their role
-        const user = await getMe();
-        localStorage.setItem("user", JSON.stringify(user));
-        
-        // Redirect based on role
-        if (user && user.roles && user.roles[0] === "Procesador") {
-          navigate("/requests");
-        } else {
-          navigate("/dashboard");
-        }
-      } else {
-        setError("Invalid credentials");
+      const { user } = await performLogin({ email, password });
+      
+      // Determinar la ruta de redirección
+      let redirectPath = "/dashboard";
+      
+      // Verificar si hay una ruta guardada antes del login
+      const redirectParam = searchParams.get('redirect');
+      if (redirectParam) {
+        redirectPath = decodeURIComponent(redirectParam);
+      } else if (user?.roles?.[0] === "Procesador") {
+        redirectPath = "/requests";
       }
+      
+      // IMPORTANTE: Usar replace: true para evitar que el botón "atrás" muestre el login
+      navigate(redirectPath, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
       
@@ -46,8 +54,9 @@ const Login = () => {
       } else {
         setError("Invalid credentials or network error");
       }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

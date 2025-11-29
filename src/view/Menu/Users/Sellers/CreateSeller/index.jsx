@@ -137,7 +137,7 @@ const CreateSeller = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color m-0`}>
-              Create Seller
+              Create Business Advisor
             </h2>
           </div>
         </div>
@@ -285,7 +285,7 @@ const CreateSeller = () => {
                   minWidth: "180px",
                 }}
               >
-                {loading ? "Creating..." : "CREATE"}
+                {loading ? "CREATING..." : "CREATE"}
               </button>
             </form>
           </div>

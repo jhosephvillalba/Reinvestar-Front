@@ -181,7 +181,7 @@ const DetailSeller = () => {
               <img src={Back} alt="back" width={35} />
             </button>
             <h2 className={`${styles.title} fw-bolder my_title_color m-0`}>
-              {id ? "Seller Details" : "Create Seller"}
+              {id ? "Business Advisor Details" : "Create Business Advisor"}
             </h2>
           </div>
         </div>
@@ -362,7 +362,7 @@ const DetailSeller = () => {
                     minWidth: "180px",
                   }}
                 >
-                  {loading ? "Saving..." : "SAVE CHANGES"}
+                  {loading ? "SAVING..." : "SAVE CHANGES"}
                 </button>
               )}
             </form>

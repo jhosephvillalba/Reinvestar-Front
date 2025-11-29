@@ -166,7 +166,7 @@ const Procesors = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Create Processor
+              CREATE PROCESSOR
             </span>
           </button>
         </div>

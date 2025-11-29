@@ -106,7 +106,7 @@ const Clients = () => {
         <div>
           <button className="btn btn-primary d-flex align-items-center" onClick={handlerRedirectCreate}>
             <i className={`bi bi-plus-lg ${style.icon}`}></i>
-            <span className={`${style.text} my_title_color`}>Create Client</span>
+            <span className={`${style.text} my_title_color`}>CREATE CLIENT</span>
           </button>
         </div>
         <div className="d-flex gap-3">

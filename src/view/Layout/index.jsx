@@ -97,11 +97,19 @@ const Layout = ({ children }) => {
     }
   }, [user, location, navigate]);
 
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    try {
+      // Importar dinámicamente para evitar circular dependencies
+      const { performLogout } = await import("../../services/authService");
+      await performLogout(false); // No llamar API de logout por ahora
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Limpiar localmente aunque falle
+      localStorage.clear();
+      navigate("/login", { replace: true });
+    }
   };
 
   // Menu filtering based on role
@@ -110,23 +118,25 @@ const Layout = ({ children }) => {
   let filteredOtherRoutes = [];
   
   if (user && user.roles) {
-    const role = user.roles[0];
+    // Obtener todos los roles del usuario y normalizarlos a minúsculas
+    const userRoles = (user.roles || []).map(role => role?.toLowerCase());
+    const hasRole = (roleName) => userRoles.includes(roleName.toLowerCase());
 
-    if (role.toLowerCase() === 'vendedor') {
+    if (hasRole('vendedor')) {
       // For sellers, only show Requests and Clients
       filteredMainRoutes = mainRoutes.filter(
         route => route.name === 'Requests' || route.name === 'Clients'
       );
       filteredUserRoutes = []; // Hide Users section
       filteredOtherRoutes = []; // Hide Settings section
-    } else if (role.toLowerCase() === 'procesador') {
+    } else if (hasRole('procesador')) {
       // For processors, only show Requests
       filteredMainRoutes = mainRoutes.filter(
         route => route.name === 'Requests'
       );
       filteredUserRoutes = []; // Hide Users section
       filteredOtherRoutes = []; // Hide Settings section
-    } else if (role.toLowerCase() === 'coordinador') {
+    } else if (hasRole('coordinador')) {
       // For coordinators, show everything except Parameters, System and Coordinators
       filteredMainRoutes = mainRoutes;
       filteredUserRoutes = userRoutes.filter(
@@ -136,11 +146,16 @@ const Layout = ({ children }) => {
         route => route.name !== 'Parameters'
       );
     } else {
-      // For other roles, show everything
+      // For other roles (including Admin), show everything
       filteredMainRoutes = mainRoutes;
       filteredUserRoutes = userRoutes;
       filteredOtherRoutes = otherRoutes;
     }
+  } else {
+    // Si no hay usuario o roles, no mostrar nada
+    filteredMainRoutes = [];
+    filteredUserRoutes = [];
+    filteredOtherRoutes = [];
   }
 
   return (

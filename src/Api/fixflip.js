@@ -1,108 +1,44 @@
-import instance from './instance';
-import axios from 'axios';
+import api from './instance';
 
-const getBaseURL = () => import.meta.env.VITE_API_URL || "http://localhost:8000";
-
-const getAuthParams = () => {
-  const token = localStorage.getItem("token");
-  return token ? { access_token: token } : {};
-};
+/**
+ * Fixflip API
+ * Usa la instancia de axios configurada que incluye:
+ * - Interceptor para agregar token en header Authorization
+ * - Interceptor para refresh token automático en caso de 401
+ */
 
 export const createFixflip = async (data) => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error('No se encontró token de autenticación');
-    }
-    
-    const params = { access_token: token };
-    const response = await axios.post(`${getBaseURL()}/api/v1/fixflip-requests/`, data, { 
-      params,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error en createFixflip:', error);
-    throw error;
-  }
-}
+  const response = await api.post("/api/v1/fixflip-requests/", data);
+  return response.data;
+};
 
 export const getFixflips = async (params = {}) => {
-  try {
-    const authParams = getAuthParams();
-    const allParams = { ...params, ...authParams };
-    const response = await axios.get(`${getBaseURL()}/api/v1/fixflip-requests/`, { params: allParams });
-    return response.data;
-  } catch (error) {
-    console.error('Error en getFixflips:', error);
-    throw error;
-  }
-}
+  const response = await api.get("/api/v1/fixflip-requests/", { params });
+  return response.data;
+};
 
 export const getFixflipById = async (fixflip_id) => {
-  try {
-    const authParams = getAuthParams();
-    const response = await axios.get(`${getBaseURL()}/api/v1/fixflip-requests/${fixflip_id}`, { params: authParams });
-    return response.data;
-  } catch (error) {
-    console.error('Error en getFixflipById:', error);
-    throw error;
-  }
-}
+  const response = await api.get(`/api/v1/fixflip-requests/${fixflip_id}`);
+  return response.data;
+};
 
 export const updateFixflip = async (fixflip_id, data) => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error('No se encontró token de autenticación');
-    }
-    
-    const params = { access_token: token };
-    const response = await axios.put(`${getBaseURL()}/api/v1/fixflip-requests/${fixflip_id}`, data, { 
-      params,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error en updateFixflip:', error);
-    throw error;
-  }
-}
+  const response = await api.put(`/api/v1/fixflip-requests/${fixflip_id}`, data);
+  return response.data;
+};
 
 export const deleteFixflip = async (fixflip_id) => {
-  try {
-    const authParams = getAuthParams();
-    const response = await axios.delete(`${getBaseURL()}/api/v1/fixflip-requests/${fixflip_id}`, { params: authParams });
-    return response.data;
-  } catch (error) {
-    console.error('Error en deleteFixflip:', error);
-    throw error;
-  }
-}
+  const response = await api.delete(`/api/v1/fixflip-requests/${fixflip_id}`);
+  return response.data;
+};
 
 export const getFixflipStatus = async (fixflip_id) => {
-  try {
-    const authParams = getAuthParams();
-    const response = await axios.get(`${getBaseURL()}/api/v1/fixflip-requests/${fixflip_id}/status`, { params: authParams });
-    return response.data;
-  } catch (error) {
-    console.error('Error en getFixflipStatus:', error);
-    throw error;
-  }
-}
+  const response = await api.get(`/api/v1/fixflip-requests/${fixflip_id}/status`);
+  return response.data;
+};
 
 export const getFixflipByRegisterCode = async (fixflip_code) => {
-  try {
-    const authParams = getAuthParams();
-    const response = await axios.get(`${getBaseURL()}/api/v1/fixflip-requests/by-uuid/${fixflip_code}`, { params: authParams });
-    return response.data;
-  } catch (error) {
-    console.error('Error en getFixflipByRegisterCode:', error);
-    throw error;
-  }
-}
+  const response = await api.get(`/api/v1/fixflip-requests/by-uuid/${fixflip_code}`);
+  return response.data;
+};
 

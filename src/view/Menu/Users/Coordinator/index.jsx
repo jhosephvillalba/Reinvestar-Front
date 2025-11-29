@@ -109,7 +109,7 @@ const Coordinator = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Create Coordinator
+              CREATE COORDINATOR
             </span>
           </button>
         </div>

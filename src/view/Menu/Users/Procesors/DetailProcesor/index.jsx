@@ -443,7 +443,7 @@ const DetailProcesor = () => {
                     minWidth: "180px",
                   }}
                 >
-                  {loading ? "Saving..." : "SAVE CHANGES"}
+                  {loading ? "SAVING..." : "SAVE CHANGES"}
                 </button>
               )}
             </form>

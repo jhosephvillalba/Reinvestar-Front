@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './view/Login'
 import Layout from './view/Layout'
 import DetalleSolicitud from './view/Menu/RequestLoan/RequestDeatils'
@@ -19,8 +19,9 @@ import Procesors from './view/Menu/Users/Procesors'
 import CreateProcesor from './view/Menu/Users/Procesors/CreateProcesor'
 import System from './view/Menu/Users/System'
 import CreateUserSystem from './view/Menu/Users/System/CreateUserSystem'
-import PrivateRoute from './components/PrivateRouter'
-import AuthGuard from './components/AuthGuard'
+import PrivateRoute from './components/PrivateRoute'
+import PublicRoute from './components/PublicRoute'
+import RoleProtectedRoute from './components/RoleProtectedRoute'
 import DetailSeller from './view/Menu/Users/Sellers/DetailsSeller'
 import DetailCoordinator from './view/Menu/Users/Coordinator/DetailCoordinantor'
 import DetailUserSystem from './view/Menu/Users/System/DetailUserSystem'
@@ -32,14 +33,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Rutas públicas protegidas por AuthGuard */}
-        <Route element={<AuthGuard />}>
+        {/* Rutas públicas: Login, recuperación de contraseña, etc. */}
+        {/* PublicRoute evita que usuarios autenticados accedan a estas rutas */}
+        <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/recover-password" element={<RecoverPassword/>} />
           <Route path="/recover-confirmation" element={<RecoverConfirmation/>} />
           <Route path="/reset-password" element={<ResetPassword/>} />
         </Route>
-        {/* Rutas privadas */}
+        
+        {/* Rutas privadas: Requieren autenticación */}
+        {/* PrivateRoute redirige a /login si no está autenticado */}
         <Route element={<PrivateRoute />}> 
           <Route path="/" element={<Layout />} >
             <Route index element={<Navigate to="/dashboard" replace />} />
@@ -61,9 +65,10 @@ function App() {
             <Route path='processors' element={<Procesors/>}/>
             <Route path='processors/new-process' element={<CreateProcesor/>}/>
             <Route path='processors/:id/details' element={<DetailProcesor/>}/>
-            <Route path='system' element={<System/>}/>
-            <Route path='system/new-admin' element={<CreateUserSystem/>}/>
-            <Route path='system/:id/details' element={<DetailUserSystem/>}/>
+            {/* Rutas solo para Admin - acepta Admin, ADMIN, admin, Administrador */}
+            <Route path='system' element={<RoleProtectedRoute allowedRoles={['Admin', 'ADMIN', 'Administrador']}><System/></RoleProtectedRoute>}/>
+            <Route path='system/new-admin' element={<RoleProtectedRoute allowedRoles={['Admin', 'ADMIN', 'Administrador']}><CreateUserSystem/></RoleProtectedRoute>}/>
+            <Route path='system/:id/details' element={<RoleProtectedRoute allowedRoles={['Admin', 'ADMIN', 'Administrador']}><DetailUserSystem/></RoleProtectedRoute>}/>
             <Route path="*" element={<h1>404 Not Found</h1>} />
           </Route>
         </Route>

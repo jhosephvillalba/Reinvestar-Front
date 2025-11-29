@@ -99,7 +99,7 @@ const Sellers = () => {
     >
       <div className="d-flex flex-column align-items-start w-100 mb-4 px-4 mt-5">
         <p className="mb-4 fs-2 fw-bolder my_title_color">
-          Sellers
+          Business Advisors
         </p>
       </div>
       <div className="d-flex justify-content-between w-100 mb-4 px-4">
@@ -110,7 +110,7 @@ const Sellers = () => {
           >
             <i className={`bi bi-plus-lg ${styles.icon}`}></i>
             <span className={`${styles.text} my_title_color`}>
-              Create Seller
+              CREATE BUSINESS ADVISOR
             </span>
           </button>
         </div>

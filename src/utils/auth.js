@@ -1,4 +1,5 @@
 // Utilidades para manejar la autenticación y obtener información del usuario
+import { getAccessToken } from '../services/authService';
 
 // Función para decodificar el token JWT y obtener el payload
 export const decodeToken = (token) => {
@@ -26,7 +27,8 @@ export const decodeToken = (token) => {
 // Función para obtener el ID del usuario del token almacenado
 export const getUserIdFromToken = () => {
   try {
-    const token = localStorage.getItem('token');
+    // Usar getAccessToken() de authService para consistencia
+    const token = getAccessToken() || localStorage.getItem('token'); // Legacy support
     if (!token) return null;
     
     const decoded = decodeToken(token);
@@ -40,7 +42,8 @@ export const getUserIdFromToken = () => {
 // Función para obtener información completa del usuario del token
 export const getUserFromToken = () => {
   try {
-    const token = localStorage.getItem('token');
+    // Usar getAccessToken() de authService para consistencia
+    const token = getAccessToken() || localStorage.getItem('token'); // Legacy support
     if (!token) return null;
     
     return decodeToken(token);
@@ -53,7 +56,8 @@ export const getUserFromToken = () => {
 // Función para verificar si el token está expirado
 export const isTokenExpired = () => {
   try {
-    const token = localStorage.getItem('token');
+    // Usar getAccessToken() de authService para consistencia
+    const token = getAccessToken() || localStorage.getItem('token'); // Legacy support
     if (!token) return true;
     
     const decoded = decodeToken(token);
@@ -72,6 +76,7 @@ export const isTokenExpired = () => {
 export const cleanExpiredToken = () => {
   if (isTokenExpired()) {
     localStorage.removeItem('token');
+    localStorage.removeItem('access_token'); // También limpiar access_token
     return true;
   }
   return false;
